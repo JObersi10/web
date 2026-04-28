@@ -4,102 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JOBERSI | Lab</title>
+    <meta name="description" content="JOBERSI gear list, production workflow, and lab setup.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --accent:      #3b82f6;
-            --bg:          #020205;
-            --surface:     #0c0c14;
-            --border:      rgba(255,255,255,0.07);
-            --text-muted:  #52525b;
-            --text-mid:    #a1a1aa;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { -webkit-font-smoothing: antialiased; }
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--bg);
-            color: #fff;
-            overflow-x: hidden;
-            cursor: none;
-            line-height: 1.8;
-        }
-
-        #bg-grad {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background: radial-gradient(circle at 10% 15%, #0b1a35 0%, transparent 40%),
-                        radial-gradient(circle at 90% 85%, #0d1f3c 0%, transparent 40%), var(--bg);
-        }
-
-        #cursor {
-            position: fixed; top: 0; left: 0; width: 10px; height: 10px;
-            background: #fff; border-radius: 50%; pointer-events: none;
-            z-index: 10000; will-change: transform;
-        }
-
-        nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-            padding: 1.5rem 6%; display: flex; justify-content: space-between; align-items: center;
-            backdrop-filter: blur(20px); background: rgba(2,2,5,0.8); border-bottom: 1px solid var(--border);
-        }
-        .nav-logo {
-            font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
-            font-size: 1rem; letter-spacing: -0.02em; text-transform: uppercase;
-            color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
-        }
-        .nav-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-        .nav-links { display: flex; gap: 3rem; }
-        .nav-link {
-            color: #fff; font-size: 0.6rem; font-weight: 700;
-            letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.4;
-            transition: opacity 0.3s; text-decoration: none;
-        }
-        .nav-link:hover, .nav-link.active { opacity: 1; }
-
-        .container { width: 88%; max-width: 1300px; margin: 0 auto; position: relative; z-index: 10; }
-        .page-wrap { padding: 14rem 0 6rem; }
-        
-        .section-heading {
-            font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
-            text-transform: uppercase; letter-spacing: -0.04em; line-height: 1;
-            font-size: clamp(3.5rem, 8vw, 6.5rem);
-        }
-
-        .gear-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-top: 6rem; }
-        @media (max-width: 900px) { .gear-grid { grid-template-columns: 1fr; } }
-
-        .gear-card {
-            background: rgba(12,12,20,0.4); border: 1px solid var(--border);
-            padding: 3rem; border-radius: 1.5rem; transition: all 0.4s ease;
-        }
-        .gear-card:hover { border-color: var(--accent); background: var(--surface); transform: translateY(-5px); }
-        .gear-card.wide { grid-column: 1 / -1; }
-
-        .gear-cat { color: var(--accent); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; display: block; margin-bottom: 1.5rem; }
-        .gear-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; margin-bottom: 2rem; font-style: italic; text-transform: uppercase; }
-        
-        .gear-specs { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
-        .gear-specs li { display: flex; justify-content: space-between; font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
-        .gear-specs li span:first-child { color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.7rem; }
-        .gear-specs li span:last-child { color: var(--text-mid); text-align: right; }
-
-        .wf-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; margin-top: 1rem; }
-        .wf-num { font-family: 'Syne', sans-serif; color: var(--accent); font-weight: 800; font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.5; }
-        .wf-title { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
-        .wf-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
-
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
-
-        footer { border-top: 1px solid var(--border); padding: 4rem 0; margin-top: 8rem; }
-        .footer-inner { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; }
-        .footer-links { display: flex; gap: 3rem; }
-        .footer-links button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; text-transform: uppercase; letter-spacing: 0.2em; transition: color 0.3s; }
-        .footer-links button:hover { color: #fff; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -107,12 +16,12 @@
 <div id="bg-grad"></div>
 
 <nav>
-    <a class="nav-logo" href="index.html"><span class="nav-dot"></span>JOBERSI</a>
+    <a class="nav-logo" href="index.html" data-nav><span class="nav-dot"></span>JOBERSI</a>
     <div class="nav-links">
-        <a class="nav-link" href="portfolio.html">Archive</a>
-        <a class="nav-link" href="cv.html">CV</a>
-        <a class="nav-link active" href="gear.html">Lab</a>
-        <a class="nav-link" href="contact.html">Connect</a>
+        <a class="nav-link" href="portfolio.html" data-nav>Archive</a>
+        <a class="nav-link" href="cv.html" data-nav>CV</a>
+        <a class="nav-link active" href="gear.html" data-nav>Lab</a>
+        <a class="nav-link" href="contact.html" data-nav>Connect</a>
     </div>
 </nav>
 
@@ -132,7 +41,6 @@
                     <li><span>Format</span><span>1080P / 4K XAVC-S</span></li>
                 </ul>
             </div>
-
             <div class="gear-card reveal" style="transition-delay: 0.1s;">
                 <span class="gear-cat">Glass</span>
                 <div class="gear-name">Lenses</div>
@@ -143,7 +51,6 @@
                     <li><span>Macro</span><span>none :(</span></li>
                 </ul>
             </div>
-
             <div class="gear-card reveal">
                 <span class="gear-cat">Compute</span>
                 <div class="gear-name">Edit Suite</div>
@@ -154,7 +61,6 @@
                     <li><span>Display</span><span>Apple MacBook Air M2</span></li>
                 </ul>
             </div>
-
             <div class="gear-card reveal" style="transition-delay: 0.1s;">
                 <span class="gear-cat">Colour Science</span>
                 <div class="gear-name">Grading</div>
@@ -165,7 +71,6 @@
                     <li><span>LUTs</span><span>Custom S-Gamut3 Pack</span></li>
                 </ul>
             </div>
-
             <div class="gear-card wide reveal">
                 <span class="gear-cat">Production Workflow</span>
                 <div class="gear-name">Process</div>
@@ -194,38 +99,19 @@
             </div>
         </div>
 
-        <footer>
+        <footer class="site-footer">
             <div class="footer-inner">
                 <span class="footer-copy">© 2026 — JObersi</span>
                 <div class="footer-links">
-                    <button onclick="location.href='index.html'">Home</button>
-                    <button onclick="location.href='cv.html'">CV</button>
-                    <button onclick="location.href='contact.html'">Connect</button>
+                    <button onclick="navTo('index.html')">Home</button>
+                    <button onclick="navTo('cv.html')">CV</button>
+                    <button onclick="navTo('contact.html')">Connect</button>
                 </div>
             </div>
         </footer>
     </div>
 </div>
 
-<script>
-    const cursor = document.getElementById('cursor');
-    let mx = 0, my = 0, cx = 0, cy = 0;
-    window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-    function tick() {
-        cx += (mx - cx) * 0.08;
-        cy += (my - cy) * 0.08;
-        cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
-        requestAnimationFrame(tick);
-    }
-    tick();
-
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>

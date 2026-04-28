@@ -8,179 +8,48 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="shared.css">
-    <style>
-    /* ══ HERO ════════════════════════════════════════════════════════ */
-    #hero {
-        min-height: 100svh; display: flex; flex-direction: column;
-        justify-content: center; align-items: center; text-align: center;
-        padding: 6rem 0 4rem; position: relative; overflow: visible;
-    }
-    .hero-name {
-        font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
-        text-transform: uppercase; letter-spacing: -0.04em; line-height: 0.9;
-        /* Allow text to shrink on small screens — do NOT use white-space:nowrap */
-        display: block;
-        padding: 0.1em 0.05em 0.18em;
-        font-size: clamp(3rem, 17vw, 17rem);
-        /* JS will override font-size for large screens */
-        max-width: 100%;
-    }
-    .hero-sub {
-        font-size: 0.57rem; font-weight: 700; letter-spacing: 1em;
-        text-transform: uppercase; color: var(--accent); margin-top: 0.6rem;
-        /* prevent letter-spacing from causing overflow */
-        padding-right: 1em;
-    }
-    .scroll-hint {
-        position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-        display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
-        opacity: 0.28; font-size: 0.5rem; letter-spacing: 0.45em; text-transform: uppercase;
-        white-space: nowrap;
-    }
-    .scroll-hint::before {
-        content: ''; width: 1px; height: 34px;
-        background: linear-gradient(to bottom, transparent, #fff);
-        animation: scrollPulse 1.8s ease-in-out infinite;
-    }
-    @keyframes scrollPulse {
-        0%,100% { opacity: 0.3; transform: scaleY(1); }
-        50%      { opacity: 0.9; transform: scaleY(1.45); }
-    }
-
-    /* ══ ABOUT ═══════════════════════════════════════════════════════ */
-    #home-about { padding: 10rem 0; }
-    @media (max-width: 900px) { #home-about { padding: 6rem 0; } }
-
-    .about-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5rem;
-        align-items: start;
-    }
-    @media (max-width: 900px) {
-        .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-    }
-
-    .about-body { font-size: clamp(1rem, 2.2vw, 1.4rem); color: var(--text-mid); line-height: 1.8; }
-    .about-body strong { color: #fff; font-weight: 700; }
-    .about-body p { margin-bottom: 1.2rem; }
-    .about-body p:last-child { margin-bottom: 0; }
-
-    /* Photo column — vertical stack of square + landscape */
-    .about-photos {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        padding-top: 2rem;
-    }
-    .photo-square {
-        width: 100%;
-        max-width: 260px;
-        aspect-ratio: 1 / 1;
-        border-radius: 2rem;
-        overflow: hidden;
-        border: 1px solid var(--border);
-        flex-shrink: 0;
-    }
-    .photo-square img {
-        width: 100%; height: 100%; object-fit: cover;
-        filter: grayscale(0.3);
-        transition: filter 0.6s ease;
-    }
-    .photo-square:hover img { filter: grayscale(0); }
-
-    .photo-landscape {
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        border-radius: 2rem;
-        overflow: hidden;
-        border: 1px solid var(--border);
-    }
-    .photo-landscape img {
-        width: 100%; height: 100%; object-fit: cover;
-        filter: grayscale(0.4);
-        transition: filter 0.6s ease;
-    }
-    .photo-landscape:hover img { filter: grayscale(0); }
-
-    .photo-label {
-        font-size: 0.5rem; font-weight: 700; letter-spacing: 0.4em;
-        text-transform: uppercase; color: var(--accent);
-    }
-
-    /* ══ STATS ═══════════════════════════════════════════════════════ */
-    #stats { padding: 4rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
-    @media (max-width: 700px) { .stats-row { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; } }
-    .stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic; font-size: clamp(2.25rem, 5vw, 4.25rem); color: var(--accent); line-height: 1; }
-    .stat-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-muted); margin-top: 0.35rem; }
-
-    /* ══ SERVICES ════════════════════════════════════════════════════ */
-    #home-services { padding: 8rem 0; }
-    @media (max-width: 640px) { #home-services { padding: 5rem 0; } }
-    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3.5rem; }
-    @media (max-width: 900px) { .services-grid { grid-template-columns: 1fr; } }
-    .service-card {
-        padding: 2.5rem; border-radius: var(--radius-card);
-        background: var(--surface); border: 1px solid var(--border);
-        transition: border-color 0.3s, transform 0.3s; position: relative; overflow: hidden;
-    }
-    .service-card::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-        background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
-    }
-    .service-card:hover::before { transform: scaleX(1); }
-    .service-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-4px); }
-    .service-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.6rem; letter-spacing: 0.35em; color: var(--accent); margin-bottom: 1.5rem; }
-    .service-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 0.75rem; }
-    .service-desc { color: var(--text-mid); font-size: 0.88rem; line-height: 1.75; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="cursor"></div>
-<div id="transition-overlay"><div class="shutter"></div><div class="shutter"></div><div class="shutter"></div></div>
 <div id="bg-grad"></div>
 <div id="bg-bloom"></div>
 
-<!-- NAV -->
 <nav id="navbar">
-    <a class="nav-logo" href="index.html"><span class="nav-dot"></span>JOBERSI</a>
+    <a class="nav-logo" href="index.html" data-nav> <span class="nav-dot"></span>JOBERSI</a>
     <div class="nav-links">
-        <a class="nav-link" href="portfolio.html" onclick="navTo('portfolio.html');return false;">Archive</a>
-        <a class="nav-link" href="cv.html" onclick="navTo('cv.html');return false;">CV</a>
-        <a class="nav-link" href="gear.html" onclick="navTo('gear.html');return false;">Lab</a>
-        <a class="nav-link" href="contact.html" onclick="navTo('contact.html');return false;">Connect</a>
+        <a class="nav-link" href="portfolio.html" data-nav>Archive</a>
+        <a class="nav-link" href="cv.html" data-nav>CV</a>
+        <a class="nav-link" href="gear.html" data-nav>Lab</a>
+        <a class="nav-link" href="contact.html" data-nav>Connect</a>
     </div>
-    <button id="hamburger" onclick="openMenu()">☰</button>
+    <button id="hamburger">☰</button>
 </nav>
+
 <div id="mobile-menu">
-    <button id="m-close" onclick="closeMenu()">✕</button>
-    <a class="m-link" href="index.html">Home</a>
-    <a class="m-link" href="portfolio.html" onclick="navTo('portfolio.html');closeMenu();return false;">Archive</a>
-    <a class="m-link" href="cv.html" onclick="navTo('cv.html');closeMenu();return false;">CV</a>
-    <a class="m-link" href="gear.html" onclick="navTo('gear.html');closeMenu();return false;">Lab</a>
-    <a class="m-link" href="contact.html" onclick="navTo('contact.html');closeMenu();return false;">Connect</a>
+    <button id="m-close">✕</button>
+    <a class="m-link" href="index.html" data-nav>Home</a>
+    <a class="m-link" href="portfolio.html" data-nav>Archive</a>
+    <a class="m-link" href="cv.html" data-nav>CV</a>
+    <a class="m-link" href="gear.html" data-nav>Lab</a>
+    <a class="m-link" href="contact.html" data-nav>Connect</a>
 </div>
 
-<!-- ═══════════ HERO ═══════════ -->
 <section id="hero">
     <span class="hero-name" id="hero-name">JOBERSI</span>
     <p class="hero-sub">I shoot. I build around it.</p>
-    <a href="portfolio.html" class="btn-outline" style="margin-top:3.5rem" onclick="navTo('portfolio.html');return false;">SEE_WORK</a>
+    <a href="portfolio.html" class="btn-outline" data-nav style="margin-top:3.5rem;">SEE_WORK</a>
     <span class="scroll-hint">scroll</span>
 </section>
 
-<!-- ═══════════ ABOUT ═══════════ -->
 <section id="home-about">
     <div class="container">
         <div class="about-grid">
-            <!-- Text column -->
             <div>
-                <span class="pill" style="margin-bottom:1.75rem;display:inline-block">About</span>
-                <h2 class="section-heading reveal" style="margin-bottom:2.5rem">Work in<br><span style="color:var(--accent)">progress.</span></h2>
-                <div class="about-body reveal" style="transition-delay:0.1s">
+                <span class="pill" style="margin-bottom:1.75rem;display:inline-block;">About</span>
+                <h2 class="section-heading reveal" style="margin-bottom:2.5rem;">Work in<br><span style="color:var(--accent)">progress.</span></h2>
+                <div class="about-body reveal" style="transition-delay:0.1s;">
                     <p>Videographer from <strong>Curaçao</strong>. I shoot events, brands, and whatever's worth capturing.</p>
                     <p>Focused on making things <strong>connect</strong> — from planning to edit — not just random clips.</p>
                     <p>Worked on <strong>20+ projects</strong>, including camps, competitions, and client work.</p>
@@ -192,16 +61,12 @@
                         </a>
                     </p>
                 </div>
-                <a href="cv.html" class="btn-accent" style="margin-top:2.5rem;display:inline-block" onclick="navTo('cv.html');return false;">What I've done →</a>
+                <a href="cv.html" class="btn-accent" data-nav style="margin-top:2.5rem;display:inline-block;">What I've done →</a>
             </div>
-
-            <!-- Photos column -->
-            <div class="about-photos reveal" style="transition-delay:0.2s">
-                <!-- Profile — 1:1 square -->
+            <div class="about-photos reveal" style="transition-delay:0.2s;">
                 <div class="photo-square">
                     <img src="media/pfp.jpg" alt="JO — portrait">
                 </div>
-                <!-- Work — 16:9 landscape -->
                 <div class="photo-landscape">
                     <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=2070&auto=format&fit=crop" alt="Behind the lens">
                 </div>
@@ -211,7 +76,6 @@
     </div>
 </section>
 
-<!-- ═══════════ STATS ═══════════ -->
 <section id="stats">
     <div class="container">
         <div class="stats-row">
@@ -223,23 +87,22 @@
     </div>
 </section>
 
-<!-- ═══════════ SERVICES ═══════════ -->
 <section id="home-services">
     <div class="container">
         <span class="pill">What I do</span>
-        <h2 class="section-heading reveal" style="margin-top:1.25rem">Simple.</h2>
+        <h2 class="section-heading reveal" style="margin-top:1.25rem;">Simple.</h2>
         <div class="services-grid">
             <div class="service-card reveal">
                 <div class="service-num">01</div>
                 <div class="service-title">Filming</div>
                 <p class="service-desc">Events, short vids, brand stuff. I show up, figure out what actually matters, and shoot that.</p>
             </div>
-            <div class="service-card reveal" style="transition-delay:.1s">
+            <div class="service-card reveal" style="transition-delay:.1s;">
                 <div class="service-num">02</div>
                 <div class="service-title">Editing</div>
                 <p class="service-desc">Cutting, pacing, basic color. Making things feel right instead of just "looking good".</p>
             </div>
-            <div class="service-card reveal" style="transition-delay:.2s">
+            <div class="service-card reveal" style="transition-delay:.2s;">
                 <div class="service-num">03</div>
                 <div class="service-title">Experimenting</div>
                 <p class="service-desc">Trying weird angles, pushing gear, testing ideas. Sometimes it works. Sometimes it doesn't.</p>
@@ -252,30 +115,14 @@
     <div class="footer-inner">
         <span class="footer-copy">© 2026 — JObersi | Curaçao</span>
         <div class="footer-links">
-            <a href="portfolio.html" onclick="navTo('portfolio.html');return false;">Archive</a>
-            <a href="cv.html" onclick="navTo('cv.html');return false;">CV</a>
-            <a href="gear.html" onclick="navTo('gear.html');return false;">Lab</a>
-            <a href="contact.html" onclick="navTo('contact.html');return false;">Connect</a>
+            <a href="portfolio.html" data-nav>Archive</a>
+            <a href="cv.html" data-nav>CV</a>
+            <a href="gear.html" data-nav>Lab</a>
+            <a href="contact.html" data-nav>Connect</a>
         </div>
     </div>
 </footer>
 
-<script src="shared.js"></script>
-<script>
-/* Hero text fit — clamp-based so no overflow ever */
-const heroEl = document.getElementById('hero-name');
-function fitHero() {
-    // Reset to auto so scrollWidth reflects natural size
-    heroEl.style.fontSize = '';
-    const available = window.innerWidth * 0.94;
-    heroEl.style.fontSize = '100px';
-    const ratio = available / heroEl.scrollWidth;
-    // clamp: never exceed 17rem, never go below 3rem
-    const computed = Math.min(Math.max(100 * ratio, 48), 272);
-    heroEl.style.fontSize = computed + 'px';
-}
-fitHero();
-window.addEventListener('resize', fitHero, { passive: true });
-</script>
+<script src="script.js"></script>
 </body>
 </html>
