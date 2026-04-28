@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
     fitHero();
-
+    
     const revealObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -153,43 +153,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-function setupScrollSquircle() {
-    const squircle = document.getElementById('scroll-squircle');
-    const startSection = document.getElementById('home-about');
-    const endSection = document.getElementById('home-services');
-    
-    if (!squircle || !startSection || !endSection) return;
-
-    window.addEventListener('scroll', () => {
-        const startRect = startSection.getBoundingClientRect();
-        const endRect = endSection.getBoundingClientRect();
-        
-        // Point where animation starts (About section enters)
-        const startPoint = startRect.top; 
-        // Point where animation finishes (Services section starts)
-        const endPoint = endRect.top;
-
-        // Total distance between the two sections
-        const totalDistance = endPoint - startPoint;
-        
-        // Calculate progress based on how much of that gap we've scrolled
-        // 0 = At the start of About, 1 = Reached What I Do
-        let progress = (window.innerHeight - startRect.top) / (endRect.top - startRect.top + window.innerHeight);
-        
-        progress = Math.max(0, Math.min(1, progress));
-
-        if (progress > 0) {
-            const scale = progress * 90;
-            const radius = 30 - (progress * 30);
-            const blur = progress * 10; // 3. Blur grows with the image
-            
-            squircle.style.opacity = Math.min(progress * 1.5, 0.5);
-            squircle.style.transform = `translate(-50%, -50%) scale(${scale})`;
-            squircle.style.borderRadius = `${radius}%`;
-            squircle.style.filter = `blur(${blur}px)`;
-        } else {
-            squircle.style.opacity = "0";
-        }
-    }, { passive: true });
-}
