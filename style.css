@@ -1120,3 +1120,20 @@ nav {
         gap: 1.5rem;
     }
 }
+
+#scroll-squircle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    height: 150px;
+    background-image: url('cover.jpg'); 
+    background-size: cover;
+    background-position: center;
+    border-radius: 30%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: -1; 
+    pointer-events: none;
+    will-change: transform, filter;
+    opacity: 0;
+}

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="scroll-squircle"></div>
 
 <div id="cursor"></div>
 <div id="bg-grad"></div>
@@ -36,55 +37,54 @@
     <a class="m-link" href="contact.html" data-nav>Connect</a>
 </div>
 
-<section id="hero">
-    <span class="hero-name" id="hero-name">JOBERSI</span>
-    <p class="hero-sub">I shoot. I build around it.</p>
-    <a href="portfolio.html" class="btn-outline" data-nav style="margin-top:3.5rem;">SEE_WORK</a>
+<section id="hero" style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 80vh; padding-top: 60px;">
+    <span class="hero-name" id="hero-name" style="line-height: 0.8 !important; display: block !important; white-space: nowrap;">JOBERSI</span>
+    <p class="hero-sub" style="margin-top: 2rem !important; position: relative !important;">I shoot. I build around it.</p>
+    <a href="portfolio.html" class="btn-outline" data-nav style="margin-top:3.5rem; display: inline-block !important;">SEE_WORK</a>
     <span class="scroll-hint">scroll</span>
 </section>
 
-<section id="home-about">
+<section id="home-about" style="padding: 100px 0; overflow: hidden;">
     <div class="container">
-        <div class="about-grid">
-            <div class="about-photos reveal" style="transition-delay:0.2s;">
-                <div class="photo-square">
-                    <img src="media/pfp.jpg" alt="JO — portrait">
-                </div>
-            </div>
-            <div>
-                <span class="pill" style="margin-bottom:1.75rem;display:inline-block;">About</span>
-                <h2 class="section-heading reveal" style="margin-bottom:2.5rem;">Work in<br><span style="color:var(--accent)">progress.</span></h2>
-                <div class="about-body reveal" style="transition-delay:0.1s;">
+        <div class="about-grid" style="display: grid !important; grid-template-columns: 1fr 320px !important; gap: 4rem; align-items: start;">
+            
+            <div style="min-width: 0;">
+                <span class="pill" style="margin-bottom:1.75rem;display:inline-block;">ABOUT</span>
+                <h2 class="section-heading reveal" style="margin-bottom:3rem; line-height: 1; font-size: clamp(2.5rem, 5vw, 4.5rem); font-family: 'Syne', sans-serif; font-weight: 800; text-transform: uppercase;">
+                    Work in<br><span style="color:var(--accent)">progress.</span>
+                </h2>
+                
+                <div class="about-body reveal" style="max-width: 550px; transition-delay:0.1s; line-height: 1.6; font-size: 1.1rem; opacity: 0.9;">
                     <p>Videographer from <strong>Curaçao</strong>. I shoot events, brands, and whatever's worth capturing.</p>
-                    <p>Focused on making things <strong>connect</strong> — from planning to edit — not just random clips.</p>
-                    <p>Worked on <strong>20+ projects</strong>, including camps, competitions, and client work.</p>
-                    <p>
+                    <p style="margin-top: 1.5rem;">Focused on making things <strong>connect</strong> — from planning to edit — not just random clips.</p>
+                    <p style="margin-top: 1.5rem;">Worked on <strong>20+ projects</strong>, including camps, competitions, and client work.</p>
+                    <p style="margin-top: 1.5rem;">
                         Also running
-<a href="https://curahack.club" target="_blank" style="color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:2px;margin-left:6px;display:inline-flex;align-items:center;gap:6px;">
-    <img src="media/hcc.png" alt="Hack Club Curaçao" style="width:22px; height:22px; border-radius:50%; object-fit:cover; display:inline-block;">
-    Hack Club Curaçao
-</a>
+                        <a href="https://curahack.club" target="_blank" style="color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:2px;margin-left:6px;display:inline-flex;align-items:center;gap:6px;">
+                            <img src="media/hcc.png" alt="Hack Club Curaçao" style="width:22px; height:22px; border-radius:50%; object-fit:cover;">
+                            Hack Club Curaçao
+                        </a>
                     </p>
                 </div>
-                <a href="cv.html" class="btn-accent" data-nav style="margin-top:2.5rem;display:inline-block;">What I've done →</a>
-            </div>
-            <div class="about-photos reveal" style="transition-delay:0.2s;">
-                <div class="photo-landscape">
-                    <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=2070&auto=format&fit=crop" alt="Behind the lens">
-                </div>
-            </div>
-            <span class="photo-label">SUBJECT: JO / BUILDING</span>
-        </div>
-    </div>
-</section>
 
-<section id="stats">
-    <div class="container">
-        <div class="stats-row">
-            <div class="reveal"><div class="stat-val">4+</div><div class="stat-label">Years</div></div>
-            <div class="reveal" style="transition-delay:.08s"><div class="stat-val">20+</div><div class="stat-label">Projects</div></div>
-            <div class="reveal" style="transition-delay:.16s"><div class="stat-val">Solo</div><div class="stat-label">Most work</div></div>
-            <div class="reveal" style="transition-delay:.24s"><div class="stat-val">WIP</div><div class="stat-label">Still learning</div></div>
+                <a href="portfolio.html" class="btn-accent" data-nav style="margin-top:3rem; display:inline-block;">WHAT I'VE DONE →</a>
+            </div>
+
+            <div class="about-photos reveal" style="padding-top: 40px; display: flex; flex-direction: column; gap: 3rem; align-items: center;">
+                
+                <div style="width: 280px; background: #fff; padding: 12px 12px 40px 12px; transform: rotate(3deg); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 2px;">
+                    <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; background: #111;">
+                        <img src="media/pfp.jpg" alt="JO — portrait" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                    </div>
+                </div>
+
+                <div style="width: 280px; background: #fff; padding: 12px 12px 40px 12px; transform: rotate(-2deg); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 2px;">
+                    <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; background: #111;">
+                        <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=2070&auto=format&fit=crop" alt="Secondary" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </section>
@@ -93,18 +93,18 @@
     <div class="container">
         <span class="pill">What I do</span>
         <h2 class="section-heading reveal" style="margin-top:1.25rem;">Simple.</h2>
-        <div class="services-grid">
-            <div class="service-card reveal">
+        <div class="services-grid" style="display: flex !important; flex-wrap: wrap !important; gap: 2rem; margin-top: 3rem !important;">
+            <div class="service-card reveal" style="flex: 1; min-width: 300px; padding: 2.5rem !important; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); position: relative !important;">
                 <div class="service-num">01</div>
                 <div class="service-title">Filming</div>
                 <p class="service-desc">Events, short vids, brand stuff. I show up, figure out what actually matters, and shoot that.</p>
             </div>
-            <div class="service-card reveal" style="transition-delay:.1s;">
+            <div class="service-card reveal" style="flex: 1; min-width: 300px; padding: 2.5rem !important; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); position: relative !important;">
                 <div class="service-num">02</div>
                 <div class="service-title">Editing</div>
                 <p class="service-desc">Cutting, pacing, basic color. Making things feel right instead of just "looking good".</p>
             </div>
-            <div class="service-card reveal" style="transition-delay:.2s;">
+            <div class="service-card reveal" style="flex: 1; min-width: 300px; padding: 2.5rem !important; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); position: relative !important;">
                 <div class="service-num">03</div>
                 <div class="service-title">Experimenting</div>
                 <p class="service-desc">Trying weird angles, pushing gear, testing ideas. Sometimes it works. Sometimes it doesn't.</p>

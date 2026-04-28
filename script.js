@@ -23,166 +23,173 @@ const projects = [
     }
 ];
 
-function navTo(url) {
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        window.location.href = url;
-    }, 400);
-}
+const UI = {
+    cursor: document.getElementById('cursor'),
+    hero: document.getElementById('hero-name'),
+    grid: document.getElementById('portfolio-grid'),
+    modal: document.getElementById('modal'),
+    mobileMenu: document.getElementById('mobile-menu'),
+    body: document.body
+};
 
-function openMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (mobileMenu) mobileMenu.classList.add('open');
-}
-
-function closeMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (mobileMenu) mobileMenu.classList.remove('open');
-}
+let mouse = { x: 0, y: 0 };
+let lastMouse = { x: 0, y: 0 };
+let cursorAngle = 0;
 
 function setupCursor() {
-    const cursor = document.getElementById('cursor');
-    if (!cursor) return;
-
-    let mx = 0;
-    let my = 0;
-    let cx = 0;
-    let cy = 0;
+    if (!UI.cursor) return;
 
     window.addEventListener('mousemove', e => {
-        mx = e.clientX;
-        my = e.clientY;
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+
+        const dx = mouse.x - lastMouse.x;
+        const dy = mouse.y - lastMouse.y;
+        
+        // Update angle only if moving to prevent snapping to 0
+        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+            cursorAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+        }
+        
+        const speed = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 0.6);
+
+        UI.cursor.style.left = `${mouse.x}px`;
+        UI.cursor.style.top = `${mouse.y}px`;
+        UI.cursor.style.transform = `translate(-50%, -50%) rotate(${cursorAngle}deg) scale(${1 + speed}, ${1 - speed})`;
+
+        lastMouse.x = mouse.x;
+        lastMouse.y = mouse.y;
+
+        clearTimeout(UI.cursor.timeout);
+        UI.cursor.timeout = setTimeout(() => {
+            UI.cursor.style.transform = `translate(-50%, -50%) rotate(${cursorAngle}deg) scale(1, 1)`;
+        }, 150);
     });
 
-    function tick() {
-        cx += (mx - cx) * 0.08;
-        cy += (my - cy) * 0.08;
-        cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
-        requestAnimationFrame(tick);
-    }
-
-    tick();
+    window.addEventListener('mousedown', () => {
+        UI.cursor.style.transform += ' scale(0.6)';
+    });
 }
 
-function setupRevealObserver() {
-    const revealObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal, .service-card, .gear-card').forEach(el => revealObserver.observe(el));
-}
-
-function setupHeroFit() {
-    const heroEl = document.getElementById('hero-name');
-    if (!heroEl) return;
-
-    function fitHero() {
-        heroEl.style.fontSize = '';
-        const available = window.innerWidth * 0.94;
-        heroEl.style.fontSize = '100px';
-        const ratio = available / heroEl.scrollWidth;
-        const computed = Math.min(Math.max(100 * ratio, 48), 272);
-        heroEl.style.fontSize = `${computed}px`;
-    }
-
-    window.addEventListener('resize', fitHero, { passive: true });
-    fitHero();
-}
-
-function setupSkillBars() {
-    const skillBars = document.querySelectorAll('.skill-bar-fill');
-    if (skillBars.length === 0) return;
-
-    const skillObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.width = `${entry.target.dataset.p}%`;
-            }
-        });
-    }, { threshold: 0.5 });
-
-    skillBars.forEach(bar => skillObserver.observe(bar));
+function fitHero() {
+    if (!UI.hero) return;
+    UI.hero.style.fontSize = '100px';
+    const ratio = (window.innerWidth * 0.94) / UI.hero.scrollWidth;
+    UI.hero.style.fontSize = `${Math.min(Math.max(100 * ratio, 48), 272)}px`;
 }
 
 function setupPortfolio() {
-    const grid = document.getElementById('portfolio-grid');
-    if (!grid) return;
-
-    projects.forEach((project, index) => {
-        const card = document.createElement('div');
-        card.className = `portfolio-card reveal${project.featured ? ' featured' : ''}`;
-        card.innerHTML = `
-            <div class="card-bg" style="background-image:url('${project.img}')"></div>
+    if (!UI.grid) return;
+    UI.grid.innerHTML = projects.map((p, i) => `
+        <div class="portfolio-card reveal ${p.featured ? 'featured' : ''}" onclick="openModal(${i})">
+            <div class="card-bg" style="background-image:url('${p.img}')"></div>
             <div class="card-info">
-                <span class="card-tag">${project.cat}</span>
-                <div class="card-title">${project.title}</div>
-                <div class="card-year">${project.year}</div>
-            </div>`;
-        card.addEventListener('click', () => openModal(index));
-        grid.appendChild(card);
-    });
+                <span class="card-tag">${p.cat}</span>
+                <div class="card-title">${p.title}</div>
+                <div class="card-year">${p.year}</div>
+            </div>
+        </div>`).join('');
 }
 
 function openModal(index) {
-    const project = projects[index];
-    if (!project) return;
-
-    const modal = document.getElementById('modal');
-    const title = document.getElementById('m-title');
-    const tag = document.getElementById('m-tag');
-    const year = document.getElementById('m-year');
-    const desc = document.getElementById('m-desc');
-    const media = document.getElementById('modal-media');
-
-    if (title) title.innerText = project.title;
-    if (tag) tag.innerText = project.cat;
-    if (year) year.innerText = project.year;
-    if (desc) desc.innerText = project.desc;
-    if (media) media.innerHTML = `<img src="${project.img}" alt="${project.title}" />`;
-    if (modal) modal.classList.add('open');
+    const p = projects[index];
+    if (!p || !UI.modal) return;
+    document.getElementById('m-title').innerText = p.title;
+    document.getElementById('m-tag').innerText = p.cat;
+    document.getElementById('m-year').innerText = p.year;
+    document.getElementById('m-desc').innerText = p.desc;
+    document.getElementById('modal-media').innerHTML = `<img src="${p.img}" alt="${p.title}" />`;
+    UI.modal.classList.add('open');
 }
 
 function closeModal() {
-    const modal = document.getElementById('modal');
-    if (modal) modal.classList.remove('open');
+    if (UI.modal) UI.modal.classList.remove('open');
 }
 
-function setupMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    const hamburger = document.getElementById('hamburger');
-    const closeBtn = document.getElementById('m-close');
-    if (!mobileMenu) return;
-    if (hamburger) hamburger.addEventListener('click', openMenu);
-    if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+function toggleMenu(state) {
+    if (UI.mobileMenu) UI.mobileMenu.classList.toggle('open', state);
 }
 
-function bindPageLinks() {
-    document.querySelectorAll('a[data-nav]').forEach(link => {
-        link.addEventListener('click', event => {
-            event.preventDefault();
-            closeMenu();
-            navTo(link.getAttribute('href'));
-        });
-    });
+function navTo(url) {
+    UI.body.style.opacity = '0';
+    setTimeout(() => window.location.href = url, 400);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
-    setupHeroFit();
-    setupMobileMenu();
     setupPortfolio();
-    setupSkillBars();
-    setupRevealObserver();
-    bindPageLinks();
+    fitHero();
 
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
+    const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal, .service-card, .gear-card').forEach(el => revealObserver.observe(el));
+
+    document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+        new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) bar.style.width = `${bar.dataset.p}%`;
+        }, { threshold: 0.5 }).observe(bar);
+    });
+
+    document.getElementById('hamburger')?.addEventListener('click', () => toggleMenu(true));
+    document.getElementById('m-close')?.addEventListener('click', () => toggleMenu(false));
+    
+    document.querySelectorAll('a[data-nav]').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            toggleMenu(false);
+            navTo(link.getAttribute('href'));
+        });
+    });
+
+    window.addEventListener('resize', fitHero);
+    window.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
             closeModal();
-            closeMenu();
+            toggleMenu(false);
         }
     });
 });
+
+function setupScrollSquircle() {
+    const squircle = document.getElementById('scroll-squircle');
+    const startSection = document.getElementById('home-about');
+    const endSection = document.getElementById('home-services');
+    
+    if (!squircle || !startSection || !endSection) return;
+
+    window.addEventListener('scroll', () => {
+        const startRect = startSection.getBoundingClientRect();
+        const endRect = endSection.getBoundingClientRect();
+        
+        // Point where animation starts (About section enters)
+        const startPoint = startRect.top; 
+        // Point where animation finishes (Services section starts)
+        const endPoint = endRect.top;
+
+        // Total distance between the two sections
+        const totalDistance = endPoint - startPoint;
+        
+        // Calculate progress based on how much of that gap we've scrolled
+        // 0 = At the start of About, 1 = Reached What I Do
+        let progress = (window.innerHeight - startRect.top) / (endRect.top - startRect.top + window.innerHeight);
+        
+        progress = Math.max(0, Math.min(1, progress));
+
+        if (progress > 0) {
+            const scale = progress * 90;
+            const radius = 30 - (progress * 30);
+            const blur = progress * 10; // 3. Blur grows with the image
+            
+            squircle.style.opacity = Math.min(progress * 1.5, 0.5);
+            squircle.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            squircle.style.borderRadius = `${radius}%`;
+            squircle.style.filter = `blur(${blur}px)`;
+        } else {
+            squircle.style.opacity = "0";
+        }
+    }, { passive: true });
+}
