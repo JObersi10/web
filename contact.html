@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOBERSI | Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --accent:      #3b82f6;
+            --bg:          #020205;
+            --surface:     #0c0c14;
+            --border:      rgba(255,255,255,0.07);
+            --text-muted:  #52525b;
+            --text-mid:    #a1a1aa;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: #fff;
+            overflow-x: hidden;
+            cursor: none;
+            line-height: 1.8;
+        }
+
+        #bg-grad {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(circle at 10% 15%, #0b1a35 0%, transparent 40%),
+                radial-gradient(circle at 90% 85%, #0d1f3c 0%, transparent 40%),
+                var(--bg);
+        }
+
+        #cursor {
+            position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+            background: #fff; border-radius: 50%; pointer-events: none;
+            z-index: 10000; will-change: transform;
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            padding: 1.5rem 6%; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(20px); background: rgba(2,2,5,0.8); border-bottom: 1px solid var(--border);
+        }
+        .nav-logo {
+            font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
+            font-size: 1rem; letter-spacing: -0.02em; text-transform: uppercase;
+            color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .nav-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        .nav-links { display: flex; gap: 3rem; }
+        .nav-link {
+            color: #fff; font-size: 0.6rem; font-weight: 700;
+            letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.4;
+            transition: opacity 0.3s; text-decoration: none;
+        }
+        .nav-link:hover, .nav-link.active { opacity: 1; }
+
+        .container { width: 88%; max-width: 1300px; margin: 0 auto; position: relative; z-index: 10; }
+        .page-wrap { padding: 14rem 0 6rem; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+        
+        .section-heading {
+            font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
+            text-transform: uppercase; letter-spacing: -0.04em; line-height: 1;
+            font-size: clamp(3.5rem, 8vw, 6.5rem); margin-bottom: 6rem;
+        }
+
+        .contact-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8rem; align-items: start; }
+        @media (max-width: 1024px) { .contact-grid { grid-template-columns: 1fr; gap: 5rem; } .section-heading { margin-bottom: 4rem; } }
+
+        .contact-email {
+            font-family: 'Syne', sans-serif; font-weight: 800;
+            font-size: clamp(1.2rem, 4vw, 2.8rem);
+            letter-spacing: -0.02em; font-style: italic;
+            text-decoration: none; color: #fff; display: inline-block;
+            transition: color 0.3s, transform 0.3s; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;
+        }
+        .contact-email:hover { color: var(--accent); transform: translateX(10px); border-color: var(--accent); }
+
+        .contact-phone {
+            font-family: 'Syne', sans-serif; font-weight: 700;
+            font-size: 1.2rem; color: var(--text-mid); text-decoration: none;
+            display: block; margin-top: 2rem; transition: color 0.3s;
+        }
+        .contact-phone:hover { color: #fff; }
+
+        .contact-meta { margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; }
+        .contact-meta-row { display: flex; gap: 1rem; align-items: center; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        .contact-meta-row::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+
+        .social-list { display: flex; flex-direction: column; gap: 1rem; }
+        .social-link {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.5rem 2rem; border-radius: 1rem;
+            border: 1px solid var(--border); background: rgba(12,12,20,0.4);
+            text-decoration: none; color: #fff; transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        .social-link:hover { border-color: var(--accent); background: var(--surface); transform: translateY(-5px); }
+        .s-label { font-size: 0.9rem; font-weight: 600; }
+        .s-handle { color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.05em; }
+
+        .btn-accent {
+            display: inline-block; padding: 1.2rem 3rem; background: var(--accent);
+            color: #fff; text-decoration: none; border-radius: 100px;
+            font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.7rem;
+            letter-spacing: 0.3em; text-transform: uppercase; margin-top: 4rem;
+            transition: all 0.3s;
+        }
+        .btn-accent:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(59,130,246,0.3); }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        footer { border-top: 1px solid var(--border); padding: 4rem 0; margin-top: 8rem; }
+        .footer-inner { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; }
+    </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="bg-grad"></div>
+
+<nav>
+    <a class="nav-logo" href="index.html"><span class="nav-dot"></span>JOBERSI</a>
+    <div class="nav-links">
+        <a class="nav-link" href="portfolio.html">Archive</a>
+        <a class="nav-link" href="cv.html">CV</a>
+        <a class="nav-link" href="gear.html">Lab</a>
+        <a class="nav-link active" href="contact.html">Connect</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <div class="container">
+        <h1 class="section-heading">Let's<br>Connect.</h1>
+        
+        <div class="contact-grid">
+            <div class="reveal">
+                <span style="color:var(--accent); font-size:0.6rem; font-weight:700; letter-spacing:0.5em; text-transform:uppercase; display:block; margin-bottom:2.5rem;">Availability: 2026</span>
+                <a href="mailto:jobersi@proton.me" class="contact-email">JOBERSI@PROTON.ME</a>
+                <a href="https://wa.me/59996767305" target="_blank" class="contact-phone">+599 9 676 7305</a>
+                
+                <div class="contact-meta">
+                    <div class="contact-meta-row">Projects in Curaçao & Europe</div>
+                    <div class="contact-meta-row">Response within 48 hours</div>
+                    <div class="contact-meta-row">R&D partnerships welcome</div>
+                </div>
+                
+                <a href="mailto:jobersi@proton.me" class="btn-accent">Start a Project →</a>
+            </div>
+
+            <div class="reveal" style="transition-delay: 0.2s;">
+                <span style="color:var(--text-muted); font-size:0.6rem; font-weight:700; letter-spacing:0.5em; text-transform:uppercase; display:block; margin-bottom:2.5rem;">Digital Spaces</span>
+                <div class="social-list">
+                    <a href="https://www.instagram.com/editedby_jobersi" target="_blank" class="social-link">
+                        <span class="s-label">Instagram</span>
+                        <span class="s-handle">@editedby_jobersi</span>
+                    </a>
+                    <a href="https://wa.me/59996767305" target="_blank" class="social-link">
+                        <span class="s-label">WhatsApp</span>
+                        <span class="s-handle">Direct Message</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-inner">
+                <span>© 2026 — JObersi</span>
+                <div style="display:flex; gap:3rem">
+                    <a href="portfolio.html" style="text-decoration:none; color:inherit">Archive</a>
+                    <a href="cv.html" style="text-decoration:none; color:inherit">CV</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script>
+    const cursor = document.getElementById('cursor');
+    let mx = 0, my = 0, cx = 0, cy = 0;
+    window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function tick() {
+        cx += (mx - cx) * 0.08;
+        cy += (my - cy) * 0.08;
+        cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+        requestAnimationFrame(tick);
+    }
+    tick();
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

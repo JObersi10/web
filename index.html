@@ -3,164 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOBERSI | Archive</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Syne:wght@400;800&display=swap" rel="stylesheet">
+    <title>JOBERSI | Visual Systems</title>
+    <meta name="description" content="JOBERSI — Videographer & Visual Systems based in Curaçao.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared.css">
     <style>
-        body { font-family: 'Space Grotesk', sans-serif; cursor: none; background: black; color: white; overflow-x: hidden; }
-        .syne { font-family: 'Syne', sans-serif; }
-        #cursor { pointer-events: none; position: fixed; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, background-color 0.3s; }
-        .particle { position: absolute; pointer-events: none; will-change: transform, opacity; }
-        .nav-blur { backdrop-filter: blur(20px); background: rgba(0, 0, 0, 0.8); }
-        .project-card:hover .project-overlay { opacity: 1; }
+    /* ══ HERO ════════════════════════════════════════════════════════ */
+    #hero {
+        min-height: 100svh; display: flex; flex-direction: column;
+        justify-content: center; align-items: center; text-align: center;
+        padding: 6rem 0 4rem; position: relative; overflow: visible;
+    }
+    .hero-name {
+        font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
+        text-transform: uppercase; letter-spacing: -0.04em; line-height: 0.9;
+        /* Allow text to shrink on small screens — do NOT use white-space:nowrap */
+        display: block;
+        padding: 0.1em 0.05em 0.18em;
+        font-size: clamp(3rem, 17vw, 17rem);
+        /* JS will override font-size for large screens */
+        max-width: 100%;
+    }
+    .hero-sub {
+        font-size: 0.57rem; font-weight: 700; letter-spacing: 1em;
+        text-transform: uppercase; color: var(--accent); margin-top: 0.6rem;
+        /* prevent letter-spacing from causing overflow */
+        padding-right: 1em;
+    }
+    .scroll-hint {
+        position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+        display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+        opacity: 0.28; font-size: 0.5rem; letter-spacing: 0.45em; text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .scroll-hint::before {
+        content: ''; width: 1px; height: 34px;
+        background: linear-gradient(to bottom, transparent, #fff);
+        animation: scrollPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+        0%,100% { opacity: 0.3; transform: scaleY(1); }
+        50%      { opacity: 0.9; transform: scaleY(1.45); }
+    }
+
+    /* ══ ABOUT ═══════════════════════════════════════════════════════ */
+    #home-about { padding: 10rem 0; }
+    @media (max-width: 900px) { #home-about { padding: 6rem 0; } }
+
+    .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5rem;
+        align-items: start;
+    }
+    @media (max-width: 900px) {
+        .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    }
+
+    .about-body { font-size: clamp(1rem, 2.2vw, 1.4rem); color: var(--text-mid); line-height: 1.8; }
+    .about-body strong { color: #fff; font-weight: 700; }
+    .about-body p { margin-bottom: 1.2rem; }
+    .about-body p:last-child { margin-bottom: 0; }
+
+    /* Photo column — vertical stack of square + landscape */
+    .about-photos {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding-top: 2rem;
+    }
+    .photo-square {
+        width: 100%;
+        max-width: 260px;
+        aspect-ratio: 1 / 1;
+        border-radius: 2rem;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+    .photo-square img {
+        width: 100%; height: 100%; object-fit: cover;
+        filter: grayscale(0.3);
+        transition: filter 0.6s ease;
+    }
+    .photo-square:hover img { filter: grayscale(0); }
+
+    .photo-landscape {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 2rem;
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
+    .photo-landscape img {
+        width: 100%; height: 100%; object-fit: cover;
+        filter: grayscale(0.4);
+        transition: filter 0.6s ease;
+    }
+    .photo-landscape:hover img { filter: grayscale(0); }
+
+    .photo-label {
+        font-size: 0.5rem; font-weight: 700; letter-spacing: 0.4em;
+        text-transform: uppercase; color: var(--accent);
+    }
+
+    /* ══ STATS ═══════════════════════════════════════════════════════ */
+    #stats { padding: 4rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    @media (max-width: 700px) { .stats-row { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; } }
+    .stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic; font-size: clamp(2.25rem, 5vw, 4.25rem); color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-muted); margin-top: 0.35rem; }
+
+    /* ══ SERVICES ════════════════════════════════════════════════════ */
+    #home-services { padding: 8rem 0; }
+    @media (max-width: 640px) { #home-services { padding: 5rem 0; } }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3.5rem; }
+    @media (max-width: 900px) { .services-grid { grid-template-columns: 1fr; } }
+    .service-card {
+        padding: 2.5rem; border-radius: var(--radius-card);
+        background: var(--surface); border: 1px solid var(--border);
+        transition: border-color 0.3s, transform 0.3s; position: relative; overflow: hidden;
+    }
+    .service-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-4px); }
+    .service-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.6rem; letter-spacing: 0.35em; color: var(--accent); margin-bottom: 1.5rem; }
+    .service-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .service-desc { color: var(--text-mid); font-size: 0.88rem; line-height: 1.75; }
     </style>
 </head>
 <body>
 
-    <div id="cursor" class="w-3 h-3 bg-white rounded-full border-2 border-transparent"></div>
+<div id="cursor"></div>
+<div id="transition-overlay"><div class="shutter"></div><div class="shutter"></div><div class="shutter"></div></div>
+<div id="bg-grad"></div>
+<div id="bg-bloom"></div>
 
-    <div class="fixed inset-0 z-0 pointer-events-none">
-        <video id="bg-video" autoplay loop muted playsinline class="absolute top-1/2 left-1/2 w-auto min-w-full min-h-full max-w-none -translate-x-1/2 -translate-y-1/2 opacity-20 grayscale">
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-blue-and-purple-smoke-2426-large.mp4" type="video/mp4">
-        </video>
-        <div class="absolute inset-0 bg-black/60"></div>
+<!-- NAV -->
+<nav id="navbar">
+    <a class="nav-logo" href="index.html"><span class="nav-dot"></span>JOBERSI</a>
+    <div class="nav-links">
+        <a class="nav-link" href="portfolio.html" onclick="navTo('portfolio.html');return false;">Archive</a>
+        <a class="nav-link" href="cv.html" onclick="navTo('cv.html');return false;">CV</a>
+        <a class="nav-link" href="gear.html" onclick="navTo('gear.html');return false;">Lab</a>
+        <a class="nav-link" href="contact.html" onclick="navTo('contact.html');return false;">Connect</a>
     </div>
+    <button id="hamburger" onclick="openMenu()">☰</button>
+</nav>
+<div id="mobile-menu">
+    <button id="m-close" onclick="closeMenu()">✕</button>
+    <a class="m-link" href="index.html">Home</a>
+    <a class="m-link" href="portfolio.html" onclick="navTo('portfolio.html');closeMenu();return false;">Archive</a>
+    <a class="m-link" href="cv.html" onclick="navTo('cv.html');closeMenu();return false;">CV</a>
+    <a class="m-link" href="gear.html" onclick="navTo('gear.html');closeMenu();return false;">Lab</a>
+    <a class="m-link" href="contact.html" onclick="navTo('contact.html');closeMenu();return false;">Connect</a>
+</div>
 
-    <div id="particle-container" class="fixed inset-0 pointer-events-none z-[9998] overflow-hidden"></div>
+<!-- ═══════════ HERO ═══════════ -->
+<section id="hero">
+    <span class="hero-name" id="hero-name">JOBERSI</span>
+    <p class="hero-sub">I shoot. I build around it.</p>
+    <a href="portfolio.html" class="btn-outline" style="margin-top:3.5rem" onclick="navTo('portfolio.html');return false;">SEE_WORK</a>
+    <span class="scroll-hint">scroll</span>
+</section>
 
-    <nav id="navbar" class="fixed w-full z-[100] transition-all duration-500 py-10">
-        <div class="max-w-7xl mx-auto px-8 flex justify-between items-center">
-            <button onclick="showPage('home')" class="text-3xl font-black italic syne flex items-center gap-3">
-                <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
-                JO<span class="text-blue-500">BERSI</span>
-            </button>
-            <div class="hidden md:flex gap-10 font-bold text-[10px] tracking-[0.5em] uppercase text-zinc-500">
-                <button onclick="showPage('home')" class="hover:text-white transition-colors">HOME</button>
-                <button onclick="showPage('portfolio')" class="hover:text-white transition-colors">PORTFOLIO</button>
-                <button onclick="showPage('about')" class="hover:text-white transition-colors">ABOUT</button>
+<!-- ═══════════ ABOUT ═══════════ -->
+<section id="home-about">
+    <div class="container">
+        <div class="about-grid">
+            <!-- Text column -->
+            <div>
+                <span class="pill" style="margin-bottom:1.75rem;display:inline-block">About</span>
+                <h2 class="section-heading reveal" style="margin-bottom:2.5rem">Work in<br><span style="color:var(--accent)">progress.</span></h2>
+                <div class="about-body reveal" style="transition-delay:0.1s">
+                    <p>Videographer from <strong>Curaçao</strong>. I shoot events, brands, and whatever's worth capturing.</p>
+                    <p>Focused on making things <strong>connect</strong> — from planning to edit — not just random clips.</p>
+                    <p>Worked on <strong>20+ projects</strong>, including camps, competitions, and client work.</p>
+                    <p>
+                        Also running
+                        <a href="https://curahack.club" target="_blank" style="color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:2px;margin-left:6px;display:inline-flex;align-items:center;gap:8px;">
+                            <img src="media/hcc.png" alt="Hack Club Curaçao" style="width:22px;height:22px;border-radius:50%;object-fit:cover;display:inline-block;">
+                            Hack Club Curaçao
+                        </a>
+                    </p>
+                </div>
+                <a href="cv.html" class="btn-accent" style="margin-top:2.5rem;display:inline-block" onclick="navTo('cv.html');return false;">What I've done →</a>
+            </div>
+
+            <!-- Photos column -->
+            <div class="about-photos reveal" style="transition-delay:0.2s">
+                <!-- Profile — 1:1 square -->
+                <div class="photo-square">
+                    <img src="media/pfp.jpg" alt="JO — portrait">
+                </div>
+                <!-- Work — 16:9 landscape -->
+                <div class="photo-landscape">
+                    <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=2070&auto=format&fit=crop" alt="Behind the lens">
+                </div>
+                <span class="photo-label">SUBJECT: JO / BUILDING</span>
             </div>
         </div>
-    </nav>
+    </div>
+</section>
 
-    <main id="content" class="relative z-10">
-        <section id="home" class="page min-h-screen flex flex-col items-center justify-center text-center px-8">
-            <h1 class="text-[18vw] font-black leading-[0.8] mb-12 uppercase italic syne">
-                JO<br><span class="text-blue-500">BERSI</span>
-            </h1>
-            <button onclick="showPage('portfolio')" class="px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110">
-                Access_Archive
-            </button>
-        </section>
+<!-- ═══════════ STATS ═══════════ -->
+<section id="stats">
+    <div class="container">
+        <div class="stats-row">
+            <div class="reveal"><div class="stat-val">4+</div><div class="stat-label">Years</div></div>
+            <div class="reveal" style="transition-delay:.08s"><div class="stat-val">20+</div><div class="stat-label">Projects</div></div>
+            <div class="reveal" style="transition-delay:.16s"><div class="stat-val">Solo</div><div class="stat-label">Most work</div></div>
+            <div class="reveal" style="transition-delay:.24s"><div class="stat-val">WIP</div><div class="stat-label">Still learning</div></div>
+        </div>
+    </div>
+</section>
 
-        <section id="portfolio" class="page hidden pt-48 px-8 max-w-7xl mx-auto pb-40">
-            <h2 class="text-9xl font-black italic syne uppercase mb-24">Work.</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="portfolio-grid">
-                </div>
-        </section>
+<!-- ═══════════ SERVICES ═══════════ -->
+<section id="home-services">
+    <div class="container">
+        <span class="pill">What I do</span>
+        <h2 class="section-heading reveal" style="margin-top:1.25rem">Simple.</h2>
+        <div class="services-grid">
+            <div class="service-card reveal">
+                <div class="service-num">01</div>
+                <div class="service-title">Filming</div>
+                <p class="service-desc">Events, short vids, brand stuff. I show up, figure out what actually matters, and shoot that.</p>
+            </div>
+            <div class="service-card reveal" style="transition-delay:.1s">
+                <div class="service-num">02</div>
+                <div class="service-title">Editing</div>
+                <p class="service-desc">Cutting, pacing, basic color. Making things feel right instead of just "looking good".</p>
+            </div>
+            <div class="service-card reveal" style="transition-delay:.2s">
+                <div class="service-num">03</div>
+                <div class="service-title">Experimenting</div>
+                <p class="service-desc">Trying weird angles, pushing gear, testing ideas. Sometimes it works. Sometimes it doesn't.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-        <section id="about" class="page hidden pt-48 px-8 max-w-7xl mx-auto pb-40">
-            <h2 class="text-[15vw] font-black italic leading-[0.75] syne uppercase mb-20">JO<br><span class="text-blue-500">BERSI</span></h2>
-            <p class="text-6xl font-light italic text-zinc-300 max-w-5xl">High schooler in <span class="text-white font-black">Curaçao</span>. Visual engineer and hardware experimenter.</p>
-        </section>
-    </main>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <span class="footer-copy">© 2026 — JObersi | Curaçao</span>
+        <div class="footer-links">
+            <a href="portfolio.html" onclick="navTo('portfolio.html');return false;">Archive</a>
+            <a href="cv.html" onclick="navTo('cv.html');return false;">CV</a>
+            <a href="gear.html" onclick="navTo('gear.html');return false;">Lab</a>
+            <a href="contact.html" onclick="navTo('contact.html');return false;">Connect</a>
+        </div>
+    </div>
+</footer>
 
-    <script>
-        // --- State & Config ---
-        let mouseX = 0, mouseY = 0, lastX = 0, lastY = 0;
-        let audioCtx = null;
-        const cursor = document.getElementById('cursor');
-        const particleContainer = document.getElementById('particle-container');
-
-        // --- Audio Logic ---
-        function playSound(freq = 330, duration = 0.6) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-
-        // --- Particles ---
-        function createBurst(x, y) {
-            for (let i = 0; i < 10; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle w-12 h-[1px] bg-blue-500';
-                const angle = (i * 36) + (Math.random() * 15);
-                const velocity = 4 + Math.random() * 5;
-                p.style.left = `${x}px`;
-                p.style.top = `${y}px`;
-                p.style.transform = `rotate(${angle}deg)`;
-                
-                particleContainer.appendChild(p);
-                
-                p.animate([
-                    { transform: `rotate(${angle}deg) translateX(0px) scale(1)`, opacity: 1 },
-                    { transform: `rotate(${angle}deg) translateX(${velocity * 100}px) scale(0)`, opacity: 0 }
-                ], { duration: 800, easing: 'ease-out' }).onfinish = () => p.remove();
-            }
-        }
-
-        // --- Cursor & Scroll ---
-        window.addEventListener('mousemove', (e) => {
-            lastX = mouseX; lastY = mouseY;
-            mouseX = e.clientX; mouseY = e.clientY;
-            
-            const dx = mouseX - lastX;
-            const dy = mouseY - lastY;
-            const speed = Math.sqrt(dx*dx + dy*dy);
-            const stretch = Math.min(speed * 0.04, 0.8);
-
-            cursor.style.left = `${mouseX}px`;
-            cursor.style.top = `${mouseY}px`;
-            cursor.style.transform = `translate(-50%, -50%) scale(${1 + stretch}, ${1 - stretch * 0.4})`;
-        });
-
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                nav.classList.add('nav-blur', 'py-4');
-                nav.classList.remove('py-10');
-            } else {
-                nav.classList.remove('nav-blur', 'py-4');
-                nav.classList.add('py-10');
-            }
-        });
-
-        window.addEventListener('mousedown', (e) => {
-            createBurst(e.clientX, e.clientY);
-            playSound(220 + Math.random() * 100);
-        });
-
-        // --- Navigation ---
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            playSound(440, 0.2);
-        }
-
-        // --- Init Portfolio ---
-        const grid = document.getElementById('portfolio-grid');
-        for (let i = 1; i <= 9; i++) {
-            grid.innerHTML += `
-                <div class="project-card aspect-[4/5] bg-zinc-900 overflow-hidden rounded-3xl relative group border border-white/5">
-                    <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
-                    <div class="absolute bottom-8 left-8 z-20 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
-                        <span class="text-[10px] font-bold tracking-widest text-blue-400">PROJECT_0${i}</span>
-                    </div>
-                </div>`;
-        }
-
-        // Initialize Icons
-        lucide.createIcons();
-    </script>
+<script src="shared.js"></script>
+<script>
+/* Hero text fit — clamp-based so no overflow ever */
+const heroEl = document.getElementById('hero-name');
+function fitHero() {
+    // Reset to auto so scrollWidth reflects natural size
+    heroEl.style.fontSize = '';
+    const available = window.innerWidth * 0.94;
+    heroEl.style.fontSize = '100px';
+    const ratio = available / heroEl.scrollWidth;
+    // clamp: never exceed 17rem, never go below 3rem
+    const computed = Math.min(Math.max(100 * ratio, 48), 272);
+    heroEl.style.fontSize = computed + 'px';
+}
+fitHero();
+window.addEventListener('resize', fitHero, { passive: true });
+</script>
 </body>
 </html>

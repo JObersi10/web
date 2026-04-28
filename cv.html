@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOBERSI | CV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --accent:      #3b82f6;
+        --bg:          #020205;
+        --surface:     #0c0c14;
+        --border:      rgba(255,255,255,0.07);
+        --text-muted:  #52525b;
+        --text-mid:    #a1a1aa;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Space Grotesk', sans-serif;
+        background: var(--bg);
+        color: #fff;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    #bg-grad {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background: radial-gradient(circle at 15% 15%, #0b1a35 0%, transparent 50%),
+                    radial-gradient(circle at 85% 85%, #0d1f3c 0%, transparent 50%), var(--bg);
+    }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            padding: 1.5rem 6%; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(20px); background: rgba(2,2,5,0.8); border-bottom: 1px solid var(--border);
+        }
+        .nav-logo {
+            font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
+            font-size: 1rem; letter-spacing: -0.02em; text-transform: uppercase;
+            color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .nav-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        .nav-links { display: flex; gap: 3rem; }
+        .nav-link {
+            color: #fff; font-size: 0.6rem; font-weight: 700;
+            letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.4;
+            transition: opacity 0.3s; text-decoration: none;
+        }
+        .nav-link:hover, .nav-link.active { opacity: 1; }
+
+        
+    .container { width: 90%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 10; }
+    
+    #page-cv { padding: 12rem 0 4rem; min-height: 100vh; }
+    
+    .section-heading {
+        font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
+        text-transform: uppercase; letter-spacing: -0.04em; line-height: 1;
+        font-size: clamp(3.5rem, 10vw, 8rem); margin-bottom: 5rem;
+        word-break: break-word;
+    }
+
+    .cv-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: clamp(2rem, 5vw, 6rem); align-items: start; }
+    
+    @media (max-width: 1024px) {
+        #page-cv { padding: 10rem 0 4rem; }
+        .cv-grid { grid-template-columns: 1fr; gap: 4rem; }
+        .section-heading { margin-bottom: 3.5rem; line-height: 0.9; }
+    }
+
+    .cv-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; display: block; }
+    
+    /* SKILLS */
+    .skill-bar-wrap { margin-bottom: 1.5rem; }
+    .skill-bar-top { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; }
+    .skill-bar-bg { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .skill-bar-fill { height: 100%; background: var(--accent); transition: width 1.5s cubic-bezier(0.2, 1, 0.3, 1); width: 0; }
+
+    /* TECH STACK */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .tech-tag { padding: 0.4rem 1rem; border: 1px solid var(--border); border-radius: 100px; font-size: 0.7rem; font-weight: 600; color: var(--text-mid); background: rgba(255,255,255,0.02); }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 1.8rem; border-left: 1px solid var(--border); }
+    .tl-item { position: relative; padding-bottom: 3rem; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot { position: absolute; left: -2.15rem; top: 0.4rem; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; border: 3px solid var(--bg); }
+    .tl-period { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 0.4rem; }
+    .tl-role { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; text-transform: uppercase; line-height: 1.2; margin-bottom: 0.2rem; }
+    .tl-org { color: var(--text-mid); font-size: 0.9rem; margin-bottom: 0.8rem; font-weight: 500; }
+    .tl-desc { color: var(--text-muted); font-size: 0.9rem; max-width: 600px; }
+
+    /* EDU */
+    .edu-card { padding: 1.5rem; border-radius: 1.2rem; background: var(--surface); border: 1px solid var(--border); margin-top: 1rem; }
+    .edu-deg { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; text-transform: uppercase; }
+    .edu-school { color: var(--text-mid); font-size: 0.85rem; margin: 0.2rem 0; }
+    .edu-yr { font-size: 0.65rem; font-weight: 700; color: var(--accent); }
+
+    footer { border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+    
+    /* Initial state: hidden and shifted down */
+.reveal { 
+    opacity: 0; 
+    transform: translateY(30px); 
+    transition: opacity 0.8s cubic-bezier(0.2, 1, 0.3, 1), 
+                transform 0.8s cubic-bezier(0.2, 1, 0.3, 1); 
+}
+
+/* Active state: visible and in position */
+.reveal.visible { 
+    opacity: 1; 
+    transform: translateY(0); 
+}
+
+    </style>
+</head>
+<body>
+
+<div id="bg-grad"></div>
+
+<nav>
+    <a class="nav-logo" href="index.html"><span class="nav-dot"></span>JOBERSI</a>
+    <div class="nav-links">
+        <a class="nav-link" href="portfolio.html">Archive</a>
+        <a class="nav-link" href="cv.html">CV</a>
+        <a class="nav-link" href="gear.html">Lab</a>
+        <a class="nav-link active" href="contact.html">Connect</a>
+    </div>
+</nav>
+
+
+<main id="page-cv" class="container">
+<h2 class="section-heading" style="font-size: clamp(2.5rem, 8vw, 5rem); line-height: 1.1; white-space: nowrap; margin-bottom: 4rem;">Curriculum</h2>
+</h1>
+    
+    <div class="cv-grid">
+        <aside>
+            <section style="margin-bottom: 4rem;">
+                <span class="cv-label">Core Skills</span>
+                <div id="skill-bars"></div>
+            </section>
+
+            <section style="margin-bottom: 4rem;">
+                <span class="cv-label">Tech Stack</span>
+                <div class="tech-grid">
+                    <span class="tech-tag">DaVinci Resolve</span>
+                    <span class="tech-tag">Pixelmator Pro</span>
+                    <span class="tech-tag">Lightroom Classic</span>
+                    <span class="tech-tag">AI Prompting</span>
+                    <span class="tech-tag">Vibecoding</span>
+                    <span class="tech-tag">Hack Club</span>
+                    <span class="tech-tag">GitHub</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Raspberry Pi</span>
+                </div>
+            </section>
+
+            <section>
+                <span class="cv-label">Education</span>
+                <div class="edu-card">
+                    <div class="edu-deg">Cinematography Masterclass</div>
+                    <div class="edu-school">Creative College Curacao / Bright Club</div>
+                    <div class="edu-yr">2024</div>
+                </div>
+            </section>
+        </aside>
+
+<section>
+    <span class="cv-label">Experience</span>
+    <div class="timeline">
+        <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <div class="tl-period">2026 — Present</div>
+                    <div class="tl-role">Co-Founder Hack Club Curaçao</div>
+                    <div class="tl-org">Coding & Hardware Club</div>
+                    <div class="tl-desc">Building a community of teenage makers and coders. Managing workshops and hardware logistics.</div>
+                </div>
+                <div style="width: 250px; height: 141px; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; flex-shrink: 0; overflow: hidden;">
+                    <img src="media/hcc-group.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
+                </div>
+            </div>
+        </div>
+
+        <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <div class="tl-period">2024 — Present</div>
+                    <div class="tl-role">Videographer - Bright Club</div>
+                    <div class="tl-org">Documented their programs</div>
+                    <div class="tl-desc">Documented various events for Bright Club. From their Digital Kids Camp 2024 to the First Robotics Competition in Curaçao.</div>
+                </div>
+                <div style="width: 250px; height: 141px; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; flex-shrink: 0; overflow: hidden;">
+                    <img src="media/tn3.png" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
+                </div>
+            </div>
+        </div>
+
+        <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <div class="tl-period">2022 - Present</div>
+                    <div class="tl-role">Freelance Videographer</div>
+                    <div class="tl-org">Self-Employed | Curaçao &amp; Remote</div>
+                    <div class="tl-desc">Shot 20+ projects for clients across Curaçao. Focus on experimental visual work. Developed expertise in direct-to-sensor capture and post-production workflows.</div>
+                </div>
+                <div style="width: 250px; height: 141px; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; flex-shrink: 0; overflow: hidden;">
+                    <img src="media/tn2.png" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
+                </div>
+            </div>
+        </div>
+
+        <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <div class="tl-period">2020 - 2022</div>
+                    <div class="tl-role">ICTer - De Meanderschool</div>
+                    <div class="tl-org">Student | Curaçao</div>
+                    <div class="tl-desc">Helped the school with IT support and maintained their digital infrastructure.</div>
+                </div>
+                <div style="width: 250px; height: 141px; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; flex-shrink: 0; overflow: hidden;">
+                    <img src="media/tn1.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<footer class="container">
+    <div class="footer-inner">
+        <span>© 2026 — JObersi</span>
+        <span>Curaçao</span>
+    </div>
+</footer>
+
+<script>
+const skillData = [
+    { label: 'Cinematography', pct: 97 },
+    { label: 'Colour Grading', pct: 48 },
+    { label: 'Post Production', pct: 78 },
+    { label: 'Storyboarding', pct: 36 },
+    { label: 'Hardware / DIY', pct: 67 }
+];
+
+const container = document.getElementById('skill-bars');
+skillData.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'skill-bar-wrap';
+    el.innerHTML = `
+        <div class="skill-bar-top"><span>${s.label}</span><span style="color:var(--text-muted)">${s.pct}%</span></div>
+        <div class="skill-bar-bg"><div class="skill-bar-fill" data-p="${s.pct}"></div></div>`;
+    container.appendChild(el);
+});
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.width = entry.target.dataset.p + '%';
+        }
+    });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.skill-bar-fill').forEach(b => observer.observe(b));
+
+const observerOptions = {
+    threshold: 0.1 // Trigger when 10% of the element is visible
+};
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+// Apply to all elements with the .reveal class
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+
+</script>
+
+</body>
+</html>

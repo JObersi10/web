@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOBERSI | Archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent:      #3b82f6;
+            --bg:          #020205;
+            --surface:     #0c0c14;
+            --border:      rgba(255,255,255,0.07);
+            --text-muted:  #52525b;
+            --text-mid:    #a1a1aa;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: #fff;
+            overflow-x: hidden;
+            cursor: none;
+            line-height: 1.8;
+        }
+
+        #bg-grad {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background: radial-gradient(circle at 10% 15%, #0b1a35 0%, transparent 40%),
+                        radial-gradient(circle at 90% 85%, #0d1f3c 0%, transparent 40%), var(--bg);
+        }
+
+        #cursor {
+            position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+            background: #fff; border-radius: 50%; pointer-events: none;
+            z-index: 10000; will-change: transform;
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            padding: 1.5rem 6%; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(20px); background: rgba(2,2,5,0.8); border-bottom: 1px solid var(--border);
+        }
+        .nav-logo {
+            font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
+            font-size: 1rem; letter-spacing: -0.02em; text-transform: uppercase;
+            color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .nav-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        .nav-links { display: flex; gap: 3rem; }
+        .nav-link {
+            color: #fff; font-size: 0.6rem; font-weight: 700;
+            letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.4;
+            transition: opacity 0.3s; text-decoration: none;
+        }
+        .nav-link:hover, .nav-link.active { opacity: 1; }
+
+        .container { width: 88%; max-width: 1300px; margin: 0 auto; position: relative; z-index: 10; }
+        .page-wrap { padding: 14rem 0 6rem; }
+        
+        .section-heading {
+            font-family: 'Syne', sans-serif; font-weight: 800; font-style: italic;
+            text-transform: uppercase; letter-spacing: -0.04em; line-height: 1;
+            font-size: clamp(3.5rem, 8vw, 6.5rem);
+        }
+
+        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; margin-top: 6rem; }
+        @media (max-width: 1100px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; } }
+        @media (max-width: 650px)  { .portfolio-grid { grid-template-columns: 1fr; } }
+
+        .portfolio-card {
+            aspect-ratio: 4/5; border-radius: 2rem; background: var(--surface); border: 1px solid var(--border);
+            position: relative; overflow: hidden;
+            transition: border-color 0.4s, transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        .portfolio-card:hover { border-color: var(--accent); transform: translateY(-10px); }
+        .portfolio-card.featured { grid-column: span 2; aspect-ratio: 16/9; }
+        @media (max-width: 1100px) { .portfolio-card.featured { grid-column: span 1; aspect-ratio: 4/5; } }
+
+        .card-bg { position: absolute; inset: 0; background-size: cover; background-position: center; filter: grayscale(1) brightness(0.5); transition: 0.8s ease; }
+        .portfolio-card:hover .card-bg { filter: grayscale(0) brightness(0.6); transform: scale(1.05); }
+        
+        .card-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 2.5rem; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%); }
+        .card-tag { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 0.5rem; }
+        .card-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; letter-spacing: -0.02em; font-style: italic; }
+        .card-year { color: var(--text-mid); font-size: 0.75rem; margin-top: 0.2rem; }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        footer { border-top: 1px solid var(--border); padding: 4rem 0; margin-top: 8rem; }
+        .footer-inner { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; }
+        .footer-links { display: flex; gap: 3rem; }
+        .footer-links button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; text-transform: uppercase; letter-spacing: 0.2em; transition: color 0.3s; }
+        .footer-links button:hover { color: #fff; }
+
+        #modal {
+            position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center;
+            padding: 2rem; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
+            opacity: 0; pointer-events: none; transition: opacity 0.4s;
+        }
+        #modal.open { opacity: 1; pointer-events: all; }
+        .modal-card {
+            width: 100%; max-width: 1100px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 2.5rem; display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden;
+            transform: scale(0.95); transition: 0.4s cubic-bezier(0.2, 1, 0.3, 1); position: relative;
+        }
+        #modal.open .modal-card { transform: scale(1); }
+        @media (max-width: 900px) { .modal-card { grid-template-columns: 1fr; max-height: 85vh; overflow-y: auto; } }
+
+        .modal-media { background: #000; position: relative; min-height: 300px; }
+        .modal-media img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+        .modal-info { padding: 3rem; display: flex; flex-direction: column; gap: 1.5rem; }
+        .m-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.5rem; text-transform: uppercase; font-style: italic; line-height: 1; }
+        .m-desc { font-size: 0.9rem; color: var(--text-mid); line-height: 1.8; }
+        .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; }
+    </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="bg-grad"></div>
+
+<nav>
+    <a class="nav-logo" href="index.html"><span class="nav-dot"></span>JOBERSI</a>
+    <div class="nav-links">
+        <a class="nav-link active" href="portfolio.html">Archive</a>
+        <a class="nav-link" href="cv.html">CV</a>
+        <a class="nav-link" href="gear.html">Lab</a>
+        <a class="nav-link" href="contact.html">Connect</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <div class="container">
+        <h1 class="section-heading">Archive.</h1>
+        <p style="color:var(--text-muted); margin-top:.6rem; font-size:.75rem; letter-spacing:.18em; text-transform:uppercase;">Selected works · 2018 → 2024 · Click to view</p>
+
+        <div class="portfolio-grid" id="portfolio-grid">
+            </div>
+
+        <footer>
+            <div class="footer-inner">
+                <span>© 2026 — JObersi</span>
+                <div class="footer-links">
+                    <button onclick="location.href='index.html'">Home</button>
+                    <button onclick="location.href='cv.html'">CV</button>
+                    <button onclick="location.href='contact.html'">Connect</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<div id="modal">
+    <div class="modal-card">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-media" id="modal-media"></div>
+        <div class="modal-info">
+            <span class="card-tag" id="m-tag">Category</span>
+            <div class="m-title" id="m-title">Project Name</div>
+            <div class="card-year" id="m-year">2024</div>
+            <div class="m-desc" id="m-desc">Description text goes here.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const projects = [
+        { title: 'Horizon Campaign', cat: 'Brand Film', year: '2024', featured: true, img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop', desc: 'A cinematic brand film shot across the northern coast of Curaçao exploring the infinite horizon.' },
+        { title: 'Salt & Shore', cat: 'Documentary', year: '2023', img: 'https://images.unsplash.com/photo-1504439468489-c8920d796a29?q=80&w=2071&auto=format&fit=crop', desc: 'Short documentary following traditional fishermen captured entirely in golden-hour natural light.' },
+        { title: 'Machina', cat: 'Experimental', year: '2023', img: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1974&auto=format&fit=crop', desc: 'Experimental macro series blending mechanical industry with organic movement.' }
+    ];
+
+    const grid = document.getElementById('portfolio-grid');
+    projects.forEach((p, i) => {
+        const d = document.createElement('div');
+        d.className = `portfolio-card reveal ${p.featured ? 'featured' : ''}`;
+        d.innerHTML = `
+            <div class="card-bg" style="background-image:url('${p.img}')"></div>
+            <div class="card-info">
+                <span class="card-tag">${p.cat}</span>
+                <div class="card-title">${p.title}</div>
+                <div class="card-year">${p.year}</div>
+            </div>`;
+        d.onclick = () => openModal(i);
+        grid.appendChild(d);
+    });
+
+    const modal = document.getElementById('modal');
+    function openModal(i) {
+        const p = projects[i];
+        document.getElementById('m-title').innerText = p.title;
+        document.getElementById('m-tag').innerText = p.cat;
+        document.getElementById('m-year').innerText = p.year;
+        document.getElementById('m-desc').innerText = p.desc;
+        document.getElementById('modal-media').innerHTML = `<img src="${p.img}" />`;
+        modal.classList.add('open');
+    }
+    function closeModal() { modal.classList.remove('open'); }
+
+    const cursor = document.getElementById('cursor');
+    let mx = 0, my = 0, cx = 0, cy = 0;
+    window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function tick() {
+        cx += (mx - cx) * 0.08; cy += (my - cy) * 0.08;
+        cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+        requestAnimationFrame(tick);
+    }
+    tick();
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
