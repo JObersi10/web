@@ -40,35 +40,45 @@ function setupCursor() {
     if (!UI.cursor) return;
 
     window.addEventListener('mousemove', e => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-
-        const dx = mouse.x - lastMouse.x;
-        const dy = mouse.y - lastMouse.y;
+        const dx = e.clientX - lastMouse.x;
+        const dy = e.clientY - lastMouse.y;
+        const mouseDistance = Math.sqrt(dx * dx + dy * dy);
         
-        // Update angle only if moving to prevent snapping to 0
+        // Check if cursor is currently expanded
+        const isExpanded = UI.cursor.classList.contains('active');
+        
+        // Restore original 0.15 intensity for small state
+        // Drop to 0.01 for big state to keep it from overreacting
+        const intensity = isExpanded ? 0.01 : 0.15;
+        const stretchBase = Math.min(mouseDistance * intensity, 0.4); 
+
         if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
             cursorAngle = Math.atan2(dy, dx) * (180 / Math.PI);
         }
+
+        // Direct positioning (no smoothing/lag)
+        UI.cursor.style.left = `${e.clientX}px`;
+        UI.cursor.style.top = `${e.clientY}px`;
         
-        const speed = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 0.6);
+        UI.cursor.style.transform = `translate(-50%, -50%) rotate(${cursorAngle}deg) scale(${1 + stretchBase}, ${1 - stretchBase})`;
 
-        UI.cursor.style.left = `${mouse.x}px`;
-        UI.cursor.style.top = `${mouse.y}px`;
-        UI.cursor.style.transform = `translate(-50%, -50%) rotate(${cursorAngle}deg) scale(${1 + speed}, ${1 - speed})`;
+        lastMouse.x = e.clientX;
+        lastMouse.y = e.clientY;
 
-        lastMouse.x = mouse.x;
-        lastMouse.y = mouse.y;
-
-        clearTimeout(UI.cursor.timeout);
-        UI.cursor.timeout = setTimeout(() => {
-            UI.cursor.style.transform = `translate(-50%, -50%) rotate(${cursorAngle}deg) scale(1, 1)`;
-        }, 150);
+        const target = e.target;
+        const isHoverable = target.closest('button, a, .btn-accent, .btn-outline, .nav-link');
+        UI.cursor.classList.toggle('active', !!isHoverable);
     });
+    // Add these inside setupCursor()
+window.addEventListener('mouseout', (e) => {
+    if (!e.relatedTarget && !e.toElement) {
+        UI.cursor.style.opacity = '0';
+    }
+});
 
-    window.addEventListener('mousedown', () => {
-        UI.cursor.style.transform += ' scale(0.6)';
-    });
+window.addEventListener('mouseover', () => {
+    UI.cursor.style.opacity = '1';
+});
 }
 
 function fitHero() {
@@ -151,5 +161,25 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModal();
             toggleMenu(false);
         }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, { 
+        threshold: 0.05, // Trigger earlier
+        rootMargin: "0px 0px -20px 0px" 
+    });
+
+    const textElements = document.querySelectorAll('.javii-reveal');
+    textElements.forEach((el, index) => {
+        // Faster stagger (0.05s)
+        el.style.transitionDelay = `${index * 0.05}s`; 
+        observer.observe(el);
     });
 });

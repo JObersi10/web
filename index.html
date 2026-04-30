@@ -9,6 +9,41 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <style>
+.section-heading {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0;
+    line-height: 0.95; 
+    letter-spacing: -0.015em;
+}
+
+.w-letter {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    transform-origin: center;
+}
+
+.section-heading.reveal:not(.active) .w-letter {
+    transform: translateY(30px) rotate(15deg);
+    opacity: 0;
+}
+
+.section-heading.reveal.active .w-letter {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+    transition-delay: calc(var(--i) * 0.05s);
+}
+
+.section-heading:hover .w-letter:nth-child(1) { transform: translate(-18px, -22px) rotate(-25deg); }
+.section-heading:hover .w-letter:nth-child(2) { transform: translate(-8px, 18px) rotate(15deg); }
+.section-heading:hover .w-letter:nth-child(3) { transform: translate(12px, -28px) rotate(-20deg); }
+.section-heading:hover .w-letter:nth-child(4) { transform: translate(25px, 12px) rotate(25deg); }
+.section-heading:hover .w-letter:nth-child(5) { transform: translate(-12px, -18px) rotate(-15deg); }
+.section-heading:hover .w-letter:nth-child(6) { transform: translate(8px, 22px) rotate(20deg); }
+.section-heading:hover .w-letter:nth-child(7) { transform: translate(-25px, 12px) rotate(-30deg); }
+.section-heading:hover .w-letter:nth-child(8) { transform: translate(18px, -12px) rotate(15deg); }</style>
 </head>
 <body>
 <div id="scroll-squircle"></div>
@@ -37,9 +72,9 @@
 </div>
 
 <section id="hero" style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 80vh; padding-top: 60px;">
-    <span class="hero-name" id="hero-name" style="line-height: 0.8 !important; display: block !important; white-space: nowrap;">JOBERSI</span>
-    <p class="hero-sub" style="margin-top: 2rem !important; position: relative !important;">I shoot. I build around it.</p>
-    <a href="portfolio.html" class="btn-outline" data-nav style="margin-top:3.5rem; display: inline-block !important;">SEE_WORK</a>
+    <span class="hero-name javii-reveal" id="hero-name" style="line-height: 0.8 !important; display: block !important; white-space: nowrap;">JOBERSI</span>
+    <p class="hero-sub javii-reveal" style="margin-top: 2rem !important; position: relative !important;">I shoot. I build around it.</p>
+    <a href="portfolio.html" class="btn-outline javii-reveal" data-nav style="margin-top:3.5rem; display: inline-block !important;">SEE_WORK</a>
     <span class="scroll-hint">scroll</span>
 </section>
 
@@ -48,17 +83,21 @@
         <div class="about-grid" style="display: grid !important; grid-template-columns: 1fr 320px !important; gap: 4rem; align-items: start;">
             
             <div style="min-width: 0;">
-                <span class="pill" style="margin-bottom:1.75rem;display:inline-block;">ABOUT</span>
-                <h2 class="section-heading reveal" style="margin-bottom:3rem; line-height: 1; font-size: clamp(2.5rem, 5vw, 4.5rem); font-family: 'Syne', sans-serif; font-weight: 800; text-transform: uppercase;">
-                    Work in<br><span style="color:var(--accent)">progress.</span>
-                </h2>
+                <span class="pill javii-reveal" style="margin-bottom:1.75rem;display:inline-block;">ABOUT</span>
                 
-                <div class="about-body reveal" style="max-width: 550px; transition-delay:0.1s; line-height: 1.6; font-size: 1.1rem; opacity: 0.9;">
-                    <p>I am a student currently in high school in <strong>Curaçao</strong>. I am a <strong>photo-video-cinematographer</strong> and I like to experiment with all types of gadgets. I focus on creating <strong>visual systems</strong> that actually work.</p>
-                    <p style="margin-top: 1.5rem;">Videographer from <strong>Curaçao</strong>. I shoot events, brands, and whatever's worth capturing.</p>
-                    <p style="margin-top: 1.5rem;">Focused on making things <strong>connect</strong> — from planning to edit — not just random clips.</p>
-                    <p style="margin-top: 1.5rem;">Worked on <strong>20+ projects</strong>, including camps, competitions, and client work.</p>
-                    <p style="margin-top: 1.5rem;">
+                <h2 class="section-heading javii-reveal" style="margin-bottom: 2rem; display: block; font-size: 2.6rem;">
+                    Work in<br>
+                    <span style="color:var(--accent)">
+                        <span class="w-letter" style="--i:1">p</span><span class="w-letter" style="--i:2">r</span><span class="w-letter" style="--i:3">o</span><span class="w-letter" style="--i:4">g</span><span class="w-letter" style="--i:5">r</span><span class="w-letter" style="--i:6">e</span><span class="w-letter" style="--i:7">s</span><span class="w-letter" style="--i:8">s</span>.
+                    </span>
+                </h2>
+
+                <div class="about-body" style="max-width: 550px; line-height: 1.6; font-size: 1.1rem; opacity: 0.9;">
+                    <p class="javii-reveal">I am a student currently in high school in <strong>Curaçao</strong>. I am a <strong>photo-video-cinematographer</strong> and I like to experiment with all types of gadgets. I focus on creating <strong>visual systems</strong> that actually work.</p>
+                    <p class="javii-reveal" style="margin-top: 1.5rem;">Videographer from <strong>Curaçao</strong>. I shoot events, brands, and whatever's worth capturing.</p>
+                    <p class="javii-reveal" style="margin-top: 1.5rem;">Focused on making things <strong>connect</strong> — from planning to edit — not just random clips.</p>
+                    <p class="javii-reveal" style="margin-top: 1.5rem;">Worked on <strong>20+ projects</strong>, including camps, competitions, and client work.</p>
+                    <p class="javii-reveal" style="margin-top: 1.5rem;">
                         Also running
                         <a href="https://curahack.club" target="_blank" style="color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:2px;margin-left:6px;display:inline-flex;align-items:center;gap:6px;">
                             <img src="media/hcc.png" alt="Hack Club Curaçao" style="width:22px; height:22px; border-radius:50%; object-fit:cover;">
@@ -67,23 +106,20 @@
                     </p>
                 </div>
 
-                <a href="portfolio.html" class="btn-accent" data-nav style="margin: 2.5rem 0; display:inline-block;">WHAT I'VE DONE →</a>
+                <a href="portfolio.html" class="btn-accent javii-reveal" data-nav style="margin: 2.5rem 0; display:inline-block;">WHAT I'VE DONE →</a>
 
-                <div class="reveal" style="width: 100%; max-width: 550px; aspect-ratio: 16/9; overflow: hidden; border-radius: 2rem; transform: rotate(-2deg); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                <div class="javii-reveal" style="width: 100%; max-width: 550px; aspect-ratio: 16/9; overflow: hidden; border-radius: 2rem; transform: rotate(-2deg); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
                     <img src="media/cover.jpg" alt="Work highlight" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
 
-            <div class="about-photos reveal" style="padding-top: 40px; display: flex; flex-direction: column; gap: 2.5rem; align-items: center;">
-                
-                <div style="width: 280px; aspect-ratio: 1/1; overflow: hidden; border-radius: 2rem; transform: rotate(3deg); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <div class="about-photos" style="padding-top: 40px; display: flex; flex-direction: column; gap: 2.5rem; align-items: center;">
+                <div class="javii-reveal" style="width: 280px; aspect-ratio: 1/1; overflow: hidden; border-radius: 2rem; transform: rotate(3deg); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
                     <img src="media/pfp.jpg" alt="JO — portrait" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-
-                <div style="width: 280px; aspect-ratio: 1/1; overflow: hidden; border-radius: 2rem; transform: rotate(-3deg); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                <div class="javii-reveal" style="width: 280px; aspect-ratio: 1/1; overflow: hidden; border-radius: 2rem; transform: rotate(-3deg); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
                     <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=2070&auto=format&fit=crop" alt="Secondary" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-
             </div>
         </div>
     </div>
@@ -126,5 +162,16 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
