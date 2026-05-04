@@ -51,6 +51,52 @@
 <div id="bg-grad"></div>
 <div id="bg-bloom"></div>
 
+<div id="orientation-lock" style="display: none; position: fixed; inset: 0; z-index: 9999; backdrop-filter: blur(15px); background: rgba(0,0,0,0.85); flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
+    <div style="max-width: 300px;">
+        <h2 style="font-family: 'Syne', sans-serif; font-size: 1.5rem; margin-bottom: 1rem;">Desktop Recommended</h2>
+        <p style="font-size: 0.9rem; color: #a1a1aa; margin-bottom: 2rem;">Greetings mobile user, the site is kinda not ready for mobile yet, BUT you can turn your phone landscape, or turn on desktop mode to use it or sum, I'll fix it soon enough :3</p>
+        <button onclick="document.getElementById('orientation-lock').style.display = 'none'" style="background: transparent; border: 1px solid #52525b; color: white; padding: 0.5rem 1.5rem; cursor: pointer; border-radius: 4px;">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function checkOrientation() {
+        const lock = document.getElementById('orientation-lock');
+        if (window.innerHeight > window.innerWidth && window.innerWidth < 900) {
+            lock.style.display = 'flex';
+        } else {
+            lock.style.display = 'none';
+        }
+    }
+    window.addEventListener('resize', checkOrientation);
+    checkOrientation();
+</script>
+
+<div class="banner-wrapper" style="position: fixed; top: 0; left: 0; z-index: 2000; width: 100%; height: 50px; background: #000; color: #fff; overflow: hidden; display: flex; align-items: center;">
+    <style>
+        body { padding-top: 50px !important; }
+        nav { top: 50px !important; }
+        .banner-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll 60s linear infinite;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        @keyframes scroll {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+    </style>
+    <div class="banner-content">
+        <span>This website is still a work in progress. Suggestions? Please let me know @ Connect • Website unusable for mobile users at the moment, I shall fix it soon trust :3</span>
+    </div>
+</div>
+
+
 <nav id="navbar">
     <a class="nav-logo" href="index.html" data-nav> <span class="nav-dot"></span>JOBERSI</a>
     <div class="nav-links">
@@ -59,7 +105,7 @@
         <a class="nav-link" href="gear.html" data-nav>Lab</a>
         <a class="nav-link" href="contact.html" data-nav>Connect</a>
     </div>
-    <button id="hamburger">☰</button>
+    <button id="hamburger" aria-label="Menu">☰</button>
 </nav>
 
 <div id="mobile-menu">
