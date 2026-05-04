@@ -183,3 +183,56 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(el);
     });
 });
+
+// Easter Egg: Trigger after 3 clicks
+let pfpClickCount = 0;
+let pfpClickTimer;
+const pfp = document.getElementById('pfp-easter-egg');
+
+pfp?.addEventListener('click', () => {
+    pfpClickCount++;
+    
+    // Animation for feedback
+    pfp.animate([
+        { transform: 'scale(1)' },
+        { transform: 'scale(1.1) rotate(-5deg)' },
+        { transform: 'scale(1)' }
+    ], { duration: 200, easing: 'ease-in-out' });
+    
+    if (navigator.vibrate) navigator.vibrate(50);
+
+    // Reset counter if time exceeds 2 seconds
+    clearTimeout(pfpClickTimer);
+    pfpClickTimer = setTimeout(() => { pfpClickCount = 0; }, 2000);
+
+    // Trigger at 3 clicks
+    if (pfpClickCount >= 3) {
+        pfpClickCount = 0;
+        triggerRickRoll();
+    }
+});
+
+function triggerRickRoll() {
+    if (document.getElementById('rickroll-overlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = "rickroll-overlay";
+    // Using fixed positioning and full viewport coverage
+    overlay.style.cssText = "position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; padding: 20px;";
+    
+    overlay.innerHTML = `
+        <div style="position: relative; width: 100%; max-width: 800px; aspect-ratio: 16/9; background: #000; border: 2px solid #333; box-shadow: 0 0 50px rgba(0,0,0,0.5);">
+            <button onclick="document.getElementById('rickroll-overlay').remove()" 
+                style="position: absolute; top: -40px; right: 0; color: #fff; background: none; border: none; cursor: pointer; font-family: sans-serif; font-weight: 700; text-transform: uppercase; font-size: 14px;">
+                Close [X]
+            </button>
+            <iframe width="100%" height="100%" 
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+                frameborder="0" 
+                allow="autoplay; encrypted-media" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
