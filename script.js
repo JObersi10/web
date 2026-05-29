@@ -128,6 +128,7 @@ function navTo(url) {
 document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
+    setupBackToTop();
     fitHero();
     
     const revealObserver = new IntersectionObserver(entries => {
@@ -211,6 +212,15 @@ pfp?.addEventListener('click', () => {
         triggerRickRoll();
     }
 });
+
+function setupBackToTop() {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > 400);
+    }, { passive: true });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
 
 function triggerRickRoll() {
     if (document.getElementById('rickroll-overlay')) return;
