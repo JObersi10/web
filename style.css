@@ -29,8 +29,27 @@ body {
     transition: opacity 0.4s ease;
 }
 
-body::backdrop {
-    background: var(--bg);
+#orientation-lock {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    backdrop-filter: blur(15px);
+    background: rgba(0,0,0,0.85);
+    place-items: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.tl-img {
+    width: 250px;
+    height: 141px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 img {
@@ -1068,6 +1087,47 @@ nav {
     }
     #hamburger {
         display: block;
+    }
+    .page-wrap {
+        padding: 8rem 0 4rem;
+    }
+    #page-cv {
+        padding: 8rem 0 4rem;
+    }
+    .services-grid .service-card {
+        min-width: 0 !important;
+        flex: 1 1 100% !important;
+    }
+    .services-grid {
+        gap: 1rem !important;
+    }
+    .hero-sub {
+        letter-spacing: 0.25em;
+        padding-right: 0;
+    }
+    .tl-img {
+        display: none;
+    }
+    .about-photos > div {
+        width: min(280px, 100%) !important;
+    }
+    .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+    .footer-links {
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .site-footer {
+        padding: 2.5rem 0;
+    }
+    .contact-grid {
+        gap: 3rem;
+    }
+    .section-heading {
+        font-size: clamp(2.5rem, 10vw, 4rem);
     }
 }
 
