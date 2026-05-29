@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JOBERSI | Archive</title>
     <meta name="description" content="JOBERSI selected works archive.">
+    <meta property="og:title" content="JOBERSI | Archive">
+    <meta property="og:description" content="JOBERSI selected works archive — videography, brand films, and experimental visuals.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="media/cover.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="JOBERSI | Archive">
+    <meta name="twitter:description" content="JOBERSI selected works archive — videography, brand films, and experimental visuals.">
+    <meta name="twitter:image" content="media/cover.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
@@ -23,7 +31,19 @@
         <a class="nav-link" href="gear.html" data-nav>Lab</a>
         <a class="nav-link" href="contact.html" data-nav>Connect</a>
     </div>
+    <button id="hamburger" aria-label="Open menu">☰</button>
 </nav>
+
+<div id="mobile-menu">
+    <button id="m-close">✕</button>
+    <a class="m-link" href="index.html" data-nav>Home</a>
+    <a class="m-link active" href="portfolio.html" data-nav>Archive</a>
+    <a class="m-link" href="cv.html" data-nav>CV</a>
+    <a class="m-link" href="gear.html" data-nav>Lab</a>
+    <a class="m-link" href="contact.html" data-nav>Connect</a>
+</div>
+
+<button id="back-to-top" aria-label="Back to top">↑</button>
 
 <div class="page-wrap">
     <div class="container">
@@ -34,11 +54,12 @@
 
         <footer class="site-footer">
             <div class="footer-inner">
-                <span>© 2026 — JObersi</span>
+                <span class="footer-copy">© 2026 — JObersi | Curaçao</span>
                 <div class="footer-links">
-                    <button onclick="navTo('index.html')">Home</button>
-                    <button onclick="navTo('cv.html')">CV</button>
-                    <button onclick="navTo('contact.html')">Connect</button>
+                    <a href="portfolio.html" data-nav>Archive</a>
+                    <a href="cv.html" data-nav>CV</a>
+                    <a href="gear.html" data-nav>Lab</a>
+                    <a href="contact.html" data-nav>Connect</a>
                 </div>
             </div>
         </footer>

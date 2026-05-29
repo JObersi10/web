@@ -107,19 +107,6 @@ button {
     cursor: pointer;
 }
 
-#cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 10px;
-    height: 10px;
-    background: #fff;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 10000;
-    will-change: transform;
-}
-
 nav {
     position: fixed;
     top: 0;
@@ -1109,6 +1096,47 @@ nav {
     z-index: 10;
 }
 
+#hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    line-height: 1;
+}
+
+#back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 500;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(59,130,246,0.15);
+    border: 1px solid rgba(59,130,246,0.35);
+    color: #fff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, background 0.2s ease;
+}
+
+#back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#back-to-top:hover {
+    background: rgba(59,130,246,0.3);
+}
+
 @media (max-width: 640px) {
     nav {
         padding: 1.2rem 4%;
@@ -1117,7 +1145,10 @@ nav {
         width: 92%;
     }
     .nav-links {
-        gap: 1.5rem;
+        display: none;
+    }
+    #hamburger {
+        display: block;
     }
 }
 
