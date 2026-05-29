@@ -37,6 +37,18 @@ let cursorAngle = 0;
 
 function setupCursor() {
     if (!UI.cursor) return;
+    // Don't run on touch-only devices
+    if (window.matchMedia('(hover: none)').matches) {
+        UI.cursor.style.display = 'none';
+        return;
+    }
+
+    let idleTimer;
+    function resetIdle() {
+        UI.cursor.style.opacity = '1';
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => { UI.cursor.style.opacity = '0'; }, 3000);
+    }
 
     window.addEventListener('mousemove', e => {
         const dx = e.clientX - lastMouse.x;
@@ -59,15 +71,18 @@ function setupCursor() {
 
         const isHoverable = e.target.closest('button, a, .btn-accent, .btn-outline, .nav-link');
         UI.cursor.classList.toggle('active', !!isHoverable);
+
+        resetIdle();
     });
 
     window.addEventListener('mouseout', e => {
-        if (!e.relatedTarget && !e.toElement) UI.cursor.style.opacity = '0';
+        if (!e.relatedTarget && !e.toElement) {
+            UI.cursor.style.opacity = '0';
+            clearTimeout(idleTimer);
+        }
     });
 
-    window.addEventListener('mouseover', () => {
-        UI.cursor.style.opacity = '1';
-    });
+    window.addEventListener('mouseover', resetIdle);
 }
 
 function fitHero() {
