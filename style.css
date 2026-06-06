@@ -1217,10 +1217,15 @@ nav {
     pointer-events: none;
 }
 
-.hero-badge svg {
+.hero-badge .badge-ring {
     width: 100%;
     height: 100%;
     overflow: visible;
+}
+
+.hero-badge .badge-center svg {
+    width: 16px;
+    height: 16px;
 }
 
 .hero-badge .badge-text {
