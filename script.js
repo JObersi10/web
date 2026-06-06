@@ -92,6 +92,59 @@ function fitHero() {
     UI.hero.style.fontSize = `${Math.min(Math.max(100 * ratio, 48), 272)}px`;
 }
 
+function setupGrain() {
+    const el = document.createElement('div');
+    el.id = 'grain';
+    document.body.appendChild(el);
+}
+
+function setupMagnetic() {
+    if (window.matchMedia('(hover: none)').matches) return;
+    document.querySelectorAll('.btn-accent, .btn-outline').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+            const r = btn.getBoundingClientRect();
+            const x = (e.clientX - r.left - r.width / 2) * 0.3;
+            const y = (e.clientY - r.top - r.height / 2) * 0.3;
+            btn.style.transition = 'transform 0.1s ease';
+            btn.style.transform = `translate(${x}px, ${y}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transition = 'transform 0.5s cubic-bezier(0.2, 1, 0.3, 1)';
+            btn.style.transform = '';
+        });
+    });
+}
+
+function setupScramble() {
+    if (window.matchMedia('(hover: none)').matches) return;
+    document.querySelectorAll('.nav-logo').forEach(logo => {
+        const textNode = [...logo.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+        if (!textNode) return;
+        const span = document.createElement('span');
+        span.textContent = textNode.textContent.trim();
+        logo.replaceChild(span, textNode);
+        const original = span.textContent;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ01#$@';
+        let rafId, iteration;
+        logo.addEventListener('mouseenter', () => {
+            cancelAnimationFrame(rafId);
+            iteration = 0;
+            (function run() {
+                span.textContent = original.split('').map((ch, i) =>
+                    i < Math.floor(iteration) ? original[i] : chars[Math.floor(Math.random() * chars.length)]
+                ).join('');
+                iteration += 0.4;
+                if (iteration < original.length) rafId = requestAnimationFrame(run);
+                else span.textContent = original;
+            })();
+        });
+        logo.addEventListener('mouseleave', () => {
+            cancelAnimationFrame(rafId);
+            span.textContent = original;
+        });
+    });
+}
+
 function setupPortfolio() {
     if (!UI.grid) return;
     UI.grid.innerHTML = projects.map((p, i) => `
@@ -142,7 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
     setupBackToTop();
-    fitHero();
+    setupGrain();
+    setupMagnetic();
+    setupScramble();
+    document.fonts.ready.then(() => {
+        fitHero();
+        window.addEventListener('resize', fitHero);
+    });
 
     const revealObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -180,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    window.addEventListener('resize', fitHero);
     window.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
             closeModal();
