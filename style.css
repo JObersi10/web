@@ -149,8 +149,9 @@ button {
     inset: -100px;
     z-index: var(--z-grain);
     pointer-events: none;
-    opacity: 0.036;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.072;
+    /* lower baseFrequency = bigger chunkier grain */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
     animation: grain 0.4s steps(1) infinite;
     will-change: transform;
 }
@@ -565,8 +566,8 @@ nav {
     position: absolute;
     right: 5%;
     bottom: var(--sp-16);
-    width: 100px;
-    height: 100px;
+    width: 152px;
+    height: 152px;
     animation: badge-spin 14s linear infinite;
     pointer-events: none;
     z-index: 2;
@@ -581,8 +582,8 @@ nav {
 .hero-badge .badge-text {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 7.5px;
-    fill: rgba(255,255,255,0.55);
+    font-size: 8.5px;
+    fill: rgba(255,255,255,0.6);
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -1509,13 +1510,64 @@ nav {
     .hero-meta { gap: var(--sp-1); }
 }
 
+/* ── Mobile polish pass ──────────────────── */
+@media (max-width: 768px) {
+    /* Hero meta — wrap neatly, hide extra seps on tiny screens */
+    .hero-meta { gap: var(--sp-2) var(--sp-3); }
+    .hero-meta-sep { display: none; }
+
+    /* Hero button full-width on phone */
+    #hero .btn-outline {
+        width: auto;
+        padding: 0.9rem var(--sp-8);
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        display: inline-flex;
+    }
+
+    /* Badge — hide on small screens, already handled at 900px */
+    .hero-badge { display: none; }
+
+    /* About section on mobile: let it flow naturally */
+    #about-scroll-track { height: auto !important; }
+    .about-sticky {
+        position: relative;
+        height: auto;
+        padding-top: calc(var(--nav-h) + var(--sp-10));
+        padding-bottom: var(--sp-10);
+    }
+
+    /* Show all words immediately on mobile (no scroll-drive) */
+    .word-unit { opacity: 1 !important; filter: none !important; transform: none !important; }
+
+    /* About body text tighter */
+    .about-body-text { font-size: 0.95rem; line-height: 1.75; }
+    .about-body-text p + p { margin-top: 0.5rem; }
+
+    /* Stats */
+    .about-stats { gap: var(--sp-6); margin-top: var(--sp-10); }
+    .about-stat-num { font-size: var(--text-2xl); }
+
+    /* Services */
+    .service-card { padding: var(--sp-8); }
+
+    /* Hackclub badge always visible, no scale on tap */
+    .hackclub-badge { font-size: 0.72rem; padding: 2px var(--sp-2) 2px 5px; }
+    .hackclub-badge img { width: 15px; height: 15px; }
+
+    /* Footer CTA heading */
+    .footer-cta-text { font-size: clamp(1.2rem, 8vw, 2rem); }
+
+    /* grain slightly less intrusive on small screens */
+    #grain { opacity: 0.052; }
+}
+
 /* ═══════════════════════════════════════════
    PHASE 3 — Ambient blobs, word reveal,
    Curaçao marker, side photos, grain boost
 ═══════════════════════════════════════════ */
 
-/* ── Grain — bumpier ─────────────────────── */
-#grain { opacity: 0.055; }
+/* ── Grain — handled in base rule above ──── */
 
 /* ── Ambient blobs ───────────────────────── */
 .ambient-blob {
@@ -1788,13 +1840,20 @@ nav {
 
 /* ── Hackclub badge pop keyframe ─────────── */
 @keyframes badge-thump {
-    0%   { transform: scale(1); }
-    25%  { transform: scale(1.22) translateY(-3px); }
-    55%  { transform: scale(0.92) translateY(1px); }
-    75%  { transform: scale(1.07) translateY(-1px); }
-    100% { transform: scale(1); }
+    0%   { transform: scale(1);                     box-shadow: none; }
+    25%  { transform: scale(1.22) translateY(-4px); box-shadow: 0 0 22px rgba(236,72,72,0.7), 0 0 40px rgba(236,72,72,0.3); }
+    55%  { transform: scale(0.93) translateY(1px);  box-shadow: 0 0 10px rgba(236,72,72,0.3); }
+    75%  { transform: scale(1.07) translateY(-1px); box-shadow: 0 0 16px rgba(236,72,72,0.5); }
+    100% { transform: scale(1);                     box-shadow: none; }
 }
 
 .hackclub-badge.thump {
-    animation: badge-thump 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    animation: badge-thump 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+/* ── See Work button — fix arrow spacing ─── */
+.btn-outline {
+    gap: 0.4em;
+    letter-spacing: 0.18em;
+    padding-right: calc(var(--sp-8) + 2px);
 }

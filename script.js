@@ -382,17 +382,22 @@ function setupWordReveal() {
     const totalWords = globalWordIndex;
     if (!totalWords) return;
 
-    // 2. Set the scroll-track height so there's enough room to scroll through all words
-    const track = document.getElementById('about-scroll-track');
-    const PX_PER_WORD = 55; // px of scroll per word
-    if (track) {
-        track.style.height = `calc(100vh + ${totalWords * PX_PER_WORD + 200}px)`;
+    // 2. On mobile or reduced-motion: reveal all words immediately, skip scroll-drive
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (prefersReducedMotion || isMobile) {
+        document.querySelectorAll('.word-unit').forEach(w => w.classList.add('active'));
+        // also fire the marker & floats right away
+        const markEl = document.querySelector('.curacao-mark');
+        if (markEl) markEl.classList.add('marker-active');
+        document.querySelectorAll('.about-float').forEach(f => f.classList.add('pop-in'));
+        return;
     }
 
-    // 3. On reduced-motion: just show all words immediately
-    if (prefersReducedMotion) {
-        document.querySelectorAll('.word-unit').forEach(w => w.classList.add('active'));
-        return;
+    // 3. Set the scroll-track height so there's enough room to scroll through all words
+    const track = document.getElementById('about-scroll-track');
+    const PX_PER_WORD = 55;
+    if (track) {
+        track.style.height = `calc(100vh + ${totalWords * PX_PER_WORD + 200}px)`;
     }
 
     // 4. Find the index of the word "running" so we can time the badge thump
