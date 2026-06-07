@@ -551,6 +551,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { threshold: 0.4 }).observe(bar);
     });
 
+    /* Stat count-up (ease-out cubic, fires once on viewport entry) */
+    document.querySelectorAll('.about-stat-num').forEach(el => {
+        const target   = parseInt(el.textContent, 10);
+        const accentEl = el.querySelector('.accent');
+        const suffix   = accentEl ? accentEl.textContent : '';
+        if (isNaN(target) || prefersReducedMotion) return;
+        el.innerHTML = '0' + (suffix ? `<span class="accent">${suffix}</span>` : '');
+        const obs = new IntersectionObserver(entries => {
+            if (!entries[0].isIntersecting) return;
+            obs.disconnect();
+            const start = performance.now();
+            (function tick(now) {
+                const t = Math.min(1, (now - start) / 1100);
+                const cur = Math.floor((1 - Math.pow(1 - t, 3)) * target);
+                el.innerHTML = cur + (suffix ? `<span class="accent">${suffix}</span>` : '');
+                if (t < 1) requestAnimationFrame(tick);
+            })(start);
+        }, { threshold: 0.5 });
+        obs.observe(el);
+    });
+
     /* Nav */
     document.getElementById('hamburger')?.addEventListener('click', () => toggleMenu(true));
     document.getElementById('m-close')?.addEventListener('click',   () => toggleMenu(false));
