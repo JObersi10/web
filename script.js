@@ -412,7 +412,14 @@ function setupWordReveal() {
         });
     });
 
-    // 5. Scroll → PARALLEL reveal: both paragraphs reveal at the same scroll progress
+    // 5. Scroll → STAGGERED parallel reveal
+    //    Para 1 runs  0% → 65% of scroll
+    //    Para 2 starts at 55% (overlaps near last sentence of para 1) → 100%
+    const paraSchedule = [
+        { start: 0.0, end: 0.65 },
+        { start: 0.55, end: 1.0  },
+    ];
+
     const section = document.getElementById('home-about');
     const badge   = document.querySelector('.hackclub-badge');
     const mark    = document.querySelector('.curacao-mark');
@@ -421,33 +428,36 @@ function setupWordReveal() {
 
     function updateWords() {
         if (!section) return;
-        const rect    = section.getBoundingClientRect();
-        const trackH  = section.offsetHeight - window.innerHeight;
+        const rect     = section.getBoundingClientRect();
+        const trackH   = section.offsetHeight - window.innerHeight;
         const progress = trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
 
-        // Reveal each paragraph proportionally — they grow in parallel
-        paragraphWordSets.forEach(words => {
-            const reveal = Math.floor(progress * words.length);
+        paragraphWordSets.forEach((words, pi) => {
+            const sched = paraSchedule[pi] || { start: 0, end: 1 };
+            const local = Math.max(0, Math.min(1, (progress - sched.start) / (sched.end - sched.start)));
+            const reveal = Math.floor(local * words.length);
             words.forEach((w, i) => w.classList.toggle('active', i < reveal));
         });
 
-        // Badge thump when "running" is revealed in its paragraph
+        // Badge thump
         if (!badgeThumped && runningSet && runningLocalIdx >= 0) {
-            const paraReveal = Math.floor(progress * runningSet.length);
+            const pi = paragraphWordSets.indexOf(runningSet);
+            const sched = paraSchedule[pi] || { start: 0, end: 1 };
+            const local = Math.max(0, Math.min(1, (progress - sched.start) / (sched.end - sched.start)));
+            const paraReveal = Math.floor(local * runningSet.length);
             if (prevRunningReveal <= runningLocalIdx && paraReveal > runningLocalIdx) {
                 badgeThumped = true;
                 if (badge) {
                     badge.classList.remove('thump');
                     void badge.offsetWidth;
                     badge.classList.add('thump');
-                    setTimeout(() => badge.classList.remove('thump'), 550);
+                    setTimeout(() => badge.classList.remove('thump'), 850);
                 }
             }
             prevRunningReveal = paraReveal;
         }
 
-        // Marker at 55% progress
-        if (!markerFired && mark && progress > 0.55) {
+        if (!markerFired && mark && progress > 0.6) {
             markerFired = true;
             mark.classList.add('marker-active');
         }
@@ -481,6 +491,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEasterEgg();
     setupWordReveal();
     setupCuracaoIdle();
+
+    // Motherboard footer reveal
+    const footer = document.getElementById('site-footer');
+    if (footer) {
+        const fObs = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                footer.classList.add('revealed');
+                fObs.disconnect();
+            }
+        }, { threshold: 0.05 });
+        fObs.observe(footer);
+    }
 
     // Curaçao click — stars burst
     const curacaoMark = document.querySelector('.curacao-mark');

@@ -129,9 +129,9 @@
                         <p data-word-reveal>
                             I'm a <strong>photo-video-cinematographer</strong> and high school student in Curaçao.
                             I shoot events, brands, and anything worth capturing —
-                        </p>
-                        <p data-word-reveal>
                             then build systems around the footage that actually make sense.
+                        </p>
+                        <p data-word-reveal style="margin-top:var(--sp-5);">
                             Focused on <strong>visual storytelling</strong> from concept to edit. Worked on 20+ projects
                             including camps, competitions, and client work. Also running
                             <a href="https://curahack.club" target="_blank" rel="noopener" class="hackclub-badge">
@@ -168,84 +168,72 @@
     </div>
 </section>
 
-<!-- SERVICES — editorial list style -->
+<!-- SERVICES -->
 <section id="home-services">
     <div class="container">
-        <div class="svc-header">
-            <span class="pill reveal">What I Do</span>
-            <p class="svc-tagline reveal">Three things. Done properly.</p>
-        </div>
+        <span class="pill reveal">What I Do</span>
+        <h2 class="section-heading reveal" style="margin-top:1.25rem;">Simple.</h2>
 
-        <ul class="svc-list">
-            <li class="svc-item reveal">
-                <span class="svc-index">01</span>
-                <div class="svc-body">
-                    <span class="svc-name">Filming<span class="svc-dot">.</span></span>
-                    <span class="svc-detail">I show up. I figure out what matters. I shoot <em>that</em>.</span>
-                </div>
-                <span class="svc-tag">Events · Brand · Short-form</span>
-            </li>
-            <li class="svc-item reveal">
-                <span class="svc-index">02</span>
-                <div class="svc-body">
-                    <span class="svc-name">Editing<span class="svc-dot">.</span></span>
-                    <span class="svc-detail">Cut it tight. Color it right. Make it <em>feel</em> like something.</span>
-                </div>
-                <span class="svc-tag">Pacing · Grade · Sound</span>
-            </li>
-            <li class="svc-item reveal">
-                <span class="svc-index">03</span>
-                <div class="svc-body">
-                    <span class="svc-name">Systems<span class="svc-dot">.</span></span>
-                    <span class="svc-detail">From brief to delivery — workflows that don't fall apart mid-project.</span>
-                </div>
-                <span class="svc-tag">Workflow · Delivery · Strategy</span>
-            </li>
-        </ul>
+        <div class="services-grid">
+            <div class="service-card reveal">
+                <div class="service-num">01</div>
+                <div class="service-title">Filming</div>
+                <p class="service-desc">Events, brand films, short-form content. I show up, figure out what actually matters, and shoot that — not just what looks good in a brief.</p>
+            </div>
+            <div class="service-card reveal">
+                <div class="service-num">02</div>
+                <div class="service-title">Editing</div>
+                <p class="service-desc">Cutting, pacing, color grading. Making the footage feel right — coherent and intentional — not just a collection of good-looking clips.</p>
+            </div>
+            <div class="service-card reveal">
+                <div class="service-num">03</div>
+                <div class="service-title">Systems</div>
+                <p class="service-desc">From planning to delivery, I build workflows that hold together. Experiment with gear, test ideas, keep what actually works.</p>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- SPACER — lets the fixed motherboard footer be revealed -->
-<div class="footer-spacer" aria-hidden="true"></div>
+<!-- CTA SECTION — separate from motherboard footer -->
+<section class="footer-cta-section reveal">
+    <div class="container">
+        <p class="footer-cta-text">
+            Let's work<br><span class="accent">together.</span>
+        </p>
+        <a href="contact.html" class="btn-accent" data-nav>Start a Project →</a>
+    </div>
+</section>
 
-<script src="script.js"></script>
-</body>
-</html>
-
-<!-- MOTHERBOARD FOOTER — fixed behind page, revealed on scroll -->
+<!-- MOTHERBOARD FOOTER — nav + system info only -->
 <footer class="site-footer mboard-footer" id="site-footer">
     <!-- Circuit trace SVG decoration -->
-    <svg class="mboard-traces" aria-hidden="true" viewBox="0 0 1440 420" preserveAspectRatio="xMidYMid slice">
+    <svg class="mboard-traces" aria-hidden="true" viewBox="0 0 1440 300" preserveAspectRatio="xMidYMid slice">
         <g stroke="#00ff41" stroke-width="1" fill="none" opacity="0.18">
             <path d="M0,60 H200 V120 H400 V60 H600"/>
             <path d="M800,60 H1000 V30 H1200 V90 H1440"/>
-            <path d="M0,300 H150 V260 H350 V320 H500 V280 H700"/>
-            <path d="M900,280 H1100 V340 H1300 V300 H1440"/>
-            <path d="M240,120 V200 H320 V160 H480 V220 H560"/>
-            <path d="M900,90 V170 H980 V130 H1120 V190"/>
-            <!-- solder pads -->
-            <circle cx="200"  cy="60"  r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="400"  cy="60"  r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="600"  cy="60"  r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="1000" cy="30"  r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="1200" cy="90"  r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="350"  cy="260" r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="700"  cy="280" r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="1100" cy="340" r="4" fill="#00ff41" opacity="0.4"/>
-            <circle cx="480"  cy="160" r="3" fill="#00ff41" opacity="0.35"/>
-            <circle cx="980"  cy="130" r="3" fill="#00ff41" opacity="0.35"/>
+            <path d="M0,220 H150 V180 H350 V240 H500 V200 H700"/>
+            <path d="M900,200 H1100 V260 H1300 V220 H1440"/>
+            <path d="M240,120 V180 H320 V150 H480 V190 H560"/>
+            <path d="M900,90 V150 H980 V120 H1120 V170"/>
+            <circle cx="200"  cy="60"  r="3.5" fill="#00ff41" opacity="0.45"/>
+            <circle cx="400"  cy="60"  r="3.5" fill="#00ff41" opacity="0.45"/>
+            <circle cx="1000" cy="30"  r="3.5" fill="#00ff41" opacity="0.45"/>
+            <circle cx="350"  cy="180" r="3.5" fill="#00ff41" opacity="0.45"/>
+            <circle cx="700"  cy="200" r="3.5" fill="#00ff41" opacity="0.45"/>
+            <circle cx="1100" cy="260" r="3"   fill="#00ff41" opacity="0.38"/>
+            <circle cx="480"  cy="150" r="3"   fill="#00ff41" opacity="0.38"/>
         </g>
     </svg>
 
     <div class="container mboard-inner">
-        <!-- CTA -->
-        <div class="mboard-cta">
-            <span class="mboard-sys-label">// READY_TO_SHOOT.EXE</span>
-            <p class="mboard-headline">Let's&nbsp;work<br><span class="mboard-accent">together.</span></p>
-            <a href="contact.html" class="btn-mboard" data-nav>Start a project&nbsp;→</a>
+        <!-- Identity -->
+        <div class="mboard-sysinfo">
+            <span class="mboard-sys-label">// JOBERSI.EXE</span>
+            <p class="mboard-mono">JOBERSI v2.0<br>Curaçao · Caribbean<br>Yu di Kòrsou</p>
+            <p class="mboard-copy">© 2026 — JObersi</p>
         </div>
 
-        <!-- Nav grid -->
+        <!-- Nav -->
         <nav class="mboard-nav" aria-label="Site navigation">
             <span class="mboard-sys-label">// NAVIGATION</span>
             <ul class="mboard-links">
@@ -257,11 +245,14 @@
             </ul>
         </nav>
 
-        <!-- System info -->
-        <div class="mboard-sysinfo">
-            <span class="mboard-sys-label">// SYSTEM_INFO</span>
-            <p class="mboard-mono">JOBERSI v2.0<br>Curaçao · Caribbean<br>Yu di Kòrsou</p>
-            <p class="mboard-copy">© 2026 — JObersi</p>
+        <!-- Status -->
+        <div class="mboard-status">
+            <span class="mboard-sys-label">// STATUS</span>
+            <p class="mboard-mono">AI Analyst<br>Builder<br>Videographer</p>
         </div>
     </div>
 </footer>
+
+<script src="script.js"></script>
+</body>
+</html>
