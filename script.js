@@ -264,6 +264,81 @@ function triggerRickRoll() {
     document.body.appendChild(overlay);
 }
 
+/* ── Word-by-word reveal ── */
+function setupWordReveal() {
+    if (prefersReducedMotion) {
+        // just make them all visible
+        document.querySelectorAll('[data-word-reveal]').forEach(el => {
+            el.style.opacity = '1';
+        });
+        return;
+    }
+
+    document.querySelectorAll('[data-word-reveal]').forEach(p => {
+        // Walk text nodes only, wrap each word in a span
+        const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        let node;
+        while ((node = walker.nextNode())) textNodes.push(node);
+
+        let wordIndex = 0;
+        textNodes.forEach(tn => {
+            const parts = tn.textContent.split(/(\s+)/);
+            const frag = document.createDocumentFragment();
+            parts.forEach(part => {
+                if (/^\s+$/.test(part) || part === '') {
+                    frag.appendChild(document.createTextNode(part));
+                } else {
+                    const span = document.createElement('span');
+                    span.className = 'word-unit';
+                    span.style.setProperty('--wi', wordIndex++);
+                    span.textContent = part;
+                    frag.appendChild(span);
+                }
+            });
+            tn.parentNode.replaceChild(frag, tn);
+        });
+    });
+
+    // Observe each [data-word-reveal] paragraph
+    const wordObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.querySelectorAll('.word-unit').forEach(w => w.classList.add('active'));
+                wordObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('[data-word-reveal]').forEach(p => wordObserver.observe(p));
+}
+
+/* ── Curaçao marker + side photo pop-in ── */
+function setupAboutEffects() {
+    const mark = document.querySelector('.curacao-mark');
+    const floats = document.querySelectorAll('.about-float');
+
+    if (!mark && !floats.length) return;
+
+    const aboutObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (mark) {
+                    // slight delay so it fires after the heading reveal
+                    setTimeout(() => mark.classList.add('marker-active'), 400);
+                }
+                floats.forEach(f => {
+                    setTimeout(() => f.classList.add('pop-in'), 200);
+                });
+                aboutObserver.disconnect();
+            }
+        });
+    }, { threshold: 0.25 });
+
+    const aboutSection = document.getElementById('home-about');
+    if (aboutSection) aboutObserver.observe(aboutSection);
+}
+
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
@@ -273,6 +348,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
+    setupWordReveal();
+    setupAboutEffects();
 
     document.fonts.ready.then(() => {
         fitHero();

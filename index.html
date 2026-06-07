@@ -23,6 +23,10 @@
 <div id="cursor"></div>
 <div id="bg-grad"></div>
 <div id="bg-bloom"></div>
+<!-- Ambient blobs — slow oscillating colored glows -->
+<div class="ambient-blob blob-1" aria-hidden="true"></div>
+<div class="ambient-blob blob-2" aria-hidden="true"></div>
+<div class="ambient-blob blob-3" aria-hidden="true"></div>
 
 <!-- Navigation -->
 <nav id="navbar">
@@ -89,23 +93,35 @@
 <!-- ABOUT — editorial centre, javii.es style -->
 <section id="home-about">
     <div class="container">
+        <!-- Side floating photos (desktop only) -->
+        <div class="about-float about-float-left" aria-hidden="true">
+            <img src="media/pfp.jpg" alt="">
+        </div>
+        <div class="about-float about-float-right" aria-hidden="true">
+            <img src="media/cover.jpg" alt="">
+        </div>
+
         <div class="about-editorial">
             <span class="pill javii-reveal">About</span>
 
-            <h2 class="section-heading javii-reveal" style="margin-top:1.5rem;">
+            <h2 class="section-heading javii-reveal about-heading" style="margin-top:1.5rem;">
                 Based in<br>
-                <span class="accent">
+                <span class="curacao-mark">
                     <span class="w-letter" style="--i:1">C</span><span class="w-letter" style="--i:2">u</span><span class="w-letter" style="--i:3">r</span><span class="w-letter" style="--i:4">a</span><span class="w-letter" style="--i:5">ç</span><span class="w-letter" style="--i:6">a</span><span class="w-letter" style="--i:7">o</span><span class="w-letter" style="--i:8">.</span>
+                    <!-- SVG animated yellow marker line -->
+                    <svg class="curacao-svg" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true">
+                        <path class="curacao-path" d="M4,11 C20,6 60,4 100,8 C140,12 180,5 220,9 C255,13 280,7 296,10" stroke="#fbbf24" stroke-width="6" fill="none" stroke-linecap="round"/>
+                    </svg>
                 </span>
             </h2>
 
             <div class="about-body-text">
-                <p class="javii-reveal">
+                <p data-word-reveal>
                     I'm a <strong>photo-video-cinematographer</strong> and high school student in Curaçao.
                     I shoot events, brands, and anything worth capturing — then build systems around
                     the footage that actually make sense.
                 </p>
-                <p class="javii-reveal">
+                <p data-word-reveal style="margin-top:1.5rem;">
                     Focused on <strong>visual storytelling</strong> from concept to edit. Worked on 20+ projects
                     including camps, competitions, and client work. Also running
                     <a href="https://curahack.club" target="_blank" rel="noopener" class="hackclub-badge">
@@ -127,8 +143,8 @@
                     <div class="about-stat-label javii-reveal">Years Shooting</div>
                 </div>
                 <div class="about-stat">
-                    <div class="about-stat-num javii-reveal">1<span class="accent">x</span></div>
-                    <div class="about-stat-label javii-reveal">Island</div>
+                    <div class="about-stat-num javii-reveal">6<span class="accent">+</span></div>
+                    <div class="about-stat-label javii-reveal">Clients</div>
                 </div>
             </div>
 
