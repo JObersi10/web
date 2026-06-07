@@ -345,11 +345,12 @@ function setupWordReveal() {
     const paragraphs = document.querySelectorAll('[data-word-reveal]');
     if (!paragraphs.length) return;
 
-    // 1. Split each paragraph's text nodes into .word-unit spans
-    let globalWordIndex = 0;
+    // 1. Split each paragraph's text nodes into .word-unit spans, track per-paragraph
+    const paragraphWordSets = []; // array of arrays — one per paragraph
 
     paragraphs.forEach(p => {
-        // Filter: skip text nodes inside .hackclub-badge so it stays always visible
+        let localIdx = 0;
+        // Filter: skip text nodes inside .hackclub-badge
         const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, {
             acceptNode(node) {
                 return node.parentElement.closest('.hackclub-badge')
@@ -370,79 +371,86 @@ function setupWordReveal() {
                 } else {
                     const span = document.createElement('span');
                     span.className = 'word-unit';
-                    span.dataset.wi = globalWordIndex++;
+                    span.dataset.wi = localIdx++;
                     span.textContent = part;
                     frag.appendChild(span);
                 }
             });
             tn.parentNode.replaceChild(frag, tn);
         });
+
+        paragraphWordSets.push([...p.querySelectorAll('.word-unit')]);
     });
 
-    const totalWords = globalWordIndex;
-    if (!totalWords) return;
+    const maxWords = Math.max(...paragraphWordSets.map(s => s.length));
+    if (!maxWords) return;
 
-    // 2. On mobile or reduced-motion: reveal all words immediately, skip scroll-drive
+    // 2. On mobile or reduced-motion: show everything immediately
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     if (prefersReducedMotion || isMobile) {
-        document.querySelectorAll('.word-unit').forEach(w => w.classList.add('active'));
-        // also fire the marker & floats right away
+        paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
         document.querySelectorAll('.about-float').forEach(f => f.classList.add('pop-in'));
         return;
     }
 
-    // 3. Set the scroll-track height so there's enough room to scroll through all words
+    // 3. Track height — based on longest paragraph × px-per-word
     const track = document.getElementById('about-scroll-track');
-    const PX_PER_WORD = 55;
+    const PX_PER_WORD = 52;
     if (track) {
-        track.style.height = `calc(100vh + ${totalWords * PX_PER_WORD + 200}px)`;
+        track.style.height = `calc(100vh + ${maxWords * PX_PER_WORD + 200}px)`;
     }
 
-    // 4. Find the index of the word "running" so we can time the badge thump
-    const allWords = document.querySelectorAll('.word-unit');
-    let runningIdx = -1;
-    allWords.forEach((w, i) => {
-        if (w.textContent.trim().toLowerCase() === 'running') runningIdx = i;
+    // 4. Find "running" word in its paragraph for badge thump timing
+    let runningSet = null, runningLocalIdx = -1;
+    paragraphWordSets.forEach(words => {
+        words.forEach((w, i) => {
+            if (w.textContent.trim().toLowerCase() === 'running') {
+                runningSet = words; runningLocalIdx = i;
+            }
+        });
     });
 
-    // 5. Scroll listener — reveal words proportional to scroll position in section
+    // 5. Scroll → PARALLEL reveal: both paragraphs reveal at the same scroll progress
     const section = document.getElementById('home-about');
     const badge   = document.querySelector('.hackclub-badge');
     const mark    = document.querySelector('.curacao-mark');
-    let lastReveal = 0;
-    let badgeThumped = false;
-    let markerFired  = false;
+    let badgeThumped = false, markerFired = false;
+    let prevRunningReveal = 0;
 
     function updateWords() {
         if (!section) return;
-        const rect     = section.getBoundingClientRect();
-        const trackH   = section.offsetHeight - window.innerHeight;
+        const rect    = section.getBoundingClientRect();
+        const trackH  = section.offsetHeight - window.innerHeight;
         const progress = trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
-        const reveal   = Math.floor(progress * totalWords);
 
-        allWords.forEach((w, i) => w.classList.toggle('active', i < reveal));
+        // Reveal each paragraph proportionally — they grow in parallel
+        paragraphWordSets.forEach(words => {
+            const reveal = Math.floor(progress * words.length);
+            words.forEach((w, i) => w.classList.toggle('active', i < reveal));
+        });
 
-        // Badge thump: fires exactly when "running" word becomes visible
-        if (!badgeThumped && runningIdx >= 0 && lastReveal <= runningIdx && reveal > runningIdx) {
-            badgeThumped = true;
-            if (badge) {
-                badge.classList.remove('thump');
-                // force reflow so animation restarts cleanly
-                void badge.offsetWidth;
-                badge.classList.add('thump');
-                setTimeout(() => badge.classList.remove('thump'), 500);
+        // Badge thump when "running" is revealed in its paragraph
+        if (!badgeThumped && runningSet && runningLocalIdx >= 0) {
+            const paraReveal = Math.floor(progress * runningSet.length);
+            if (prevRunningReveal <= runningLocalIdx && paraReveal > runningLocalIdx) {
+                badgeThumped = true;
+                if (badge) {
+                    badge.classList.remove('thump');
+                    void badge.offsetWidth;
+                    badge.classList.add('thump');
+                    setTimeout(() => badge.classList.remove('thump'), 550);
+                }
             }
+            prevRunningReveal = paraReveal;
         }
 
-        // Marker: draw the yellow line at 55% through
+        // Marker at 55% progress
         if (!markerFired && mark && progress > 0.55) {
             markerFired = true;
             mark.classList.add('marker-active');
         }
-
-        lastReveal = reveal;
     }
 
     window.addEventListener('scroll', updateWords, { passive: true });
@@ -450,6 +458,7 @@ function setupWordReveal() {
 
     // 6. Side photos pop in once section enters viewport
     const floats = document.querySelectorAll('.about-float');
+
     if (floats.length && section) {
         const floatObs = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
