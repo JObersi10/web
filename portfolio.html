@@ -15,13 +15,14 @@
     <meta name="twitter:image" content="media/cover.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="cursor"></div>
 <div id="bg-grad"></div>
+<div id="bg-bloom"></div>
 
 <nav>
     <a class="nav-logo" href="index.html" data-nav><span class="nav-dot"></span>JOBERSI</a>
@@ -35,7 +36,7 @@
 </nav>
 
 <div id="mobile-menu">
-    <button id="m-close">✕</button>
+    <button id="m-close" aria-label="Close menu">✕</button>
     <a class="m-link" href="index.html" data-nav>Home</a>
     <a class="m-link active" href="portfolio.html" data-nav>Archive</a>
     <a class="m-link" href="cv.html" data-nav>CV</a>
@@ -47,19 +48,21 @@
 
 <div class="page-wrap">
     <div class="container">
-        <h1 class="section-heading">Archive.</h1>
-        <p style="color:var(--text-muted); margin-top:.6rem; font-size:.75rem; letter-spacing:.18em; text-transform:uppercase;">Selected works · 2018 → 2024 · Click to view</p>
+        <h1 class="section-heading reveal">Archive.</h1>
+        <p class="reveal" style="color:var(--text-muted); margin-top:0.6rem; font-size:var(--text-xs); letter-spacing:0.18em; text-transform:uppercase; transition-delay:0.1s;">
+            Selected works · 2018 → 2024 · Click to view
+        </p>
 
         <div class="portfolio-grid" id="portfolio-grid"></div>
 
         <footer class="site-footer">
             <div class="footer-inner">
-                <span class="footer-copy">© 2026 — JObersi | Curaçao</span>
+                <span class="footer-copy">© 2026 — JObersi · Curaçao</span>
                 <div class="footer-links">
-                    <a href="portfolio.html" data-nav>Archive</a>
                     <a href="cv.html" data-nav>CV</a>
                     <a href="gear.html" data-nav>Lab</a>
                     <a href="contact.html" data-nav>Connect</a>
+                    <a href="https://www.instagram.com/editedby_jobersi" target="_blank" rel="noopener">Instagram</a>
                 </div>
             </div>
         </footer>
@@ -68,7 +71,7 @@
 
 <div id="modal">
     <div class="modal-card">
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
         <div class="modal-media" id="modal-media"></div>
         <div class="modal-info">
             <span class="card-tag" id="m-tag">Category</span>

@@ -15,13 +15,14 @@
     <meta name="twitter:image" content="media/cover.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="cursor"></div>
 <div id="bg-grad"></div>
+<div id="bg-bloom"></div>
 
 <nav>
     <a class="nav-logo" href="index.html" data-nav><span class="nav-dot"></span>JOBERSI</a>
@@ -35,7 +36,7 @@
 </nav>
 
 <div id="mobile-menu">
-    <button id="m-close">✕</button>
+    <button id="m-close" aria-label="Close menu">✕</button>
     <a class="m-link" href="index.html" data-nav>Home</a>
     <a class="m-link" href="portfolio.html" data-nav>Archive</a>
     <a class="m-link active" href="cv.html" data-nav>CV</a>
@@ -46,10 +47,10 @@
 <button id="back-to-top" aria-label="Back to top">↑</button>
 
 <main id="page-cv" class="container page-cv">
-    <h2 class="section-heading">Curriculum</h2>
+    <h2 class="section-heading reveal">Curriculum</h2>
     <div class="cv-grid">
         <aside>
-            <section style="margin-bottom: 4rem;">
+            <section style="margin-bottom:3.5rem;">
                 <span class="cv-label">Core Skills</span>
                 <div id="skill-bars">
                     <div class="skill-bar-wrap">
@@ -69,19 +70,18 @@
                         <div class="skill-bar-bg"><div class="skill-bar-fill" data-p="75"></div></div>
                     </div>
                     <div class="skill-bar-wrap">
-                        <div class="skill-bar-top"><span>Python / Vibe Coding</span><span>60%</span></div>
+                        <div class="skill-bar-top"><span>Python / Building</span><span>60%</span></div>
                         <div class="skill-bar-bg"><div class="skill-bar-fill" data-p="60"></div></div>
                     </div>
                 </div>
             </section>
-            <section style="margin-bottom: 4rem;">
+            <section style="margin-bottom:3.5rem;">
                 <span class="cv-label">Tech Stack</span>
                 <div class="tech-grid">
                     <span class="tech-tag">DaVinci Resolve</span>
                     <span class="tech-tag">Pixelmator Pro</span>
                     <span class="tech-tag">Lightroom Classic</span>
                     <span class="tech-tag">AI Prompting</span>
-                    <span class="tech-tag">Vibecoding</span>
                     <span class="tech-tag">Hack Club</span>
                     <span class="tech-tag">GitHub</span>
                     <span class="tech-tag">Python</span>
@@ -96,63 +96,48 @@
                 </div>
             </section>
         </aside>
+
         <section>
             <span class="cv-label">Experience</span>
             <div class="timeline">
                 <div class="tl-item reveal">
                     <div class="tl-dot"></div>
-                    <div style="display: flex; gap: 2rem; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <div class="tl-period">2026 — Present</div>
-                            <div class="tl-role">Co-Founder Hack Club Curaçao</div>
-                            <div class="tl-org">Coding & Hardware Club</div>
-                            <div class="tl-desc">Building a community of teenage makers and coders. Managing workshops and hardware logistics.</div>
-                        </div>
-                        <div class="tl-img">
-                            <img src="media/hcc-group.jpg" alt="Hack Club Curaçao" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
-                        </div>
+                    <div class="tl-period">2026 — Present</div>
+                    <div class="tl-role">Co-Founder Hack Club Curaçao</div>
+                    <div class="tl-org">Coding &amp; Hardware Club</div>
+                    <div class="tl-desc">Building a community of teenage makers and coders on the island. Managing workshops, hardware logistics, and community growth.</div>
+                    <div class="tl-img">
+                        <img src="media/hcc-group.jpg" alt="Hack Club Curaçao" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
                     </div>
                 </div>
                 <div class="tl-item reveal">
                     <div class="tl-dot"></div>
-                    <div style="display: flex; gap: 2rem; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <div class="tl-period">2024 — Present</div>
-                            <div class="tl-role">Videographer - Bright Club</div>
-                            <div class="tl-org">Documented their programs</div>
-                            <div class="tl-desc">Documented various events for Bright Club. From their Digital Kids Camp 2024 to the First Robotics Competition in Curaçao.</div>
-                        </div>
-                        <div class="tl-img">
-                            <img src="media/tn3.png" alt="Bright Club" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
-                        </div>
+                    <div class="tl-period">2024 — Present</div>
+                    <div class="tl-role">Videographer — Bright Club</div>
+                    <div class="tl-org">Documented their programs</div>
+                    <div class="tl-desc">Documented events from Digital Kids Camp 2024 to the First Robotics Competition in Curaçao.</div>
+                    <div class="tl-img">
+                        <img src="media/tn3.png" alt="Bright Club" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
                     </div>
                 </div>
                 <div class="tl-item reveal">
                     <div class="tl-dot"></div>
-                    <div style="display: flex; gap: 2rem; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <div class="tl-period">2022 - Present</div>
-                            <div class="tl-role">Freelance Videographer</div>
-                            <div class="tl-org">Self-Employed | Curaçao &amp; Remote</div>
-                            <div class="tl-desc">Shot 20+ projects for clients across Curaçao. Focus on experimental visual work. Developed expertise in direct-to-sensor capture and post-production workflows.</div>
-                        </div>
-                        <div class="tl-img">
-                            <img src="media/tn2.png" alt="Freelance videography" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
-                        </div>
+                    <div class="tl-period">2022 — Present</div>
+                    <div class="tl-role">Freelance Videographer</div>
+                    <div class="tl-org">Self-Employed · Curaçao &amp; Remote</div>
+                    <div class="tl-desc">Shot 20+ projects for clients across Curaçao. Developed expertise in direct-to-sensor capture and post-production workflows.</div>
+                    <div class="tl-img">
+                        <img src="media/tn2.png" alt="Freelance videography" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
                     </div>
                 </div>
                 <div class="tl-item reveal">
                     <div class="tl-dot"></div>
-                    <div style="display: flex; gap: 2rem; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <div class="tl-period">2020 - 2022</div>
-                            <div class="tl-role">ICTer - De Meanderschool</div>
-                            <div class="tl-org">Student | Curaçao</div>
-                            <div class="tl-desc">Helped the school with IT support and maintained their digital infrastructure.</div>
-                        </div>
-                        <div class="tl-img">
-                            <img src="media/tn1.jpg" alt="School IT" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
-                        </div>
+                    <div class="tl-period">2020 — 2022</div>
+                    <div class="tl-role">ICTer — De Meanderschool</div>
+                    <div class="tl-org">Student · Curaçao</div>
+                    <div class="tl-desc">Managed IT support and maintained the school's digital infrastructure.</div>
+                    <div class="tl-img">
+                        <img src="media/tn1.jpg" alt="School IT" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
                     </div>
                 </div>
             </div>
@@ -161,13 +146,15 @@
 </main>
 
 <footer class="site-footer">
-    <div class="footer-inner">
-        <span class="footer-copy">© 2026 — JObersi | Curaçao</span>
-        <div class="footer-links">
-            <a href="portfolio.html" data-nav>Archive</a>
-            <a href="cv.html" data-nav>CV</a>
-            <a href="gear.html" data-nav>Lab</a>
-            <a href="contact.html" data-nav>Connect</a>
+    <div class="container">
+        <div class="footer-inner">
+            <span class="footer-copy">© 2026 — JObersi · Curaçao</span>
+            <div class="footer-links">
+                <a href="portfolio.html" data-nav>Archive</a>
+                <a href="gear.html" data-nav>Lab</a>
+                <a href="contact.html" data-nav>Connect</a>
+                <a href="https://www.instagram.com/editedby_jobersi" target="_blank" rel="noopener">Instagram</a>
+            </div>
         </div>
     </div>
 </footer>
