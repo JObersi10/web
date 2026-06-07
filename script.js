@@ -105,23 +105,36 @@ function setupGrain() {
     document.body.appendChild(el);
 }
 
-/* ── Magnetic buttons (desktop only) ── */
+/* ── Magnetic buttons — proximity snap (desktop only) ── */
 function setupMagnetic() {
     if (window.matchMedia('(hover: none)').matches) return;
     if (prefersReducedMotion) return;
-    document.querySelectorAll('.btn-accent, .btn-outline').forEach(btn => {
-        btn.addEventListener('mousemove', e => {
-            const r = btn.getBoundingClientRect();
-            const x = (e.clientX - r.left - r.width  / 2) * 0.28;
-            const y = (e.clientY - r.top  - r.height / 2) * 0.28;
-            btn.style.transition = 'transform 0.1s ease';
-            btn.style.transform  = `translate(${x}px,${y}px)`;
+
+    const ATTRACT_RADIUS = 110; // px — how far the pull starts
+    const STRENGTH       = 0.52; // how strong the snap is
+
+    const magnets = [...document.querySelectorAll('.btn-accent, .btn-outline')];
+    if (!magnets.length) return;
+
+    window.addEventListener('mousemove', e => {
+        magnets.forEach(btn => {
+            const r  = btn.getBoundingClientRect();
+            const cx = r.left + r.width  / 2;
+            const cy = r.top  + r.height / 2;
+            const dx = e.clientX - cx;
+            const dy = e.clientY - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < ATTRACT_RADIUS) {
+                const factor = Math.pow(1 - dist / ATTRACT_RADIUS, 1.6) * STRENGTH;
+                btn.style.transition = 'transform 0.12s cubic-bezier(0.2,1,0.3,1), box-shadow 0.2s ease';
+                btn.style.transform  = `translate(${dx * factor}px, ${dy * factor}px)`;
+            } else {
+                btn.style.transition = 'transform 0.55s cubic-bezier(0.2,1,0.3,1), box-shadow 0.3s ease';
+                btn.style.transform  = '';
+            }
         });
-        btn.addEventListener('mouseleave', () => {
-            btn.style.transition = 'transform 0.5s cubic-bezier(0.2,1,0.3,1)';
-            btn.style.transform  = '';
-        });
-    });
+    }, { passive: true });
 }
 
 /* ── Logo text scramble on hover (desktop only) ── */
@@ -264,34 +277,30 @@ function triggerRickRoll() {
     document.body.appendChild(overlay);
 }
 
-/* ── Word-by-word reveal ── */
+/* ── Scroll-driven word-by-word reveal ── */
 function setupWordReveal() {
-    if (prefersReducedMotion) {
-        // just make them all visible
-        document.querySelectorAll('[data-word-reveal]').forEach(el => {
-            el.style.opacity = '1';
-        });
-        return;
-    }
+    const paragraphs = document.querySelectorAll('[data-word-reveal]');
+    if (!paragraphs.length) return;
 
-    document.querySelectorAll('[data-word-reveal]').forEach(p => {
-        // Walk text nodes only, wrap each word in a span
+    // 1. Split each paragraph's text nodes into .word-unit spans
+    let globalWordIndex = 0;
+
+    paragraphs.forEach(p => {
         const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null, false);
         const textNodes = [];
         let node;
         while ((node = walker.nextNode())) textNodes.push(node);
 
-        let wordIndex = 0;
         textNodes.forEach(tn => {
             const parts = tn.textContent.split(/(\s+)/);
-            const frag = document.createDocumentFragment();
+            const frag  = document.createDocumentFragment();
             parts.forEach(part => {
                 if (/^\s+$/.test(part) || part === '') {
                     frag.appendChild(document.createTextNode(part));
                 } else {
                     const span = document.createElement('span');
                     span.className = 'word-unit';
-                    span.style.setProperty('--wi', wordIndex++);
+                    span.dataset.wi = globalWordIndex++;
                     span.textContent = part;
                     frag.appendChild(span);
                 }
@@ -300,43 +309,65 @@ function setupWordReveal() {
         });
     });
 
-    // Observe each [data-word-reveal] paragraph
-    const wordObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.querySelectorAll('.word-unit').forEach(w => w.classList.add('active'));
-                wordObserver.unobserve(entry.target);
-            }
+    const totalWords = globalWordIndex;
+    if (!totalWords) return;
+
+    // 2. Set the scroll-track height so there's enough room to scroll through all words
+    const track = document.getElementById('about-scroll-track');
+    const PX_PER_WORD = 55; // px of scroll per word
+    if (track) {
+        track.style.height = `calc(100vh + ${totalWords * PX_PER_WORD + 200}px)`;
+    }
+
+    // 3. On reduced-motion: just show all words immediately
+    if (prefersReducedMotion) {
+        document.querySelectorAll('.word-unit').forEach(w => w.classList.add('active'));
+        return;
+    }
+
+    // 4. Scroll listener — reveal words proportional to scroll position in section
+    const section  = document.getElementById('home-about');
+    const allWords = document.querySelectorAll('.word-unit');
+
+    function updateWords() {
+        if (!section) return;
+        const rect     = section.getBoundingClientRect();
+        const trackH   = section.offsetHeight - window.innerHeight;
+        const progress = trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
+        const reveal   = Math.floor(progress * totalWords);
+
+        allWords.forEach((w, i) => {
+            w.classList.toggle('active', i < reveal);
         });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    }
 
-    document.querySelectorAll('[data-word-reveal]').forEach(p => wordObserver.observe(p));
-}
+    window.addEventListener('scroll', updateWords, { passive: true });
+    updateWords(); // run once on load in case already scrolled
 
-/* ── Curaçao marker + side photo pop-in ── */
-function setupAboutEffects() {
-    const mark = document.querySelector('.curacao-mark');
+    // 5. Curaçao marker fires when ALL words are revealed (near end of section)
+    function checkMarker() {
+        const mark = document.querySelector('.curacao-mark');
+        if (!mark || mark.classList.contains('marker-active')) return;
+        const rect     = section ? section.getBoundingClientRect() : null;
+        const trackH   = section ? section.offsetHeight - window.innerHeight : 1;
+        const progress = rect && trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
+        if (progress > 0.55) mark.classList.add('marker-active');
+    }
+
+    window.addEventListener('scroll', checkMarker, { passive: true });
+    checkMarker();
+
+    // 6. Side photos pop in once section enters viewport
     const floats = document.querySelectorAll('.about-float');
-
-    if (!mark && !floats.length) return;
-
-    const aboutObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                if (mark) {
-                    // slight delay so it fires after the heading reveal
-                    setTimeout(() => mark.classList.add('marker-active'), 400);
-                }
-                floats.forEach(f => {
-                    setTimeout(() => f.classList.add('pop-in'), 200);
-                });
-                aboutObserver.disconnect();
+    if (floats.length && section) {
+        const floatObs = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                floats.forEach((f, i) => setTimeout(() => f.classList.add('pop-in'), i * 160));
+                floatObs.disconnect();
             }
-        });
-    }, { threshold: 0.25 });
-
-    const aboutSection = document.getElementById('home-about');
-    if (aboutSection) aboutObserver.observe(aboutSection);
+        }, { threshold: 0.15 });
+        floatObs.observe(section);
+    }
 }
 
 /* ── Init ── */
@@ -349,7 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScramble();
     setupEasterEgg();
     setupWordReveal();
-    setupAboutEffects();
 
     document.fonts.ready.then(() => {
         fitHero();

@@ -90,70 +90,87 @@
     <span class="scroll-hint" aria-hidden="true">scroll</span>
 </section>
 
-<!-- ABOUT — editorial centre, javii.es style -->
+<!-- ABOUT — scroll-driven word reveal, javii.es style -->
 <section id="home-about">
-    <div class="container">
-        <!-- Side floating photos (desktop only) -->
-        <div class="about-float about-float-left" aria-hidden="true">
-            <img src="media/pfp.jpg" alt="">
-        </div>
-        <div class="about-float about-float-right" aria-hidden="true">
-            <img src="media/cover.jpg" alt="">
-        </div>
+    <!-- Scroll track — JS sets height based on word count -->
+    <div id="about-scroll-track">
+        <div class="about-sticky">
+            <div class="container">
 
-        <div class="about-editorial">
-            <span class="pill javii-reveal">About</span>
+                <!-- Side floating photos (desktop only) -->
+                <!-- Left: pfp — rickroll easter egg (3 clicks) -->
+                <div class="about-float about-float-left" id="pfp-easter-egg" tabindex="-1" aria-hidden="true">
+                    <img src="media/pfp.jpg" alt="">
+                </div>
+                <!-- Right: cover — with rotating star frame overlay -->
+                <div class="about-float about-float-right" aria-hidden="true">
+                    <img src="media/cover.jpg" alt="">
+                    <!-- rotating star frame — image stays still, star spins -->
+                    <span class="star-frame" aria-hidden="true">
+                        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="60,4 72,42 112,42 80,66 92,104 60,82 28,104 40,66 8,42 48,42"
+                                     stroke="rgba(255,255,255,0.28)" stroke-width="1.5" fill="none"
+                                     stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                </div>
 
-            <h2 class="section-heading javii-reveal about-heading" style="margin-top:1.5rem;">
-                Based in<br>
-                <span class="curacao-mark">
-                    <span class="w-letter" style="--i:1">C</span><span class="w-letter" style="--i:2">u</span><span class="w-letter" style="--i:3">r</span><span class="w-letter" style="--i:4">a</span><span class="w-letter" style="--i:5">ç</span><span class="w-letter" style="--i:6">a</span><span class="w-letter" style="--i:7">o</span><span class="w-letter" style="--i:8">.</span>
-                    <!-- SVG animated yellow marker line -->
-                    <svg class="curacao-svg" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true">
-                        <path class="curacao-path" d="M4,11 C20,6 60,4 100,8 C140,12 180,5 220,9 C255,13 280,7 296,10" stroke="#fbbf24" stroke-width="6" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </span>
-            </h2>
+                <div class="about-editorial">
+                    <span class="pill javii-reveal">About</span>
 
-            <div class="about-body-text">
-                <p data-word-reveal>
-                    I'm a <strong>photo-video-cinematographer</strong> and high school student in Curaçao.
-                    I shoot events, brands, and anything worth capturing — then build systems around
-                    the footage that actually make sense.
-                </p>
-                <p data-word-reveal style="margin-top:1.5rem;">
-                    Focused on <strong>visual storytelling</strong> from concept to edit. Worked on 20+ projects
-                    including camps, competitions, and client work. Also running
-                    <a href="https://curahack.club" target="_blank" rel="noopener" class="hackclub-badge">
-                        <img src="media/hcc.png" alt="Hack Club Curaçao logo">
-                        Hack Club Curaçao
+                    <h2 class="section-heading javii-reveal about-heading">
+                        Based in<br>
+                        <span class="curacao-mark">
+                            <span class="w-letter" style="--i:1">C</span><span class="w-letter" style="--i:2">u</span><span class="w-letter" style="--i:3">r</span><span class="w-letter" style="--i:4">a</span><span class="w-letter" style="--i:5">ç</span><span class="w-letter" style="--i:6">a</span><span class="w-letter" style="--i:7">o</span><span class="w-letter" style="--i:8">.</span>
+                            <!-- SVG hand-drawn yellow marker -->
+                            <svg class="curacao-svg" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true">
+                                <path class="curacao-path" d="M4,11 C20,6 60,4 100,8 C140,12 180,5 220,9 C255,13 280,7 296,10" stroke="#fbbf24" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                    </h2>
+
+                    <div class="about-body-text">
+                        <p data-word-reveal>
+                            I'm a <strong>photo-video-cinematographer</strong> and high school student in Curaçao.
+                            I shoot events, brands, and anything worth capturing — then build systems around
+                            the footage that actually make sense.
+                        </p>
+                        <p data-word-reveal style="margin-top:1.5rem;">
+                            Focused on <strong>visual storytelling</strong> from concept to edit. Worked on 20+ projects
+                            including camps, competitions, and client work. Also running
+                            <a href="https://curahack.club" target="_blank" rel="noopener" class="hackclub-badge">
+                                <img src="media/hcc.png" alt="Hack Club Curaçao logo">
+                                Hack Club Curaçao
+                            </a>
+                            — a community for builders on the island.
+                        </p>
+                    </div>
+
+                    <!-- Stats row -->
+                    <div class="about-stats">
+                        <div class="about-stat">
+                            <div class="about-stat-num javii-reveal">20<span class="accent">+</span></div>
+                            <div class="about-stat-label javii-reveal">Projects</div>
+                        </div>
+                        <div class="about-stat">
+                            <div class="about-stat-num javii-reveal">5<span class="accent">+</span></div>
+                            <div class="about-stat-label javii-reveal">Years Shooting</div>
+                        </div>
+                        <div class="about-stat">
+                            <div class="about-stat-num javii-reveal">6<span class="accent">+</span></div>
+                            <div class="about-stat-label javii-reveal">Clients</div>
+                        </div>
+                    </div>
+
+                    <a href="portfolio.html" class="btn-accent javii-reveal" data-nav style="margin-top:3rem;">
+                        See the Work →
                     </a>
-                    — a community for builders on the island.
-                </p>
-            </div>
 
-            <!-- Stats row -->
-            <div class="about-stats">
-                <div class="about-stat">
-                    <div class="about-stat-num javii-reveal">20<span class="accent">+</span></div>
-                    <div class="about-stat-label javii-reveal">Projects</div>
+                    <div class="about-cover javii-reveal">
+                        <img src="media/cover.jpg" alt="Work highlight — JOBERSI">
+                    </div>
                 </div>
-                <div class="about-stat">
-                    <div class="about-stat-num javii-reveal">5<span class="accent">+</span></div>
-                    <div class="about-stat-label javii-reveal">Years Shooting</div>
-                </div>
-                <div class="about-stat">
-                    <div class="about-stat-num javii-reveal">6<span class="accent">+</span></div>
-                    <div class="about-stat-label javii-reveal">Clients</div>
-                </div>
-            </div>
 
-            <a href="portfolio.html" class="btn-accent javii-reveal" data-nav style="margin-top:3rem;">
-                See the Work →
-            </a>
-
-            <div class="about-cover javii-reveal" id="pfp-easter-egg">
-                <img src="media/cover.jpg" alt="Work highlight — JOBERSI">
             </div>
         </div>
     </div>
