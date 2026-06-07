@@ -102,17 +102,11 @@
                 <div class="about-float about-float-left" id="pfp-easter-egg" tabindex="-1" aria-hidden="true">
                     <img src="media/pfp.jpg" alt="">
                 </div>
-                <!-- Right: cover — with rotating star frame overlay -->
+                <!-- Right: cover — star clip-path rotates, image stays still -->
                 <div class="about-float about-float-right" aria-hidden="true">
-                    <img src="media/cover.jpg" alt="">
-                    <!-- rotating star frame — image stays still, star spins -->
-                    <span class="star-frame" aria-hidden="true">
-                        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="60,4 72,42 112,42 80,66 92,104 60,82 28,104 40,66 8,42 48,42"
-                                     stroke="rgba(255,255,255,0.28)" stroke-width="1.5" fill="none"
-                                     stroke-linejoin="round"/>
-                        </svg>
-                    </span>
+                    <div class="star-mask-wrap">
+                        <img src="media/cover.jpg" alt="">
+                    </div>
                 </div>
 
                 <div class="about-editorial">
@@ -165,10 +159,6 @@
                     <a href="portfolio.html" class="btn-accent javii-reveal" data-nav style="margin-top:3rem;">
                         See the Work →
                     </a>
-
-                    <div class="about-cover javii-reveal">
-                        <img src="media/cover.jpg" alt="Work highlight — JOBERSI">
-                    </div>
                 </div>
 
             </div>

@@ -286,7 +286,14 @@ function setupWordReveal() {
     let globalWordIndex = 0;
 
     paragraphs.forEach(p => {
-        const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null, false);
+        // Filter: skip text nodes inside .hackclub-badge so it stays always visible
+        const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+                return node.parentElement.closest('.hackclub-badge')
+                    ? NodeFilter.FILTER_REJECT
+                    : NodeFilter.FILTER_ACCEPT;
+            }
+        }, false);
         const textNodes = [];
         let node;
         while ((node = walker.nextNode())) textNodes.push(node);
@@ -367,6 +374,24 @@ function setupWordReveal() {
             }
         }, { threshold: 0.15 });
         floatObs.observe(section);
+    }
+
+    // 7. Hackclub badge pop — add .pop class when its word-reveal paragraph is ~visible
+    const badge = document.querySelector('.hackclub-badge');
+    if (badge && section) {
+        let badgePopped = false;
+        window.addEventListener('scroll', () => {
+            if (badgePopped) return;
+            const rect    = section.getBoundingClientRect();
+            const trackH  = section.offsetHeight - window.innerHeight;
+            const progress = trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
+            // pop when about 70% through the word reveal (second paragraph territory)
+            if (progress > 0.6) {
+                badgePopped = true;
+                badge.classList.add('pop');
+                setTimeout(() => badge.classList.remove('pop'), 600);
+            }
+        }, { passive: true });
     }
 }
 

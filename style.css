@@ -659,7 +659,11 @@ nav {
     top: 0;
     height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: center;
+    /* push content down so heading lands at ~20% from top — clearly visible */
+    padding-top: calc(var(--nav-h) + 8vh);
+    padding-bottom: var(--sp-8);
     overflow: hidden;
 }
 
@@ -696,7 +700,7 @@ nav {
     margin-top: var(--sp-5);
 }
 
-/* Hack Club inline badge */
+/* Hack Club inline badge — always visible, pops on scroll-reveal */
 .hackclub-badge {
     display: inline-flex;
     align-items: center;
@@ -708,15 +712,24 @@ nav {
     color: #ec5252;
     font-size: var(--text-sm);
     font-weight: 600;
-    transition: background 0.2s, border-color 0.2s;
+    /* always fully visible — never hidden by word-reveal */
+    opacity: 1 !important;
+    filter: none !important;
+    transform: scale(1);
+    transition: background 0.2s, border-color 0.2s,
+                transform 0.4s cubic-bezier(0.34,1.56,0.64,1),
+                box-shadow 0.3s ease;
     vertical-align: middle;
     white-space: nowrap;
     cursor: pointer;
 }
 
-.hackclub-badge:hover {
+.hackclub-badge:hover,
+.hackclub-badge.pop {
     background: rgba(236,72,72,0.16);
     border-color: rgba(236,72,72,0.38);
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236,72,72,0.22);
 }
 
 .hackclub-badge img {
@@ -1447,10 +1460,10 @@ nav {
     .hero-meta { margin-top: var(--sp-4); gap: var(--sp-2); flex-direction: column; }
     .hero-meta-sep { display: none; }
 
-    /* About — sticky scroll */
+    /* About — sticky scroll, fall back to normal flow on mobile */
     #home-about { padding: 0; }
-    #about-scroll-track { min-height: auto; }
-    .about-sticky { height: auto; min-height: 100svh; position: relative; top: auto; padding: var(--sp-16) 0; }
+    #about-scroll-track { min-height: auto; height: auto !important; }
+    .about-sticky { height: auto; min-height: 100svh; position: relative; top: auto; padding: calc(var(--nav-h) + var(--sp-12)) 0 var(--sp-12); align-items: flex-start; }
     .about-editorial .section-heading { font-size: clamp(2rem, 8vw, 3rem); }
     .about-body-text { font-size: var(--text-base); }
     .about-stats { gap: var(--sp-8); }
@@ -1680,26 +1693,49 @@ nav {
     animation-delay: -2.5s; /* offset phase for natural feel */
 }
 
-/* star frame overlay on right float */
-.star-frame {
-    position: absolute;
-    inset: -28%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    animation: star-spin 12s linear infinite;
-    z-index: 2;
+/* Star clip-mask — wrapper rotates (clip-path with it), image counter-rotates */
+.about-float-right {
+    overflow: visible; /* clip-path on wrap handles clipping */
+    border-radius: 0;  /* star shape replaces border-radius */
+    box-shadow: none;
 }
 
-.star-frame svg {
+.star-mask-wrap {
     width: 100%;
     height: 100%;
+    /* 5-point star polygon */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: star-mask-spin 10s linear infinite;
+    transform-origin: center center;
+    /* shadow on the wrap instead */
+    filter: drop-shadow(0 24px 40px rgba(0,0,0,0.6));
 }
 
-@keyframes star-spin {
+.star-mask-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* counter-rotate at exact same speed so image appears completely still */
+    animation: star-img-counter 10s linear infinite;
+    transform-origin: center center;
+    /* scale up so image always fills the star during rotation */
+    transform: rotate(0deg) scale(1.55);
+}
+
+@keyframes star-mask-spin {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
+}
+
+@keyframes star-img-counter {
+    from { transform: rotate(0deg) scale(1.55); }
+    to   { transform: rotate(-360deg) scale(1.55); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .star-mask-wrap,
+    .star-mask-wrap img { animation: none; }
+    .star-mask-wrap img { transform: scale(1.3); }
 }
 
 /* hide side photos on narrow screens */
