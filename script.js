@@ -457,7 +457,7 @@ function setupWordReveal() {
             prevRunningReveal = paraReveal;
         }
 
-        if (!markerFired && mark && progress > 0.6) {
+        if (!markerFired && mark && progress > 0.02) {
             markerFired = true;
             mark.classList.add('marker-active');
         }
