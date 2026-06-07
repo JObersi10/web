@@ -277,6 +277,69 @@ function triggerRickRoll() {
     document.body.appendChild(overlay);
 }
 
+/* ── Curaçao idle letter glow ── */
+function setupCuracaoIdle() {
+    const letters = [...document.querySelectorAll('.curacao-mark .w-letter')];
+    if (!letters.length || prefersReducedMotion) return;
+
+    let activeIdx = -1;
+    setInterval(() => {
+        // un-glow previous
+        if (activeIdx >= 0) letters[activeIdx].classList.remove('idle-glow');
+        // pick a new random letter (avoid same twice)
+        let next;
+        do { next = Math.floor(Math.random() * letters.length); } while (next === activeIdx);
+        activeIdx = next;
+        letters[activeIdx].classList.add('idle-glow');
+    }, 1800);
+}
+
+/* ── Curaçao click — stars burst upward ── */
+function triggerCuracaoStars(e) {
+    if (prefersReducedMotion) return;
+    const cx = e.clientX;
+    const cy = e.clientY;
+
+    // also pop the mark element
+    const mark = e.currentTarget;
+    mark.animate(
+        [{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }],
+        { duration: 320, easing: 'cubic-bezier(0.34,1.56,0.64,1)' }
+    );
+
+    // two stars: one small + one big
+    const configs = [
+        { size: 11, dx: -28, color: '#fbbf24', delay: 0,   rot: 140 },
+        { size: 24, dx:  22, color: '#fbbf24', delay: 90,  rot: -200 },
+    ];
+
+    configs.forEach(cfg => {
+        const el = document.createElement('div');
+        el.style.cssText = `
+            position:fixed;
+            left:${cx}px; top:${cy}px;
+            width:${cfg.size}px; height:${cfg.size}px;
+            background:${cfg.color};
+            clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+            pointer-events:none; z-index:9999;
+        `;
+        document.body.appendChild(el);
+
+        el.animate([
+            { transform: 'translate(-50%,-50%) scale(0) rotate(0deg)',                              opacity: 1 },
+            { transform: `translate(calc(-50% + ${cfg.dx * 0.35}px),-70%) scale(1.3) rotate(${cfg.rot * 0.4}deg)`, opacity: 1, offset: 0.22 },
+            { transform: `translate(calc(-50% + ${cfg.dx}px), -200%) scale(0.7) rotate(${cfg.rot}deg)`,           opacity: 0 }
+        ], {
+            duration: 780,
+            delay: cfg.delay,
+            easing: 'cubic-bezier(0.22,1,0.36,1)',
+            fill: 'forwards'
+        });
+
+        setTimeout(() => el.remove(), 780 + cfg.delay + 50);
+    });
+}
+
 /* ── Scroll-driven word-by-word reveal ── */
 function setupWordReveal() {
     const paragraphs = document.querySelectorAll('[data-word-reveal]');
@@ -332,9 +395,20 @@ function setupWordReveal() {
         return;
     }
 
-    // 4. Scroll listener — reveal words proportional to scroll position in section
-    const section  = document.getElementById('home-about');
+    // 4. Find the index of the word "running" so we can time the badge thump
     const allWords = document.querySelectorAll('.word-unit');
+    let runningIdx = -1;
+    allWords.forEach((w, i) => {
+        if (w.textContent.trim().toLowerCase() === 'running') runningIdx = i;
+    });
+
+    // 5. Scroll listener — reveal words proportional to scroll position in section
+    const section = document.getElementById('home-about');
+    const badge   = document.querySelector('.hackclub-badge');
+    const mark    = document.querySelector('.curacao-mark');
+    let lastReveal = 0;
+    let badgeThumped = false;
+    let markerFired  = false;
 
     function updateWords() {
         if (!section) return;
@@ -343,26 +417,31 @@ function setupWordReveal() {
         const progress = trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
         const reveal   = Math.floor(progress * totalWords);
 
-        allWords.forEach((w, i) => {
-            w.classList.toggle('active', i < reveal);
-        });
+        allWords.forEach((w, i) => w.classList.toggle('active', i < reveal));
+
+        // Badge thump: fires exactly when "running" word becomes visible
+        if (!badgeThumped && runningIdx >= 0 && lastReveal <= runningIdx && reveal > runningIdx) {
+            badgeThumped = true;
+            if (badge) {
+                badge.classList.remove('thump');
+                // force reflow so animation restarts cleanly
+                void badge.offsetWidth;
+                badge.classList.add('thump');
+                setTimeout(() => badge.classList.remove('thump'), 500);
+            }
+        }
+
+        // Marker: draw the yellow line at 55% through
+        if (!markerFired && mark && progress > 0.55) {
+            markerFired = true;
+            mark.classList.add('marker-active');
+        }
+
+        lastReveal = reveal;
     }
 
     window.addEventListener('scroll', updateWords, { passive: true });
-    updateWords(); // run once on load in case already scrolled
-
-    // 5. Curaçao marker fires when ALL words are revealed (near end of section)
-    function checkMarker() {
-        const mark = document.querySelector('.curacao-mark');
-        if (!mark || mark.classList.contains('marker-active')) return;
-        const rect     = section ? section.getBoundingClientRect() : null;
-        const trackH   = section ? section.offsetHeight - window.innerHeight : 1;
-        const progress = rect && trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
-        if (progress > 0.55) mark.classList.add('marker-active');
-    }
-
-    window.addEventListener('scroll', checkMarker, { passive: true });
-    checkMarker();
+    updateWords();
 
     // 6. Side photos pop in once section enters viewport
     const floats = document.querySelectorAll('.about-float');
@@ -374,24 +453,6 @@ function setupWordReveal() {
             }
         }, { threshold: 0.15 });
         floatObs.observe(section);
-    }
-
-    // 7. Hackclub badge pop — add .pop class when its word-reveal paragraph is ~visible
-    const badge = document.querySelector('.hackclub-badge');
-    if (badge && section) {
-        let badgePopped = false;
-        window.addEventListener('scroll', () => {
-            if (badgePopped) return;
-            const rect    = section.getBoundingClientRect();
-            const trackH  = section.offsetHeight - window.innerHeight;
-            const progress = trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
-            // pop when about 70% through the word reveal (second paragraph territory)
-            if (progress > 0.6) {
-                badgePopped = true;
-                badge.classList.add('pop');
-                setTimeout(() => badge.classList.remove('pop'), 600);
-            }
-        }, { passive: true });
     }
 }
 
@@ -405,6 +466,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScramble();
     setupEasterEgg();
     setupWordReveal();
+    setupCuracaoIdle();
+
+    // Curaçao click — stars burst
+    const curacaoMark = document.querySelector('.curacao-mark');
+    if (curacaoMark) {
+        curacaoMark.addEventListener('click', triggerCuracaoStars);
+    }
 
     document.fonts.ready.then(() => {
         fitHero();

@@ -1759,3 +1759,42 @@ nav {
 #home-about .about-body-text {
     margin-top: 0;
 }
+
+/* paragraphs flow tightly — no gap between them */
+.about-body-text p + p {
+    margin-top: 0.35rem;
+}
+
+/* ── Curaçao letter idle pulse ───────────── */
+.w-letter {
+    transition: color 0.45s ease, transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+
+.w-letter.idle-glow {
+    color: var(--accent);
+}
+
+/* Curaçao click cursor */
+.curacao-mark {
+    cursor: pointer;
+}
+
+/* ── Curaçao click star particles ───────── */
+@keyframes star-burst-up {
+    0%   { transform: translate(-50%,-50%) scale(0) rotate(0deg);   opacity: 1; }
+    25%  { transform: translate(calc(-50% + var(--sdx) * 0.4px), calc(-50% - 18px)) scale(1.25) rotate(calc(var(--srot) * 0.5deg)); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--sdx) * 1px), calc(-50% - 90px)) scale(0.6) rotate(calc(var(--srot) * 1deg)); opacity: 0; }
+}
+
+/* ── Hackclub badge pop keyframe ─────────── */
+@keyframes badge-thump {
+    0%   { transform: scale(1); }
+    25%  { transform: scale(1.22) translateY(-3px); }
+    55%  { transform: scale(0.92) translateY(1px); }
+    75%  { transform: scale(1.07) translateY(-1px); }
+    100% { transform: scale(1); }
+}
+
+.hackclub-badge.thump {
+    animation: badge-thump 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
