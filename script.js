@@ -502,6 +502,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Footer reveal is handled by CSS — negative margin + z-index physics.
     // No JS needed: #site-content (z:1) overlaps footer (z:0) until scrolled past.
 
+    // "About Me" button — cinematic slow scroll into the about section
+    // As the page scrolls, the word-reveal fires naturally via the scroll listener
+    const aboutBtn = document.getElementById('about-me-btn');
+    const aboutSection = document.getElementById('home-about');
+    if (aboutBtn && aboutSection) {
+        aboutBtn.addEventListener('click', e => {
+            e.preventDefault();
+            const target    = aboutSection.getBoundingClientRect().top + window.scrollY;
+            const trackEl   = document.getElementById('about-scroll-track');
+            // Scroll to the END of the scroll-track so the full reveal plays out
+            const trackEnd  = trackEl
+                ? target + trackEl.offsetHeight - window.innerHeight
+                : target;
+            const start     = window.scrollY;
+            const distance  = trackEnd - start;
+            // Duration scales with distance: min 2.6s, max 5.5s — feels like a slow pan
+            const duration  = Math.min(5500, Math.max(2600, Math.abs(distance) * 2.2));
+            let startTime   = null;
+
+            function easeInOutCubic(t) {
+                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            }
+
+            function step(ts) {
+                if (!startTime) startTime = ts;
+                const elapsed  = ts - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                window.scrollTo(0, start + distance * easeInOutCubic(progress));
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        });
+    }
+
     // Curaçao click — stars burst
     const curacaoMark = document.querySelector('.curacao-mark');
     if (curacaoMark) {

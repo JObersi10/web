@@ -555,20 +555,23 @@ nav {
 .hero-meta {
     display: flex;
     align-items: center;
-    gap: var(--sp-4);
+    gap: clamp(0.3rem, 1vw, var(--sp-4));
     margin-top: var(--sp-5);
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* force single line, scale handles overflow */
     justify-content: center;
     position: relative;
     z-index: 1;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .hero-meta-item {
-    font-size: var(--text-xs);
+    font-size: clamp(0.52rem, 1.3vw, var(--text-xs));
     font-weight: 600;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--text-mid);
+    white-space: nowrap;
 }
 
 .hero-meta-sep {
@@ -712,6 +715,9 @@ nav {
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
+    padding: 0 clamp(1.25rem, 5vw, 3rem); /* prevent text touching screen edge */
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .about-editorial .section-heading {
@@ -2281,4 +2287,19 @@ nav {
     gap: 0.4em;
     letter-spacing: 0.18em;
     padding-right: calc(var(--sp-8) + 2px);
+}
+
+/* ── About Me CTA — smaller than the global btn-accent ─── */
+#home-about .btn-accent {
+    font-size: 0.72rem;
+    padding: 0.65rem 1.5rem;
+    letter-spacing: 0.2em;
+    margin-top: var(--sp-8) !important;
+    width: auto;
+    display: inline-flex;
+}
+
+/* ── Footer tagline — fluid across all screen widths ─── */
+.mboard-tagline {
+    font-size: clamp(0.85rem, 2.2vw, 1.6rem) !important;
 }
