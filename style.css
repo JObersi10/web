@@ -1831,8 +1831,9 @@ nav {
     .about-body-text p + p { margin-top: 0.5rem; }
 
     /* Stats */
-    .about-stats { gap: var(--sp-6); margin-top: var(--sp-10); }
-    .about-stat-num { font-size: var(--text-2xl); }
+    .about-stats { gap: var(--sp-4); margin-top: var(--sp-6); flex-wrap: nowrap; }
+    .about-stat-num { font-size: clamp(1.1rem, 5.5vw, 1.5rem); }
+    .about-stat-label { font-size: 0.6rem; letter-spacing: 0.15em; }
 
     /* Services */
     .service-card { padding: var(--sp-8); }
@@ -2149,10 +2150,10 @@ nav {
 .about-editorial.photos-split .asp-pfp {
     width:  clamp(140px, 42vw, 158px);
     height: clamp(140px, 42vw, 158px);
-    transform: translateX(calc(-50% - clamp(65px, 20vw, 82px)));
+    transform: translateX(calc(-50% - clamp(80px, 25vw, 100px)));
 }
 .about-editorial.photos-split .asp-star {
-    transform: translateX(calc(-50% + clamp(50px, 16vw, 68px)));
+    transform: translateX(calc(-50% + clamp(60px, 22vw, 85px)));
     opacity: 1;
 }
 
