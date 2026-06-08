@@ -1797,12 +1797,15 @@ nav {
 
 /* ── Small phone ── */
 @media (max-width: 400px) {
-    .about-stats { flex-direction: column; align-items: center; gap: var(--sp-6); }
+    .about-stats { grid-template-columns: repeat(3, 1fr); gap: var(--sp-1); }
     .hero-meta { gap: var(--sp-1); }
 }
 
 /* ── Mobile polish pass ──────────────────── */
 @media (max-width: 768px) {
+    /* Hero tagline — left-align when it wraps on mobile */
+    .hero-sub { text-align: left; }
+
     /* Hero meta — wrap neatly, hide extra seps on tiny screens */
     .hero-meta { gap: var(--sp-2) var(--sp-3); }
     .hero-meta-sep { display: none; }
@@ -1830,10 +1833,17 @@ nav {
     .about-body-text { font-size: 0.95rem; line-height: 1.75; }
     .about-body-text p + p { margin-top: 0.5rem; }
 
-    /* Stats */
-    .about-stats { gap: var(--sp-4); margin-top: var(--sp-6); flex-wrap: nowrap; }
-    .about-stat-num { font-size: clamp(1.1rem, 5.5vw, 1.5rem); }
-    .about-stat-label { font-size: 0.6rem; letter-spacing: 0.15em; }
+    /* Stats — 3 equal columns, never clip */
+    .about-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sp-2);
+        margin-top: var(--sp-6);
+        text-align: center;
+    }
+    .about-stat { min-width: 0; }
+    .about-stat-num { font-size: clamp(1rem, 5vw, 1.4rem); }
+    .about-stat-label { font-size: 0.58rem; letter-spacing: 0.1em; white-space: normal; }
 
     /* Services */
     .service-card { padding: var(--sp-8); }
