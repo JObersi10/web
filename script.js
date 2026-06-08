@@ -517,8 +517,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const d45 = (y * 0.20).toFixed(1);
                 const d30 = (y * 0.12).toFixed(1);
                 const dG  = (y * 0.28).toFixed(1);
+                // 5 layers: 45°, 30°, 60°, h-grid, v-grid
                 bgGrad.style.backgroundPosition =
-                    `left -${d45}px, left -${d30}px, left -${d30}px, 0 -${dG}px, -${dG}px 0, 0 0, 0 0`;
+                    `left -${d45}px, left -${d30}px, left -${d30}px, 0 -${dG}px, -${dG}px 0`;
             }
 
             // Word reveal
