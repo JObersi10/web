@@ -69,12 +69,40 @@ html {
 body {
     font-family: 'Space Grotesk', sans-serif;
     font-size: var(--text-base);
-    background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
     cursor: none;
     line-height: 1.75;
     transition: opacity 0.4s ease;
+    /* ── Cutting mat background — fixed to viewport = natural parallax ── */
+    background-color: var(--bg);
+    background-image:
+        /* 45° main diagonal guides */
+        repeating-linear-gradient(
+            45deg,
+            transparent 0px, transparent 55px,
+            rgba(96,165,250,0.065) 55px, rgba(96,165,250,0.065) 56px
+        ),
+        /* 30° shallow angle from bottom-left */
+        repeating-linear-gradient(
+            30deg,
+            transparent 0px, transparent 110px,
+            rgba(96,165,250,0.04) 110px, rgba(96,165,250,0.04) 111px
+        ),
+        /* 60° steep angle */
+        repeating-linear-gradient(
+            60deg,
+            transparent 0px, transparent 110px,
+            rgba(96,165,250,0.04) 110px, rgba(96,165,250,0.04) 111px
+        ),
+        /* faint metric grid */
+        linear-gradient(rgba(96,165,250,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.018) 1px, transparent 1px);
+    /* fixed = background anchored to viewport; content scrolls over it → parallax */
+    background-attachment: fixed;
+    background-size: auto, auto, auto, 44px 44px, 44px 44px;
+    /* origin at bottom-left: angles radiate from there like a real cutting mat */
+    background-position: left bottom, left bottom, left bottom, left bottom, left bottom;
 }
 
 img {
@@ -101,44 +129,11 @@ button {
     inset: 0;
     z-index: var(--z-base);
     pointer-events: none;
-    will-change: background-position;
-    /* Cutting mat: navy blue + diagonal angle guides from bottom-left (30°/45°/60°) */
+    /* Depth vignette — corner darkening to give the mat a board-edge feel */
     background:
-        /* 45° main diagonal guides — most prominent on a cutting mat */
-        repeating-linear-gradient(
-            45deg,
-            transparent 0px,
-            transparent 55px,
-            rgba(96,165,250,0.055) 55px,
-            rgba(96,165,250,0.055) 56px
-        ),
-        /* 30° shallow angle guides */
-        repeating-linear-gradient(
-            30deg,
-            transparent 0px,
-            transparent 110px,
-            rgba(96,165,250,0.032) 110px,
-            rgba(96,165,250,0.032) 111px
-        ),
-        /* 60° steep angle guides */
-        repeating-linear-gradient(
-            60deg,
-            transparent 0px,
-            transparent 110px,
-            rgba(96,165,250,0.032) 110px,
-            rgba(96,165,250,0.032) 111px
-        ),
-        /* Faint metric grid underneath */
-        linear-gradient(rgba(96,165,250,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(96,165,250,0.018) 1px, transparent 1px),
-        /* Depth vignette corners */
-        radial-gradient(circle at 0% 100%, #071a35 0%, transparent 55%),
-        radial-gradient(circle at 100% 0%, #051020 0%, transparent 45%),
-        var(--bg);
-    background-size:
-        auto, auto, auto,
-        44px 44px, 44px 44px,
-        100% 100%, 100% 100%, 100% 100%;
+        radial-gradient(ellipse at 0% 100%, rgba(2,8,24,0.82) 0%, transparent 52%),
+        radial-gradient(ellipse at 100% 0%, rgba(2,8,20,0.65) 0%, transparent 46%),
+        radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.10) 0%, transparent 60%);
 }
 
 #bg-bloom {
@@ -989,33 +984,28 @@ nav {
    MOTHERBOARD FOOTER — javii.es inspired layout
    PCB green · circuit grid · JOBERSI watermark
 ═══════════════════════════════════════════ */
-/* ── Motherboard footer: fixed behind page content, uncovered by scrolling ── */
+/* ── Motherboard footer — scroll reveal, in normal document flow ── */
 .mboard-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: var(--footer-h);
-    z-index: 0;
+    position: relative;
     border-top: none;
-    padding: 0 0 clamp(3.5rem, 10vw, 8rem);
-    overflow: hidden;
+    padding: 0 0 clamp(5rem, 14vw, 13rem);
     /* PCB dark green background */
     background-color: #030a05;
     background-image:
         linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px);
     background-size: 28px 28px;
+    overflow: hidden;
+    /* starts slightly below + faded — revealed when scrolled into view */
+    transform: translateY(64px) scale(0.99);
+    transform-origin: bottom center;
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.75s ease;
 }
 
-/* Page shield: sits ABOVE the fixed footer, scrolls normally */
-/* Gives the content the solid bg that "covers" the footer until scrolled away */
-#page-shield {
-    position: relative;
-    z-index: 1;
-    background: var(--bg);
-    padding-bottom: var(--footer-h);
+.mboard-footer.revealed {
+    transform: translateY(0) scale(1);
+    opacity: 1;
 }
 
 /* Circuit trace SVG */

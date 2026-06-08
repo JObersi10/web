@@ -492,29 +492,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setupWordReveal();
     setupCuracaoIdle();
 
-    // Parallax background — diagonal lines shift gently on scroll (video-game feel)
-    const bgGrad = document.getElementById('bg-grad');
-    if (bgGrad && !prefersReducedMotion) {
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                requestAnimationFrame(() => {
-                    const y = window.scrollY;
-                    // Each layer moves at a slightly different rate for depth
-                    // Layers: 45° diag | 30° diag | 60° diag | grid-h | grid-v | vignette1 | vignette2 | flat bg
-                    bgGrad.style.backgroundPosition = [
-                        `${y * 0.18}px ${y * 0.18}px`,  // 45° moves along its axis
-                        `${y * 0.10}px ${y * 0.06}px`,  // 30° shallow
-                        `${y * -0.10}px ${y * 0.06}px`, // 60° steep (mirror)
-                        `0px ${y * 0.08}px`,             // grid horizontal
-                        `0px ${y * 0.08}px`,             // grid vertical
-                        `0 0`, `0 0`, `0 0`              // depth + base (stationary)
-                    ].join(', ');
-                    ticking = false;
-                });
-                ticking = true;
+    // Motherboard footer reveal — slides up from below when scrolled into view
+    const footer = document.getElementById('site-footer');
+    if (footer) {
+        const fObs = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                footer.classList.add('revealed');
+                fObs.disconnect();
             }
-        }, { passive: true });
+        }, { threshold: 0.04 });
+        fObs.observe(footer);
     }
 
     // Curaçao click — stars burst
