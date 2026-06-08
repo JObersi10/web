@@ -352,15 +352,14 @@ nav {
     z-index: var(--z-raised);
 }
 
-/* ── Page content wrappers — z:5 so footer (z:4) is behind them ── */
-/* As content scrolls past, the fixed footer at bottom becomes visible.
-   Footer is z:4 (above bg overlays z:2/3), page content is z:5 (above footer).
-   This keeps bg-grad/bg-bloom at full inset without halving the background. */
+/* ── Page content wrappers ── */
+/* bg-grad (z:2) lives above page content (z:1) so the cutting mat is visible.
+   JS scroll handler dynamically clips bg-grad bottom when footer reveals. */
 #site-content,
 .page-wrap,
 #page-cv {
     position: relative;
-    z-index: 5;
+    z-index: 1;
     background: var(--bg);
 }
 
@@ -997,14 +996,15 @@ nav {
    (z:1, solid bg) overlaps it via padding-bottom + negative
    margin-top — footer is hidden behind the page, revealed as
    content scrolls away ("sliding it out from behind").
-   bg-grad (z:2) shows the cutting mat overlay on top of both.
+   bg-grad (z:2) shows the cutting mat overlay on page content.
+   JS scroll handler clips bg-grad/bg-bloom bottom as footer reveals.
 ═══════════════════════════════════════════════════════════ */
 .mboard-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 4; /* above bg-grad(z:2) & bg-bloom(z:3), below page content(z:5) */
+    z-index: 0;
     height: var(--footer-h);
     border-top: 1px solid rgba(0,255,65,0.25);
     padding: 0;

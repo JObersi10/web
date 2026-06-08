@@ -497,6 +497,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
     const backTopBtn = setupBackToTop();
     const bgGrad     = document.getElementById('bg-grad');
+    const bgBloom    = document.getElementById('bg-bloom');
+    const footerEl   = document.getElementById('site-footer');
     let scrollTick   = false;
 
     function onScroll() {
@@ -516,6 +518,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 5 layers: 45°, 30°, 60°, h-grid, v-grid
                 bgGrad.style.backgroundPosition =
                     `left -${d45}px, left -${d30}px, left -${d30}px, 0 -${dG}px, -${dG}px 0`;
+            }
+
+            // Clip bg overlays off the footer as it gets revealed
+            if (footerEl && (bgGrad || bgBloom)) {
+                const maxScroll = document.body.scrollHeight - window.innerHeight;
+                const footerH   = footerEl.offsetHeight;
+                const revealed  = Math.max(0, y - (maxScroll - footerH));
+                const clip      = revealed + 'px';
+                if (bgGrad)  bgGrad.style.bottom  = clip;
+                if (bgBloom) bgBloom.style.bottom = clip;
             }
 
             // Word reveal
