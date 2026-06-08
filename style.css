@@ -1822,12 +1822,15 @@ nav {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About section on mobile: keep sticky scroll, reduce padding */
+    /* About section on mobile: drop sticky/fixed-height, let content flow */
     .about-sticky {
-        padding-top: calc(var(--nav-h) + var(--sp-6));
-        padding-bottom: var(--sp-8);
+        position: static;
+        height: auto;
+        overflow: visible;
+        padding: calc(var(--nav-h) + var(--sp-8)) 0 var(--sp-14);
         justify-content: flex-start;
     }
+    #about-scroll-track { height: auto !important; }
 
     /* About body text tighter */
     .about-body-text { font-size: 0.95rem; line-height: 1.75; }
