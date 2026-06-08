@@ -690,6 +690,7 @@ nav {
     /* JS will set height = 100vh + (wordCount * 55px) */
     min-height: 100vh;
     position: relative;
+    overflow: clip; /* clip overflow without creating a scroll container — keeps sticky working */
 }
 
 .about-sticky {
@@ -699,10 +700,9 @@ nav {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    /* push content down so heading lands at ~20% from top — clearly visible */
-    padding-top: calc(var(--nav-h) + 8vh);
-    padding-bottom: var(--sp-8);
-    overflow: hidden;
+    padding-top: calc(var(--nav-h) + 5vh);
+    padding-bottom: var(--sp-4);
+    overflow: visible; /* visible so button is never clipped on shorter viewports */
 }
 
 .about-editorial {
@@ -716,7 +716,7 @@ nav {
 
 .about-editorial .section-heading {
     font-size: clamp(2.2rem, 5.5vw, 4.5rem);
-    margin-bottom: var(--sp-8);
+    margin-bottom: var(--sp-5);
     line-height: 1.05;
 }
 
@@ -785,7 +785,7 @@ nav {
     display: flex;
     justify-content: center;
     gap: var(--sp-10);
-    margin-top: var(--sp-8);
+    margin-top: var(--sp-5);
     flex-wrap: wrap;
 }
 
@@ -1205,11 +1205,14 @@ nav {
 }
 
 @media (max-width: 600px) {
+    :root { --footer-h: 620px; } /* 1-column layout needs more height */
     .mboard-top {
         grid-template-columns: 1fr;
-        gap: var(--sp-6);
+        gap: var(--sp-5);
     }
-    .mboard-content { padding-top: var(--sp-10); }
+    .mboard-content { padding-top: var(--sp-8); }
+    .mboard-sys-label { margin-bottom: var(--sp-2); }
+    .mboard-tagline { margin-bottom: var(--sp-4); }
 }
 
 /* ═══════════════════════════════════════════
@@ -1329,7 +1332,7 @@ nav {
 ═══════════════════════════════════════════ */
 #page-cv {
     padding-top: calc(var(--nav-h) + var(--sp-16));
-    padding-bottom: var(--sp-16);
+    padding-bottom: var(--sp-24);
     min-height: 100vh;
 }
 
@@ -2122,8 +2125,8 @@ nav {
     display: none;
     position: relative;
     width: 100%;
-    height: 215px;
-    margin-bottom: var(--sp-6);
+    height: 170px;
+    margin-bottom: var(--sp-4);
     overflow: hidden; /* clips star during initial off-screen position */
 }
 
@@ -2306,8 +2309,8 @@ nav {
 
 /* ── "See my work" inside about section — give it spacing ─── */
 #home-about .btn-accent {
-    margin-top: var(--sp-8) !important;
-    margin-bottom: var(--sp-10) !important;
+    margin-top: var(--sp-5) !important;
+    margin-bottom: 0 !important;
     display: inline-flex;
 }
 
