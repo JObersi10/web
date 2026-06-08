@@ -475,7 +475,9 @@ function setupWordReveal() {
     // 6. Side photos pop in once section enters viewport
     const floats = document.querySelectorAll('.about-float');
 
-    if (floats.length && section) {
+// 6. Side photos pop in once section enters viewport (DESKTOP ONLY)
+    const floats = document.querySelectorAll('.about-float');
+    if (floats.length && section && window.innerWidth > 1024) {
         const floatObs = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
                 floats.forEach((f, i) => setTimeout(() => f.classList.add('pop-in'), i * 160));
@@ -484,6 +486,9 @@ function setupWordReveal() {
         }, { threshold: 0.15 });
         floatObs.observe(section);
     }
+
+    // Keep this at the absolute bottom of the function
+    return updateWords;
 }
 
 /* ── Init ── */
