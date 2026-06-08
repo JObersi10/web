@@ -228,63 +228,10 @@ function navTo(url) {
 function setupBackToTop() {
     const btn = document.getElementById('back-to-top');
     if (!btn) return;
-    window.addEventListener('scroll', () => {
-        btn.classList.toggle('visible', window.scrollY > 400);
-    }, { passive: true });
+    // scroll listener is registered in the unified scroll handler below
+    btn._el = btn;
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' }));
-}
-
-/* ── Cutting mat parallax ────────────────────────────────────
-   bg-grad is fixed to viewport. Scrolling its background-position
-   at different rates per layer creates video-game depth effect.
-   Layers: [45°diag, 30°diag, 60°diag, h-grid, v-grid, vig1, vig2]
-──────────────────────────────────────────────────────────── */
-function setupParallax() {
-    if (prefersReducedMotion) return;
-    const bgGrad = document.getElementById('bg-grad');
-    if (!bgGrad) return;
-
-    let ticking = false;
-    function updateParallax() {
-        const y = window.scrollY;
-        // Each layer drifts at a different speed — depth illusion
-        // 45° fastest (foreground feel), 30°/60° mid, grid slowest
-        const d45  = (y * 0.20).toFixed(1);
-        const d30  = (y * 0.12).toFixed(1);
-        const d60  = (y * 0.12).toFixed(1);
-        const dG   = (y * 0.28).toFixed(1); // grid scrolls slightly faster → extra depth
-        bgGrad.style.backgroundPosition = [
-            `left bottom`,           // 45° — origin stays bottom-left, let y shift handle it
-            `left bottom`,           // 30°
-            `left bottom`,           // 60°
-            `0 -${dG}px`,            // horizontal grid lines drift up
-            `-${dG}px 0`,            // vertical grid lines drift left
-            '0 0',                    // vignette BL — fixed
-            '0 0'                     // vignette TR — fixed
-        ].join(', ');
-
-        // Also subtly shift the diagonal origins
-        bgGrad.style.backgroundPositionX = '';  // reset (we set full shorthand above)
-        // Re-apply with diagonal Y offsets
-        bgGrad.style.backgroundPosition = [
-            `left -${d45}px`,
-            `left -${d30}px`,
-            `left -${d60}px`,
-            `0 -${dG}px`,
-            `-${dG}px 0`,
-            '0 0',
-            '0 0'
-        ].join(', ');
-
-        ticking = false;
-    }
-
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(updateParallax);
-            ticking = true;
-        }
-    }, { passive: true });
+    return btn;
 }
 
 /* ── Easter egg: 3 clicks on cover image ── */
@@ -474,9 +421,10 @@ function setupWordReveal() {
         { start: 0.55, end: 1.0  },
     ];
 
-    const section = document.getElementById('home-about');
-    const badge   = document.querySelector('.hackclub-badge');
-    const mark    = document.querySelector('.curacao-mark');
+    const section  = document.getElementById('home-about');
+    const badge    = document.querySelector('.hackclub-badge');
+    const mark     = document.querySelector('.curacao-mark');
+    const editorial = document.querySelector('.about-editorial'); // cached — don't re-query per frame
     let badgeThumped = false, markerFired = false;
     let prevRunningReveal = 0;
 
@@ -517,14 +465,12 @@ function setupWordReveal() {
         }
 
         // Mobile photo split: pfp moves left, star slides in when para 2 starts
-        const editorial = document.querySelector('.about-editorial');
-        if (editorial) {
-            editorial.classList.toggle('photos-split', progress >= 0.5);
-        }
+        if (editorial) editorial.classList.toggle('photos-split', progress >= 0.5);
     }
 
-    window.addEventListener('scroll', updateWords, { passive: true });
+    // Don't register own scroll listener — returned to unified handler
     updateWords();
+    return updateWords;
 
     // 6. Side photos pop in once section enters viewport
     const floats = document.querySelectorAll('.about-float');
@@ -549,35 +495,61 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
-    setupWordReveal();
+    const updateWords = setupWordReveal();
     setupCuracaoIdle();
-    setupParallax();
 
-    // Footer: position:fixed z:0, revealed when page content (z:1) scrolls away.
+    // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
+    const backTopBtn = setupBackToTop();
+    const bgGrad     = document.getElementById('bg-grad');
+    let scrollTick   = false;
 
-    // "About Me" button — cinematic slow scroll into the about section
-    // As the page scrolls, the word-reveal fires naturally via the scroll listener
-    const aboutBtn = document.getElementById('about-me-btn');
+    function onScroll() {
+        if (scrollTick) return;
+        scrollTick = true;
+        requestAnimationFrame(() => {
+            const y = window.scrollY;
+
+            // Back to top button
+            if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
+
+            // Cutting mat parallax — each layer drifts at its own speed
+            if (bgGrad && !prefersReducedMotion) {
+                const d45 = (y * 0.20).toFixed(1);
+                const d30 = (y * 0.12).toFixed(1);
+                const dG  = (y * 0.28).toFixed(1);
+                bgGrad.style.backgroundPosition =
+                    `left -${d45}px, left -${d30}px, left -${d30}px, 0 -${dG}px, -${dG}px 0, 0 0, 0 0`;
+            }
+
+            // Word reveal
+            if (updateWords) updateWords();
+
+            scrollTick = false;
+        });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // init state
+
+    // ── "About Me" hero button — cinematic slow scroll through about section ──
+    const aboutBtn     = document.getElementById('about-me-btn');
     const aboutSection = document.getElementById('home-about');
     if (aboutBtn && aboutSection) {
         aboutBtn.addEventListener('click', e => {
             e.preventDefault();
-            const target    = aboutSection.getBoundingClientRect().top + window.scrollY;
-            const trackEl   = document.getElementById('about-scroll-track');
-            // Scroll to the END of the scroll-track so the full reveal plays out
-            const trackEnd  = trackEl
+            const target   = aboutSection.getBoundingClientRect().top + window.scrollY;
+            const trackEl  = document.getElementById('about-scroll-track');
+            const trackEnd = trackEl
                 ? target + trackEl.offsetHeight - window.innerHeight
                 : target;
-            const start     = window.scrollY;
-            const distance  = trackEnd - start;
-            // Duration scales with distance: min 2.6s, max 5.5s — feels like a slow pan
-            const duration  = Math.min(5500, Math.max(2600, Math.abs(distance) * 2.2));
-            let startTime   = null;
+            const start    = window.scrollY;
+            const distance = trackEnd - start;
+            const duration = Math.min(5500, Math.max(2600, Math.abs(distance) * 2.2));
+            let startTime  = null;
 
             function easeInOutCubic(t) {
                 return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
             }
-
             function step(ts) {
                 if (!startTime) startTime = ts;
                 const elapsed  = ts - startTime;

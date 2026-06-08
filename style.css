@@ -103,6 +103,9 @@ button {
     /* z:2 — above page content wrappers (z:1) so cutting mat shows over all pages */
     z-index: 2;
     pointer-events: none;
+    /* GPU-composite this layer so background-position changes don't trigger repaints */
+    will-change: background-position;
+    transform: translateZ(0);
     /* Cutting mat: diagonal angle guides (30/45/60°) + square grid + vignettes */
     background:
         /* 45° main diagonal guides — denser, more visible */
@@ -2291,17 +2294,20 @@ nav {
     padding-right: calc(var(--sp-8) + 2px);
 }
 
-/* ── About Me CTA — smaller than the global btn-accent ─── */
+/* ── "See my work" inside about section — give it spacing ─── */
 #home-about .btn-accent {
-    font-size: 0.72rem;
-    padding: 0.65rem 1.5rem;
-    letter-spacing: 0.2em;
     margin-top: var(--sp-8) !important;
-    width: auto;
     display: inline-flex;
 }
 
-/* ── Footer tagline — fluid across all screen widths ─── */
+/* ── Footer tagline — fluid sizing, always left-aligned on small screens ─── */
 .mboard-tagline {
     font-size: clamp(0.85rem, 2.2vw, 1.6rem) !important;
+}
+@media (max-width: 900px) {
+    .mboard-tagline {
+        font-size: clamp(1.1rem, 4vw, 1.5rem) !important;
+        text-align: left;
+        white-space: pre-line; /* honour <br> */
+    }
 }
