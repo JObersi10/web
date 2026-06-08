@@ -75,6 +75,7 @@ body {
     line-height: 1.75;
     transition: opacity 0.4s ease;
     background: var(--bg); /* base color — cutting mat lives on #bg-grad above */
+    padding-bottom: var(--footer-h); /* scroll space so fixed footer gets revealed */
 }
 
 img {
@@ -102,34 +103,34 @@ button {
     /* z:2 — above page content wrappers (z:1) so cutting mat shows over all pages */
     z-index: 2;
     pointer-events: none;
-    /* Cutting mat: diagonal guides from bottom-left + depth vignette corners */
+    /* Cutting mat: diagonal angle guides (30/45/60°) + square grid + vignettes */
     background:
-        /* 45° main diagonal guides */
+        /* 45° main diagonal guides — denser, more visible */
         repeating-linear-gradient(
             45deg,
-            transparent 0px, transparent 55px,
-            rgba(96,165,250,0.065) 55px, rgba(96,165,250,0.065) 56px
+            transparent 0px, transparent 48px,
+            rgba(96,165,250,0.09) 48px, rgba(96,165,250,0.09) 49px
         ),
         /* 30° shallow angle */
         repeating-linear-gradient(
             30deg,
-            transparent 0px, transparent 110px,
-            rgba(96,165,250,0.042) 110px, rgba(96,165,250,0.042) 111px
+            transparent 0px, transparent 96px,
+            rgba(96,165,250,0.055) 96px, rgba(96,165,250,0.055) 97px
         ),
         /* 60° steep angle */
         repeating-linear-gradient(
             60deg,
-            transparent 0px, transparent 110px,
-            rgba(96,165,250,0.042) 110px, rgba(96,165,250,0.042) 111px
+            transparent 0px, transparent 96px,
+            rgba(96,165,250,0.055) 96px, rgba(96,165,250,0.055) 97px
         ),
-        /* faint metric grid */
-        linear-gradient(rgba(96,165,250,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(96,165,250,0.018) 1px, transparent 1px),
+        /* square grid — visible base layer */
+        linear-gradient(rgba(96,165,250,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.055) 1px, transparent 1px),
         /* corner depth vignettes */
-        radial-gradient(ellipse at 0% 100%, rgba(2,8,24,0.78) 0%, transparent 52%),
-        radial-gradient(ellipse at 100% 0%, rgba(2,8,20,0.58) 0%, transparent 46%);
-    background-size: auto, auto, auto, 44px 44px, 44px 44px, 100% 100%, 100% 100%;
-    background-position: left bottom, left bottom, left bottom, left bottom, left bottom, 0 0, 0 0;
+        radial-gradient(ellipse at 0% 100%, rgba(2,8,24,0.82) 0%, transparent 52%),
+        radial-gradient(ellipse at 100% 0%, rgba(2,8,20,0.62) 0%, transparent 46%);
+    background-size: auto, auto, auto, 36px 36px, 36px 36px, 100% 100%, 100% 100%;
+    background-position: left bottom, left bottom, left bottom, 0 0, 0 0, 0 0, 0 0;
 }
 
 #bg-bloom {
@@ -357,15 +358,14 @@ nav {
     z-index: var(--z-raised);
 }
 
-/* ── Page content wrappers — z:1 so footer (z:0) is behind them ── */
-/* bg-grad at z:2 paints the cutting mat overlay on top of these */
+/* ── Page content wrappers — z:1 so fixed footer (z:0) is behind them ── */
+/* As content scrolls past, the fixed footer at bottom becomes visible */
 #site-content,
 .page-wrap,
 #page-cv {
     position: relative;
     z-index: 1;
     background: var(--bg);
-    padding-bottom: var(--footer-h);
 }
 
 .page-wrap {
@@ -1004,10 +1004,13 @@ nav {
    bg-grad (z:2) shows the cutting mat overlay on top of both.
 ═══════════════════════════════════════════════════════════ */
 .mboard-footer {
-    position: relative;
+    /* Fixed at bottom of viewport, z:0 — page content (z:1) hides it.
+       Body padding-bottom creates the scroll space that reveals it. */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 0;
-    /* Pull up by exactly footer-h so page-content overlaps it */
-    margin-top: calc(-1 * var(--footer-h));
     height: var(--footer-h);
     border-top: none;
     padding: 0 0 clamp(3.5rem, 10vw, 8rem);
@@ -1015,10 +1018,9 @@ nav {
     /* PCB dark green background */
     background-color: #030a05;
     background-image:
-        linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px);
+        linear-gradient(rgba(0,255,65,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,65,0.06) 1px, transparent 1px);
     background-size: 28px 28px;
-    /* No animation — reveal is pure scroll physics */
 }
 
 /* Circuit trace SVG */

@@ -234,6 +234,59 @@ function setupBackToTop() {
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' }));
 }
 
+/* ── Cutting mat parallax ────────────────────────────────────
+   bg-grad is fixed to viewport. Scrolling its background-position
+   at different rates per layer creates video-game depth effect.
+   Layers: [45°diag, 30°diag, 60°diag, h-grid, v-grid, vig1, vig2]
+──────────────────────────────────────────────────────────── */
+function setupParallax() {
+    if (prefersReducedMotion) return;
+    const bgGrad = document.getElementById('bg-grad');
+    if (!bgGrad) return;
+
+    let ticking = false;
+    function updateParallax() {
+        const y = window.scrollY;
+        // Each layer drifts at a different speed — depth illusion
+        // 45° fastest (foreground feel), 30°/60° mid, grid slowest
+        const d45  = (y * 0.20).toFixed(1);
+        const d30  = (y * 0.12).toFixed(1);
+        const d60  = (y * 0.12).toFixed(1);
+        const dG   = (y * 0.28).toFixed(1); // grid scrolls slightly faster → extra depth
+        bgGrad.style.backgroundPosition = [
+            `left bottom`,           // 45° — origin stays bottom-left, let y shift handle it
+            `left bottom`,           // 30°
+            `left bottom`,           // 60°
+            `0 -${dG}px`,            // horizontal grid lines drift up
+            `-${dG}px 0`,            // vertical grid lines drift left
+            '0 0',                    // vignette BL — fixed
+            '0 0'                     // vignette TR — fixed
+        ].join(', ');
+
+        // Also subtly shift the diagonal origins
+        bgGrad.style.backgroundPositionX = '';  // reset (we set full shorthand above)
+        // Re-apply with diagonal Y offsets
+        bgGrad.style.backgroundPosition = [
+            `left -${d45}px`,
+            `left -${d30}px`,
+            `left -${d60}px`,
+            `0 -${dG}px`,
+            `-${dG}px 0`,
+            '0 0',
+            '0 0'
+        ].join(', ');
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
+    }, { passive: true });
+}
+
 /* ── Easter egg: 3 clicks on cover image ── */
 function setupEasterEgg() {
     let count = 0, timer;
@@ -498,9 +551,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEasterEgg();
     setupWordReveal();
     setupCuracaoIdle();
+    setupParallax();
 
-    // Footer reveal is handled by CSS — negative margin + z-index physics.
-    // No JS needed: #site-content (z:1) overlaps footer (z:0) until scrolled past.
+    // Footer: position:fixed z:0, revealed when page content (z:1) scrolls away.
 
     // "About Me" button — cinematic slow scroll into the about section
     // As the page scrolls, the word-reveal fires naturally via the scroll listener
