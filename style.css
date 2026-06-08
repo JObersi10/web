@@ -10,9 +10,9 @@
     --accent:        #3b82f6;
     --accent-dim:    rgba(59,130,246,0.12);
     --accent-glow:   rgba(59,130,246,0.25);
-    --bg:            #040c08;
-    --surface:       #0a140d;
-    --surface-2:     #111118;
+    --bg:            #020a18;
+    --surface:       #081525;
+    --surface-2:     #0c1a2e;
     --border:        rgba(255,255,255,0.07);
     --border-accent: rgba(59,130,246,0.28);
     --text:          #ffffff;
@@ -101,14 +101,44 @@ button {
     inset: 0;
     z-index: var(--z-base);
     pointer-events: none;
-    /* cutting mat: dark green base + subtle grid + soft color bleed */
+    will-change: background-position;
+    /* Cutting mat: navy blue + diagonal angle guides from bottom-left (30°/45°/60°) */
     background:
-        linear-gradient(rgba(120,210,140,0.038) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(120,210,140,0.038) 1px, transparent 1px),
-        radial-gradient(circle at 10% 15%, #0b2018 0%, transparent 45%),
-        radial-gradient(circle at 90% 85%, #091810 0%, transparent 40%),
+        /* 45° main diagonal guides — most prominent on a cutting mat */
+        repeating-linear-gradient(
+            45deg,
+            transparent 0px,
+            transparent 55px,
+            rgba(96,165,250,0.055) 55px,
+            rgba(96,165,250,0.055) 56px
+        ),
+        /* 30° shallow angle guides */
+        repeating-linear-gradient(
+            30deg,
+            transparent 0px,
+            transparent 110px,
+            rgba(96,165,250,0.032) 110px,
+            rgba(96,165,250,0.032) 111px
+        ),
+        /* 60° steep angle guides */
+        repeating-linear-gradient(
+            60deg,
+            transparent 0px,
+            transparent 110px,
+            rgba(96,165,250,0.032) 110px,
+            rgba(96,165,250,0.032) 111px
+        ),
+        /* Faint metric grid underneath */
+        linear-gradient(rgba(96,165,250,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.018) 1px, transparent 1px),
+        /* Depth vignette corners */
+        radial-gradient(circle at 0% 100%, #071a35 0%, transparent 55%),
+        radial-gradient(circle at 100% 0%, #051020 0%, transparent 45%),
         var(--bg);
-    background-size: 44px 44px, 44px 44px, 100% 100%, 100% 100%, 100% 100%;
+    background-size:
+        auto, auto, auto,
+        44px 44px, 44px 44px,
+        100% 100%, 100% 100%, 100% 100%;
 }
 
 #bg-bloom {
@@ -932,7 +962,7 @@ nav {
    MOTHERBOARD FOOTER — index.html only
    Fixed behind page content, revealed on scroll
 ═══════════════════════════════════════════ */
-:root { --footer-h: 380px; }
+:root { --footer-h: 420px; }
 
 /* CTA section above motherboard footer */
 .footer-cta-section {
@@ -959,27 +989,33 @@ nav {
    MOTHERBOARD FOOTER — javii.es inspired layout
    PCB green · circuit grid · JOBERSI watermark
 ═══════════════════════════════════════════ */
+/* ── Motherboard footer: fixed behind page content, uncovered by scrolling ── */
 .mboard-footer {
-    position: relative;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: var(--footer-h);
+    z-index: 0;
     border-top: none;
-    /* space for watermark at bottom */
-    padding: 0 0 clamp(5rem, 14vw, 13rem);
+    padding: 0 0 clamp(3.5rem, 10vw, 8rem);
+    overflow: hidden;
     /* PCB dark green background */
     background-color: #030a05;
     background-image:
-        linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px);
     background-size: 28px 28px;
-    overflow: hidden;
-    /* Reveal animation */
-    transform: translateY(40px);
-    opacity: 0;
-    transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.8s ease;
 }
 
-.mboard-footer.revealed {
-    transform: translateY(0);
-    opacity: 1;
+/* Page shield: sits ABOVE the fixed footer, scrolls normally */
+/* Gives the content the solid bg that "covers" the footer until scrolled away */
+#page-shield {
+    position: relative;
+    z-index: 1;
+    background: var(--bg);
+    padding-bottom: var(--footer-h);
 }
 
 /* Circuit trace SVG */
@@ -2124,21 +2160,26 @@ nav {
     .star-frame  { animation: none; }
 }
 
-/* ── About heading spacing fix ───────────── */
-#home-about .pill { margin-bottom: 0; }
+/* ── About section spacing — consistent vertical rhythm ── */
+#home-about .pill { margin-bottom: var(--sp-4); }
 
 #home-about .about-heading {
-    margin-top: var(--sp-5);
-    margin-bottom: var(--sp-8);
+    margin-top: 0;
+    margin-bottom: var(--sp-6);
 }
 
 #home-about .about-body-text {
     margin-top: 0;
+    margin-bottom: var(--sp-6);
 }
 
-/* paragraphs flow tightly — no gap between them */
 .about-body-text p + p {
-    margin-top: 0.35rem;
+    margin-top: var(--sp-4);
+}
+
+.about-stats {
+    margin-top: var(--sp-8);
+    margin-bottom: var(--sp-8);
 }
 
 /* ── Curaçao letter idle pulse ───────────── */
