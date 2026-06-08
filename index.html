@@ -54,6 +54,9 @@
     <a class="m-link" href="contact.html" data-nav>Connect</a>
 </div>
 
+<!-- SITE CONTENT: z:1, solid bg — footer (z:0) hides behind this until scrolled away -->
+<div id="site-content">
+
 <!-- HERO -->
 <section id="hero">
     <span class="hero-name javii-reveal" id="hero-name">JOBERSI</span>
@@ -112,12 +115,12 @@
                 </div>
 
                 <div class="about-editorial">
-                    <!-- Mobile-only photo strip (hidden on desktop, shown ≤1300px) -->
-                    <div class="about-mobile-photos" aria-hidden="true">
-                        <div class="about-mobile-photo">
+                    <!-- Mobile scroll photos: pfp → splits with star on paragraph 2 -->
+                    <div class="about-scroll-photos" aria-hidden="true">
+                        <div class="asp-pfp">
                             <img src="media/pfp.jpg" alt="">
                         </div>
-                        <div class="about-mobile-photo about-mobile-photo--star">
+                        <div class="asp-star">
                             <div class="star-mask-wrap">
                                 <img src="media/cover.jpg" alt="">
                             </div>
@@ -216,7 +219,9 @@
     </div>
 </section>
 
-<!-- MOTHERBOARD FOOTER — revealed from below on scroll -->
+</div><!-- /#site-content — footer lives below this, hidden until scrolled past -->
+
+<!-- MOTHERBOARD FOOTER — behind #site-content, revealed as it scrolls away -->
 <footer class="site-footer mboard-footer" id="site-footer">
 
     <!-- Circuit trace decoration -->

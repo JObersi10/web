@@ -385,13 +385,14 @@ function setupWordReveal() {
     const maxWords = Math.max(...paragraphWordSets.map(s => s.length));
     if (!maxWords) return;
 
-    // 2. On mobile or reduced-motion: show everything immediately
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    if (prefersReducedMotion || isMobile) {
+    // 2. Reduced-motion: show everything immediately, skip scroll animation
+    if (prefersReducedMotion) {
         paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
         document.querySelectorAll('.about-float').forEach(f => f.classList.add('pop-in'));
+        const editorial = document.querySelector('.about-editorial');
+        if (editorial) editorial.classList.add('photos-split'); // show both photos immediately
         return;
     }
 
@@ -461,6 +462,12 @@ function setupWordReveal() {
             markerFired = true;
             mark.classList.add('marker-active');
         }
+
+        // Mobile photo split: pfp moves left, star slides in when para 2 starts
+        const editorial = document.querySelector('.about-editorial');
+        if (editorial) {
+            editorial.classList.toggle('photos-split', progress >= 0.5);
+        }
     }
 
     window.addEventListener('scroll', updateWords, { passive: true });
@@ -492,17 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupWordReveal();
     setupCuracaoIdle();
 
-    // Motherboard footer reveal — slides up from below when scrolled into view
-    const footer = document.getElementById('site-footer');
-    if (footer) {
-        const fObs = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                footer.classList.add('revealed');
-                fObs.disconnect();
-            }
-        }, { threshold: 0.04 });
-        fObs.observe(footer);
-    }
+    // Footer reveal is handled by CSS — negative margin + z-index physics.
+    // No JS needed: #site-content (z:1) overlaps footer (z:0) until scrolled past.
 
     // Curaçao click — stars burst
     const curacaoMark = document.querySelector('.curacao-mark');

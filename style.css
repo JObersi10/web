@@ -74,35 +74,7 @@ body {
     cursor: none;
     line-height: 1.75;
     transition: opacity 0.4s ease;
-    /* ── Cutting mat background — fixed to viewport = natural parallax ── */
-    background-color: var(--bg);
-    background-image:
-        /* 45° main diagonal guides */
-        repeating-linear-gradient(
-            45deg,
-            transparent 0px, transparent 55px,
-            rgba(96,165,250,0.065) 55px, rgba(96,165,250,0.065) 56px
-        ),
-        /* 30° shallow angle from bottom-left */
-        repeating-linear-gradient(
-            30deg,
-            transparent 0px, transparent 110px,
-            rgba(96,165,250,0.04) 110px, rgba(96,165,250,0.04) 111px
-        ),
-        /* 60° steep angle */
-        repeating-linear-gradient(
-            60deg,
-            transparent 0px, transparent 110px,
-            rgba(96,165,250,0.04) 110px, rgba(96,165,250,0.04) 111px
-        ),
-        /* faint metric grid */
-        linear-gradient(rgba(96,165,250,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(96,165,250,0.018) 1px, transparent 1px);
-    /* fixed = background anchored to viewport; content scrolls over it → parallax */
-    background-attachment: fixed;
-    background-size: auto, auto, auto, 44px 44px, 44px 44px;
-    /* origin at bottom-left: angles radiate from there like a real cutting mat */
-    background-position: left bottom, left bottom, left bottom, left bottom, left bottom;
+    background: var(--bg); /* base color — cutting mat lives on #bg-grad above */
 }
 
 img {
@@ -127,19 +99,43 @@ button {
 #bg-grad {
     position: fixed;
     inset: 0;
-    z-index: var(--z-base);
+    /* z:2 — above page content wrappers (z:1) so cutting mat shows over all pages */
+    z-index: 2;
     pointer-events: none;
-    /* Depth vignette — corner darkening to give the mat a board-edge feel */
+    /* Cutting mat: diagonal guides from bottom-left + depth vignette corners */
     background:
-        radial-gradient(ellipse at 0% 100%, rgba(2,8,24,0.82) 0%, transparent 52%),
-        radial-gradient(ellipse at 100% 0%, rgba(2,8,20,0.65) 0%, transparent 46%),
-        radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.10) 0%, transparent 60%);
+        /* 45° main diagonal guides */
+        repeating-linear-gradient(
+            45deg,
+            transparent 0px, transparent 55px,
+            rgba(96,165,250,0.065) 55px, rgba(96,165,250,0.065) 56px
+        ),
+        /* 30° shallow angle */
+        repeating-linear-gradient(
+            30deg,
+            transparent 0px, transparent 110px,
+            rgba(96,165,250,0.042) 110px, rgba(96,165,250,0.042) 111px
+        ),
+        /* 60° steep angle */
+        repeating-linear-gradient(
+            60deg,
+            transparent 0px, transparent 110px,
+            rgba(96,165,250,0.042) 110px, rgba(96,165,250,0.042) 111px
+        ),
+        /* faint metric grid */
+        linear-gradient(rgba(96,165,250,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.018) 1px, transparent 1px),
+        /* corner depth vignettes */
+        radial-gradient(ellipse at 0% 100%, rgba(2,8,24,0.78) 0%, transparent 52%),
+        radial-gradient(ellipse at 100% 0%, rgba(2,8,20,0.58) 0%, transparent 46%);
+    background-size: auto, auto, auto, 44px 44px, 44px 44px, 100% 100%, 100% 100%;
+    background-position: left bottom, left bottom, left bottom, left bottom, left bottom, 0 0, 0 0;
 }
 
 #bg-bloom {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: 3;
     pointer-events: none;
     background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.18), transparent 35%);
     mix-blend-mode: screen;
@@ -361,9 +357,19 @@ nav {
     z-index: var(--z-raised);
 }
 
+/* ── Page content wrappers — z:1 so footer (z:0) is behind them ── */
+/* bg-grad at z:2 paints the cutting mat overlay on top of these */
+#site-content,
+.page-wrap,
+#page-cv {
+    position: relative;
+    z-index: 1;
+    background: var(--bg);
+    padding-bottom: var(--footer-h);
+}
+
 .page-wrap {
     padding-top: calc(var(--nav-h) + var(--sp-16));
-    padding-bottom: var(--sp-16);
     min-height: 100vh;
 }
 
@@ -984,28 +990,29 @@ nav {
    MOTHERBOARD FOOTER — javii.es inspired layout
    PCB green · circuit grid · JOBERSI watermark
 ═══════════════════════════════════════════ */
-/* ── Motherboard footer — scroll reveal, in normal document flow ── */
+/* ── Motherboard footer ─────────────────────────────────────
+   Sits at z:0 in normal document flow. The page-content wrapper
+   (z:1, solid bg) overlaps it via padding-bottom + negative
+   margin-top — footer is hidden behind the page, revealed as
+   content scrolls away ("sliding it out from behind").
+   bg-grad (z:2) shows the cutting mat overlay on top of both.
+═══════════════════════════════════════════════════════════ */
 .mboard-footer {
     position: relative;
+    z-index: 0;
+    /* Pull up by exactly footer-h so page-content overlaps it */
+    margin-top: calc(-1 * var(--footer-h));
+    height: var(--footer-h);
     border-top: none;
-    padding: 0 0 clamp(5rem, 14vw, 13rem);
+    padding: 0 0 clamp(3.5rem, 10vw, 8rem);
+    overflow: hidden;
     /* PCB dark green background */
     background-color: #030a05;
     background-image:
         linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px);
     background-size: 28px 28px;
-    overflow: hidden;
-    /* starts slightly below + faded — revealed when scrolled into view */
-    transform: translateY(64px) scale(0.99);
-    transform-origin: bottom center;
-    opacity: 0;
-    transition: transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.75s ease;
-}
-
-.mboard-footer.revealed {
-    transform: translateY(0) scale(1);
-    opacity: 1;
+    /* No animation — reveal is pure scroll physics */
 }
 
 /* Circuit trace SVG */
@@ -2077,13 +2084,76 @@ nav {
     .about-float { display: none; }
 }
 
-/* ── Mobile about photo strip ─── */
+/* ── Mobile about photo strip (legacy — hidden when scroll photos active) ── */
 .about-mobile-photos {
     display: none;
     gap: var(--sp-4);
     justify-content: center;
     align-items: center;
     margin-bottom: var(--sp-8);
+}
+
+/* ── Mobile scroll-driven about photos ─────────────────────
+   Phase 1 (progress < 0.5): big pfp centered
+   Phase 2 (.photos-split): pfp shifts left, star slides in right
+═══════════════════════════════════════════════════════════ */
+.about-scroll-photos {
+    display: none;
+    position: relative;
+    width: 100%;
+    height: 215px;
+    margin-bottom: var(--sp-6);
+    overflow: hidden; /* clips star during initial off-screen position */
+}
+
+@media (max-width: 1300px) {
+    .about-scroll-photos { display: block; }
+    .about-mobile-photos  { display: none !important; }
+}
+
+/* Profile picture — starts centered */
+.asp-pfp {
+    position: absolute;
+    width: clamp(160px, 50vw, 190px);
+    height: clamp(160px, 50vw, 190px);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--border-accent);
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: transform 0.85s cubic-bezier(0.16,1,0.3,1),
+                width  0.75s cubic-bezier(0.16,1,0.3,1),
+                height 0.75s cubic-bezier(0.16,1,0.3,1);
+    will-change: transform;
+    z-index: 2;
+}
+.asp-pfp img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Star photo — starts hidden off-screen right */
+.asp-star {
+    position: absolute;
+    width: clamp(115px, 36vw, 138px);
+    height: clamp(115px, 36vw, 138px);
+    top: 38px;
+    left: 50%;
+    transform: translateX(160px); /* off right edge */
+    opacity: 0;
+    transition: transform 0.85s cubic-bezier(0.16,1,0.3,1) 0.09s,
+                opacity   0.55s ease                        0.09s;
+    will-change: transform;
+    z-index: 1;
+}
+
+/* Split state: pfp → left, star → right */
+.about-editorial.photos-split .asp-pfp {
+    width:  clamp(140px, 42vw, 158px);
+    height: clamp(140px, 42vw, 158px);
+    transform: translateX(calc(-50% - clamp(65px, 20vw, 82px)));
+}
+.about-editorial.photos-split .asp-star {
+    transform: translateX(calc(-50% + clamp(50px, 16vw, 68px)));
+    opacity: 1;
 }
 
 .about-mobile-photo {
