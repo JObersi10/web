@@ -1822,34 +1822,26 @@ nav {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About section on mobile: sticky so images stay in view, but show all
-       content at once — no word-by-word reveal on small screens */
+    /* About sticky: keep sticky+height:100vh, overflow visible so nothing clips */
     .about-sticky {
         position: sticky;
         top: 0;
         height: 100vh;
-        overflow: visible;       /* nothing clips */
+        overflow: visible;
         padding-top: var(--nav-h);
         padding-bottom: 0;
         align-items: center;
         justify-content: flex-start;
     }
-    /* Lock scroll track to one viewport so user just scrolls through once */
-    #about-scroll-track { height: 100vh !important; }
-    /* Word reveal still runs on mobile — just compact layout so nothing clips */
-    /* Compact scroll-photos so everything fits */
-    .about-scroll-photos { height: 160px; margin-bottom: var(--sp-4); }
-    /* Hide the pill to save space */
+    /* Compact scroll-photos */
+    .about-scroll-photos { height: 150px; margin-bottom: var(--sp-3); }
+    /* Hide pill to save space */
     .about-editorial .pill { display: none; }
     /* Tighter heading */
-    .about-editorial .section-heading { font-size: clamp(1.6rem, 7vw, 2.4rem); margin-bottom: var(--sp-4); }
-    /* Tighter body text */
-    .about-body-text { font-size: 0.88rem; line-height: 1.65; }
-    .about-body-text p + p { margin-top: var(--sp-3); }
-
-    /* About body text tighter */
-    .about-body-text { font-size: 0.95rem; line-height: 1.75; }
-    .about-body-text p + p { margin-top: 0.5rem; }
+    .about-editorial .section-heading { font-size: clamp(1.5rem, 7vw, 2.2rem); margin-bottom: var(--sp-3); }
+    /* Tighter body text — single rule, no duplicate */
+    .about-body-text { font-size: 0.85rem; line-height: 1.6; }
+    .about-body-text p + p { margin-top: var(--sp-2); }
 
     /* Stats — 3 equal columns, never clip */
     .about-stats {
