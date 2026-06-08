@@ -464,30 +464,21 @@ function setupWordReveal() {
             mark.classList.add('marker-active');
         }
 
-        // Mobile photo split: pfp moves left, star slides in when para 2 starts
-        if (editorial) editorial.classList.toggle('photos-split', progress >= 0.5);
+        // Mobile photo split (pfp left, star right) at para 2
+        if (editorial) editorial.classList.toggle('photos-split', progress >= 0.55);
+
+        // Desktop: pfp always visible once section in view; star pops at para 2
+        if (window.innerWidth > 1024) {
+            if (floatLeft && !floatLeft.classList.contains('pop-in')) floatLeft.classList.add('pop-in');
+            if (floatRight) floatRight.classList.toggle('pop-in', progress >= 0.55);
+        }
     }
 
-    // Don't register own scroll listener — returned to unified handler
+    // Desktop float elements
+    const floatLeft  = document.querySelector('.about-float-left');
+    const floatRight = document.querySelector('.about-float-right');
+
     updateWords();
-    return updateWords;
-
-    // 6. Side photos pop in once section enters viewport
-    const floats = document.querySelectorAll('.about-float');
-
-// 6. Side photos pop in once section enters viewport (DESKTOP ONLY)
-    const floats = document.querySelectorAll('.about-float');
-    if (floats.length && section && window.innerWidth > 1024) {
-        const floatObs = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                floats.forEach((f, i) => setTimeout(() => f.classList.add('pop-in'), i * 160));
-                floatObs.disconnect();
-            }
-        }, { threshold: 0.15 });
-        floatObs.observe(section);
-    }
-
-    // Keep this at the absolute bottom of the function
     return updateWords;
 }
 
