@@ -1822,15 +1822,31 @@ nav {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About section on mobile: drop sticky/fixed-height, let content flow */
+    /* About section on mobile: sticky so images stay in view, but show all
+       content at once — no word-by-word reveal on small screens */
     .about-sticky {
-        position: static;
-        height: auto;
-        overflow: visible;
-        padding: calc(var(--nav-h) + var(--sp-8)) 0 var(--sp-14);
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: visible;       /* nothing clips */
+        padding-top: var(--nav-h);
+        padding-bottom: 0;
+        align-items: center;
         justify-content: flex-start;
     }
-    #about-scroll-track { height: auto !important; }
+    /* Lock scroll track to one viewport so user just scrolls through once */
+    #about-scroll-track { height: 100vh !important; }
+    /* Show all words immediately — skip the JS word reveal on mobile */
+    .about-body-text .word { opacity: 1 !important; color: var(--text-mid) !important; }
+    /* Compact scroll-photos so everything fits */
+    .about-scroll-photos { height: 160px; margin-bottom: var(--sp-4); }
+    /* Hide the pill to save space */
+    .about-editorial .pill { display: none; }
+    /* Tighter heading */
+    .about-editorial .section-heading { font-size: clamp(1.6rem, 7vw, 2.4rem); margin-bottom: var(--sp-4); }
+    /* Tighter body text */
+    .about-body-text { font-size: 0.88rem; line-height: 1.65; }
+    .about-body-text p + p { margin-top: var(--sp-3); }
 
     /* About body text tighter */
     .about-body-text { font-size: 0.95rem; line-height: 1.75; }
