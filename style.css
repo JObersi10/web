@@ -99,7 +99,7 @@ button {
 /* ── Backgrounds ────────────────────────────────────────── */
 #bg-grad {
     position: fixed;
-    inset: 0 0 var(--footer-h) 0; /* stop at footer — don't overlay it */
+    inset: 0; /* full viewport */
     z-index: 2;
     pointer-events: none;
     will-change: background-position;
@@ -129,7 +129,7 @@ button {
 
 #bg-bloom {
     position: fixed;
-    inset: 0 0 var(--footer-h) 0; /* stop at footer — don't overlay it */
+    inset: 0; /* full viewport */
     z-index: 3;
     pointer-events: none;
     background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.18), transparent 35%);
@@ -352,8 +352,9 @@ nav {
     z-index: var(--z-raised);
 }
 
-/* ── Page content wrappers — z:1 so fixed footer (z:0) is behind them ── */
-/* As content scrolls past, the fixed footer at bottom becomes visible */
+/* ── Page content wrappers ── */
+/* bg-grad (z:2) lives above page content (z:1) so the cutting mat is visible.
+   JS scroll handler dynamically clips bg-grad bottom when footer reveals. */
 #site-content,
 .page-wrap,
 #page-cv {
@@ -995,7 +996,8 @@ nav {
    (z:1, solid bg) overlaps it via padding-bottom + negative
    margin-top — footer is hidden behind the page, revealed as
    content scrolls away ("sliding it out from behind").
-   bg-grad (z:2) shows the cutting mat overlay on top of both.
+   bg-grad (z:2) shows the cutting mat overlay on page content.
+   JS scroll handler clips bg-grad/bg-bloom bottom as footer reveals.
 ═══════════════════════════════════════════════════════════ */
 .mboard-footer {
     position: fixed;
