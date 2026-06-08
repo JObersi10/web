@@ -1836,8 +1836,7 @@ nav {
     }
     /* Lock scroll track to one viewport so user just scrolls through once */
     #about-scroll-track { height: 100vh !important; }
-    /* Show all words immediately — skip the JS word reveal on mobile */
-    .about-body-text .word { opacity: 1 !important; color: var(--text-mid) !important; }
+    /* Word reveal still runs on mobile — just compact layout so nothing clips */
     /* Compact scroll-photos so everything fits */
     .about-scroll-photos { height: 160px; margin-bottom: var(--sp-4); }
     /* Hide the pill to save space */
