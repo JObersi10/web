@@ -792,7 +792,7 @@ nav {
 .about-stat-num {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
-    font-size: var(--text-3xl);
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
     font-style: italic;
     letter-spacing: -0.04em;
     color: var(--text);
@@ -2297,6 +2297,7 @@ nav {
 /* ── "See my work" inside about section — give it spacing ─── */
 #home-about .btn-accent {
     margin-top: var(--sp-8) !important;
+    margin-bottom: var(--sp-10) !important;
     display: inline-flex;
 }
 
