@@ -99,7 +99,7 @@ button {
 /* ── Backgrounds ────────────────────────────────────────── */
 #bg-grad {
     position: fixed;
-    inset: 0 0 var(--footer-h) 0; /* stop at footer — don't overlay it */
+    inset: 0; /* full viewport */
     z-index: 2;
     pointer-events: none;
     will-change: background-position;
@@ -129,7 +129,7 @@ button {
 
 #bg-bloom {
     position: fixed;
-    inset: 0 0 var(--footer-h) 0; /* stop at footer — don't overlay it */
+    inset: 0; /* full viewport */
     z-index: 3;
     pointer-events: none;
     background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.18), transparent 35%);
@@ -352,13 +352,15 @@ nav {
     z-index: var(--z-raised);
 }
 
-/* ── Page content wrappers — z:1 so fixed footer (z:0) is behind them ── */
-/* As content scrolls past, the fixed footer at bottom becomes visible */
+/* ── Page content wrappers — z:5 so footer (z:4) is behind them ── */
+/* As content scrolls past, the fixed footer at bottom becomes visible.
+   Footer is z:4 (above bg overlays z:2/3), page content is z:5 (above footer).
+   This keeps bg-grad/bg-bloom at full inset without halving the background. */
 #site-content,
 .page-wrap,
 #page-cv {
     position: relative;
-    z-index: 1;
+    z-index: 5;
     background: var(--bg);
 }
 
@@ -1002,7 +1004,7 @@ nav {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 0;
+    z-index: 4; /* above bg-grad(z:2) & bg-bloom(z:3), below page content(z:5) */
     height: var(--footer-h);
     border-top: 1px solid rgba(0,255,65,0.25);
     padding: 0;
