@@ -547,14 +547,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const duration = Math.min(5500, Math.max(2600, Math.abs(distance) * 2.2));
             let startTime  = null;
 
-            function easeInOutCubic(t) {
-                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            // easeOutQuart — rockets fast, then decelerates into the text reveal
+            function easeOutQuart(t) {
+                return 1 - Math.pow(1 - t, 4);
             }
             function step(ts) {
                 if (!startTime) startTime = ts;
                 const elapsed  = ts - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                window.scrollTo(0, start + distance * easeInOutCubic(progress));
+                window.scrollTo(0, start + distance * easeOutQuart(progress));
                 if (progress < 1) requestAnimationFrame(step);
             }
             requestAnimationFrame(step);
