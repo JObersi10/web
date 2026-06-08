@@ -145,6 +145,21 @@ function setupScramble() {
     });
 }
 
+function setupAboutReel() {
+    const reel = document.querySelector('.about-img-reel');
+    if (!reel) return;
+    const trigger = document.querySelectorAll('.about-body p')[2];
+    if (!trigger) return;
+    const mq = window.matchMedia('(max-width: 640px)');
+    const obs = new IntersectionObserver(([entry]) => {
+        if (mq.matches) reel.classList.toggle('scrolled', entry.isIntersecting);
+    }, { threshold: 0.3 });
+    obs.observe(trigger);
+    mq.addEventListener('change', () => {
+        if (!mq.matches) reel.classList.remove('scrolled');
+    });
+}
+
 function setupPortfolio() {
     if (!UI.grid) return;
     UI.grid.innerHTML = projects.map((p, i) => `
@@ -198,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupGrain();
     setupMagnetic();
     setupScramble();
+    setupAboutReel();
     document.fonts.ready.then(() => {
         fitHero();
         window.addEventListener('resize', fitHero);
