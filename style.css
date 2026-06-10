@@ -1726,6 +1726,13 @@ nav {
     .modal-card { grid-template-columns: 1fr; max-height: 85vh; overflow-y: auto; }
     .portfolio-card.featured { grid-column: span 1; aspect-ratio: 4/5; }
     .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-4); }
+
+    /* CV — make timeline images fill the column width instead of a fixed 220px block */
+    .tl-img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
 }
 
 /* ── Mobile ── */
@@ -1791,6 +1798,12 @@ nav {
 
     /* CV */
     .page-cv .section-heading { font-size: clamp(2rem, 9vw, 3rem); }
+    #page-cv { padding-top: calc(var(--nav-h) + var(--sp-8)); padding-bottom: var(--sp-12); }
+    .cv-grid { gap: var(--sp-8); }
+    .tl-role { font-size: var(--text-lg); }
+    .tl-desc { max-width: 100%; }
+    .timeline { padding-left: var(--sp-6); }
+    .tl-dot { left: -1.6rem; }
     .tl-img { display: none; }
 
     /* Modal */
