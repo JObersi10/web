@@ -193,22 +193,27 @@ button {
     #grain { animation: none; }
 }
 
-/* ── Navigation ─────────────────────────────────────────── */
+/* ── Navigation — liquid glass ───────────────────────────── */
 nav {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 8px;
+    left: 12px;
+    right: 12px;
     z-index: var(--z-nav);
-    height: var(--nav-h);
-    padding: 0 6%;
+    height: calc(var(--nav-h) - 12px);
+    padding: 0 5%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    background: rgba(2,2,5,0.82);
-    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(40px) saturate(1.9) brightness(1.08);
+    -webkit-backdrop-filter: blur(40px) saturate(1.9) brightness(1.08);
+    background: rgba(8,18,38,0.42);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 1.1rem;
+    box-shadow:
+        0 4px 24px rgba(0,0,0,0.35),
+        0 1px 0 rgba(255,255,255,0.07) inset,
+        0 -1px 0 rgba(0,0,0,0.25) inset;
 }
 
 .nav-logo {
@@ -1772,7 +1777,7 @@ nav {
 
     /* Services */
     .services-grid { grid-template-columns: 1fr; gap: var(--sp-3); }
-    #home-services { padding: var(--sp-16) 0; }
+    #home-services { padding: var(--sp-20) 0 var(--sp-16); }
 
     /* Portfolio */
     .portfolio-grid { grid-template-columns: 1fr; gap: var(--sp-4); margin-top: var(--sp-10); }
@@ -1991,6 +1996,12 @@ nav {
     height: 0.45em;
     overflow: visible;
     pointer-events: none;
+    z-index: 0;
+}
+
+.w-letter {
+    position: relative;
+    z-index: 1;
 }
 
 .curacao-path {
@@ -2082,7 +2093,7 @@ nav {
     height: 100%;
     /* 5-point star polygon */
     clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-    animation: star-mask-spin 10s linear infinite;
+    animation: star-mask-spin 18s linear infinite;
     transform-origin: center center;
     /* shadow on the wrap instead */
     filter: drop-shadow(0 24px 40px rgba(0,0,0,0.6));
@@ -2096,7 +2107,7 @@ nav {
        jitter caused by two transform-based animations drifting out of sync */
     scale: 1.55;
     transform-origin: center center;
-    animation: star-img-counter 10s linear infinite;
+    animation: star-img-counter 18s linear infinite;
 }
 
 @keyframes star-mask-spin {

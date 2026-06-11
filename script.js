@@ -243,10 +243,10 @@ function setupEasterEgg() {
         count++;
         if (!prefersReducedMotion) {
             el.animate([
-                { transform: 'scale(1)' },
-                { transform: 'scale(1.06) rotate(-3deg)' },
-                { transform: 'scale(1)' }
-            ], { duration: 200, easing: 'ease-in-out' });
+                { scale: '1' },
+                { scale: '1.07' },
+                { scale: '1' }
+            ], { duration: 200, easing: 'ease-in-out', composite: 'add' });
         }
         if (navigator.vibrate) navigator.vibrate(40);
         clearTimeout(timer);
