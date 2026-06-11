@@ -125,7 +125,6 @@ button {
         linear-gradient(90deg, rgba(96,165,250,0.055) 1px, transparent 1px);
     background-size: auto, auto, auto, 36px 36px, 36px 36px;
     background-position: left bottom, left bottom, left bottom, 0 0, 0 0;
-    background-color: var(--bg); /* solid base (after shorthand) — footer can't bleed through on fast scroll */
 }
 
 #bg-bloom {
