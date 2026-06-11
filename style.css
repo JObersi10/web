@@ -1386,6 +1386,9 @@ nav::after {
     padding-top: calc(var(--nav-h) + var(--sp-16));
     padding-bottom: var(--sp-16);
     min-height: 100vh;
+    /* override .container's 88% width so bg covers full viewport, hiding the fixed footer */
+    width: 100%;
+    max-width: none;
 }
 
 .page-cv .section-heading {
