@@ -1524,6 +1524,27 @@ nav::after {
 .edu-school { color: var(--text-mid); font-size: var(--text-sm); margin: var(--sp-1) 0; }
 .edu-yr { font-size: var(--text-xs); font-weight: 700; color: var(--accent); }
 
+/* ── CV SIDEBAR + RIVER LAYOUT ─────────────
+   Left: static identity (skills, tech, edu)
+   Right: scroll-drawn river of experience
+═══════════════════════════════════════════ */
+.cv-road-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: clamp(2rem, 4vw, 5rem);
+    align-items: start;
+}
+
+.cv-sidebar {
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-10);
+}
+
+.cv-sidebar-section { /* just a spacing wrapper */ }
+
 /* ── CV ROADMAP RIVER ──────────────────────
    Winding SVG path drawn by scroll; stops
    alternate sides and light up as the river
@@ -1539,6 +1560,9 @@ nav::after {
 .cv-road {
     position: relative;
     padding: var(--sp-10) 0 var(--sp-16);
+    /* 3-D stage */
+    perspective: 1100px;
+    perspective-origin: 50% 30%;
 }
 
 .road-svg {
@@ -1555,36 +1579,46 @@ nav::after {
     stroke-linejoin: round;
 }
 
-/* faint full route, always visible */
+/* groove — fat blurred copy behind gives the river depth/thickness */
+.road-path-groove {
+    stroke: rgba(59,130,246,0.18);
+    stroke-width: 18;
+    filter: url(#river-glow);
+}
+
+/* faint dashed full route, always visible */
 .road-path-base {
-    stroke: rgba(96,165,250,0.13);
+    stroke: rgba(96,165,250,0.12);
     stroke-width: 2;
-    stroke-dasharray: 6 10;
+    stroke-dasharray: 5 12;
 }
 
 /* drawn portion — follows scroll */
 .road-path-draw {
     stroke: var(--accent);
     stroke-width: 3;
-    filter: drop-shadow(0 0 6px rgba(59,130,246,0.55));
+    filter: drop-shadow(0 0 8px rgba(59,130,246,0.7));
 }
 
 /* glowing tip riding the river */
 .road-tip {
     position: absolute;
-    width: 12px;
-    height: 12px;
-    margin: -6px 0 0 -6px;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
     border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 12px 4px rgba(59,130,246,0.6);
+    background: #fff;
+    box-shadow:
+        0 0 0 3px var(--accent),
+        0 0 20px 6px rgba(59,130,246,0.7);
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s;
+    z-index: 3;
 }
 .road-tip.on { opacity: 1; }
 
-/* Stops — alternate sides; ~52% width so cards clear the meander */
+/* Stops */
 .road-stop {
     position: relative;
     display: flex;
@@ -1594,32 +1628,54 @@ nav::after {
 .road-stop[data-side="left"]  { justify-content: flex-start; }
 .road-stop[data-side="right"] { justify-content: flex-end; }
 
+/* 3-D perspective tilt — faces toward river centre */
+.road-stop[data-side="left"]  .road-card { transform-origin: right center; }
+.road-stop[data-side="right"] .road-card { transform-origin: left  center; }
+
 .road-card {
     position: relative;
-    width: min(46%, 480px);
+    width: min(46%, 460px);
     padding: var(--sp-8);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
-    /* hidden until the river reaches it */
+    /* lift with proper shadow */
+    box-shadow:
+        0 24px 60px rgba(0,0,0,0.55),
+        0 1px 0 rgba(255,255,255,0.05) inset;
+    /* hidden + tilted until river arrives */
     opacity: 0;
-    transform: translateY(28px);
-    filter: blur(6px);
+    filter: blur(5px);
     transition:
-        opacity   0.7s cubic-bezier(0.16,1,0.3,1),
-        transform 0.7s cubic-bezier(0.16,1,0.3,1),
-        filter    0.7s cubic-bezier(0.16,1,0.3,1),
-        border-color 0.5s;
+        opacity   0.75s cubic-bezier(0.16,1,0.3,1),
+        transform 0.75s cubic-bezier(0.16,1,0.3,1),
+        filter    0.75s cubic-bezier(0.16,1,0.3,1),
+        border-color 0.5s,
+        box-shadow   0.5s;
 }
 
+/* inactive: slide up + face inward at an angle */
+.road-stop[data-side="left"]  .road-card { transform: translateY(32px) rotateY(-14deg); }
+.road-stop[data-side="right"] .road-card { transform: translateY(32px) rotateY( 14deg); }
+
+/* active: upright, flat, full opacity */
 .road-stop.road-active .road-card {
     opacity: 1;
-    transform: translateY(0);
     filter: blur(0);
     border-color: var(--border-accent);
+    box-shadow:
+        0 32px 80px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(59,130,246,0.12),
+        0 1px 0 rgba(255,255,255,0.07) inset;
 }
+.road-stop[data-side="left"].road-active  .road-card { transform: translateY(0) rotateY(0deg); }
+.road-stop[data-side="right"].road-active .road-card { transform: translateY(0) rotateY(0deg); }
 
-/* big ghost number, same flavour as service cards */
+/* subtle hover tilt back */
+.road-stop[data-side="left"]  .road-card:hover { transform: translateY(-3px) rotateY(-3deg); }
+.road-stop[data-side="right"] .road-card:hover { transform: translateY(-3px) rotateY( 3deg); }
+
+/* big ghost number */
 .road-num {
     position: absolute;
     top: -0.18em;
@@ -1630,53 +1686,97 @@ nav::after {
     line-height: 1;
     letter-spacing: -0.05em;
     color: var(--accent);
-    opacity: 0.16;
+    opacity: 0.14;
     user-select: none;
     pointer-events: none;
 }
 
-/* node dot placed on the river by JS */
+/* images — natural 16:9 aspect ratio, not cropped */
+.road-card .tl-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    margin-top: var(--sp-4);
+    background: var(--surface-2);
+}
+.road-card .tl-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.65;
+    display: block;
+}
+
+/* node dot on the river — bigger with pulse ring when active */
 .road-node {
     position: absolute;
-    width: 14px;
-    height: 14px;
-    margin: -7px 0 0 -7px;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
     border-radius: 50%;
     background: var(--bg);
-    border: 2px solid rgba(96,165,250,0.35);
-    transition: border-color 0.4s, box-shadow 0.4s, background 0.4s;
+    border: 2px solid rgba(96,165,250,0.3);
+    transition: border-color 0.4s, background 0.4s, box-shadow 0.4s;
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
+}
+.road-node::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(59,130,246,0.4);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.4s, transform 0.4s;
 }
 .road-node.road-active {
     background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 14px 3px rgba(59,130,246,0.55);
+    box-shadow: 0 0 16px 4px rgba(59,130,246,0.55);
+}
+.road-node.road-active::after {
+    opacity: 1;
+    transform: scale(1);
+    animation: node-pulse 2s ease-in-out infinite;
 }
 
-.road-card .tl-img { width: 100%; height: 150px; }
-.road-card .edu-card { margin-top: var(--sp-2); }
-.road-card .cv-label { margin-top: var(--sp-2); }
-.road-card .cv-label:first-of-type { margin-top: 0; }
+@keyframes node-pulse {
+    0%, 100% { transform: scale(1);    opacity: 0.5; }
+    50%       { transform: scale(1.7); opacity: 0; }
+}
+
+/* ── Responsive ────────── */
+@media (max-width: 1024px) {
+    .cv-road-layout { grid-template-columns: 260px 1fr; }
+}
 
 @media (max-width: 768px) {
+    .cv-road-layout { grid-template-columns: 1fr; }
+    .cv-sidebar { position: static; }
     .road-intro { margin: calc(-1 * var(--sp-4)) 0 var(--sp-8); }
-    /* river runs down a left rail; cards full width beside it */
+    /* river becomes a left rail; all cards on the right */
     .road-stop[data-side="left"],
-    .road-stop[data-side="right"] { justify-content: flex-start; }
-    .road-card {
-        width: 100%;
-        margin-left: 2.75rem;
-        padding: var(--sp-6);
+    .road-stop[data-side="right"] { justify-content: flex-end; }
+    .road-stop[data-side="left"]  .road-card,
+    .road-stop[data-side="right"] .road-card {
+        width: calc(100% - 2.75rem);
+        transform-origin: left center;
     }
+    .road-stop[data-side="left"]  .road-card { transform: translateY(32px) rotateY(0); }
+    .road-stop[data-side="right"] .road-card { transform: translateY(32px) rotateY(0); }
+    .road-stop[data-side="left"].road-active  .road-card,
+    .road-stop[data-side="right"].road-active .road-card { transform: translateY(0) rotateY(0); }
     .road-stop { margin-bottom: var(--sp-10); }
-    .road-card .tl-img { height: 120px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .road-card { opacity: 1; transform: none; filter: none; transition: none; }
+    .road-card { opacity: 1; transform: none !important; filter: none; transition: none; }
     .road-tip { display: none; }
     .road-path-draw { stroke-dashoffset: 0 !important; }
+    .road-node.road-active::after { animation: none; }
 }
 
 /* ═══════════════════════════════════════════

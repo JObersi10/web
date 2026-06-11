@@ -487,11 +487,12 @@ function setupCvRoad() {
     const road = document.getElementById('cv-road');
     if (!road) return null;
 
-    const svg      = road.querySelector('.road-svg');
-    const basePath = road.querySelector('.road-path-base');
-    const drawPath = road.querySelector('.road-path-draw');
-    const tip      = road.querySelector('.road-tip');
-    const stops    = [...road.querySelectorAll('.road-stop')];
+    const svg        = road.querySelector('.road-svg');
+    const groovePath = road.querySelector('.road-path-groove');
+    const basePath   = road.querySelector('.road-path-base');
+    const drawPath   = road.querySelector('.road-path-draw');
+    const tip        = road.querySelector('.road-tip');
+    const stops      = [...road.querySelectorAll('.road-stop')];
     if (!svg || !drawPath || !stops.length) return null;
 
     // node dots living on the river (one per stop)
@@ -519,10 +520,12 @@ function setupCvRoad() {
             const y = stop.offsetTop + stop.offsetHeight / 2;
             let x;
             if (mobile) {
-                // left rail with a gentle wiggle
-                x = 18 + (stop.dataset.side === 'right' ? 8 : -4);
+                // left rail, slight wiggle
+                x = 20 + (stop.dataset.side === 'right' ? 6 : -4);
             } else {
-                x = stop.dataset.side === 'left' ? W * 0.72 : W * 0.28;
+                // river bends toward the open gap beside each card
+                // cards are ~46% wide; river centre floats between them
+                x = stop.dataset.side === 'left' ? W * 0.75 : W * 0.25;
             }
             return { x, y };
         });
@@ -537,6 +540,7 @@ function setupCvRoad() {
             d += ` C ${p0.x},${p0.y + midY} ${p1.x},${p1.y - midY} ${p1.x},${p1.y}`;
         }
 
+        if (groovePath) groovePath.setAttribute('d', d);
         basePath.setAttribute('d', d);
         drawPath.setAttribute('d', d);
         pathLen = drawPath.getTotalLength();
