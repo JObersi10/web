@@ -25,6 +25,13 @@ const projects = [
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ── Low-power mode when tab is hidden ── */
+let tabHidden = document.hidden;
+document.addEventListener('visibilitychange', () => {
+    tabHidden = document.hidden;
+    document.body.classList.toggle('tab-hidden', tabHidden);
+});
+
 const UI = {
     cursor:     document.getElementById('cursor'),
     hero:       document.getElementById('hero-name'),
@@ -57,6 +64,7 @@ function setupCursor() {
     }
 
     window.addEventListener('mousemove', e => {
+        if (tabHidden) return;
         const dx = e.clientX - lastMouse.x;
         const dy = e.clientY - lastMouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -655,7 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let scrollTick   = false;
 
     function onScroll() {
-        if (scrollTick) return;
+        if (scrollTick || tabHidden) return;
         scrollTick = true;
         requestAnimationFrame(() => {
             const y = window.scrollY;
