@@ -49,9 +49,83 @@
 <main id="page-cv" class="page-cv">
 <div class="container">
     <h2 class="section-heading reveal">Curriculum</h2>
-    <div class="cv-grid">
-        <aside>
-            <section style="margin-bottom:3.5rem;">
+    <p class="road-intro reveal">Follow the river — from first gig to right now.</p>
+
+    <!-- ROADMAP RIVER — winding SVG path drawn by scroll, stops alternate sides -->
+    <div class="cv-road" id="cv-road">
+        <svg class="road-svg" aria-hidden="true">
+            <path class="road-path road-path-base" fill="none"/>
+            <path class="road-path road-path-draw" fill="none"/>
+        </svg>
+        <div class="road-tip" aria-hidden="true"></div>
+
+        <div class="road-stop" data-side="left">
+            <div class="road-card">
+                <span class="road-num">01</span>
+                <div class="tl-period">2020 — 2022</div>
+                <div class="tl-role">ICTer — De Meanderschool</div>
+                <div class="tl-org">Student · Curaçao</div>
+                <div class="tl-desc">Managed IT support and maintained the school's digital infrastructure.</div>
+                <div class="tl-img">
+                    <img src="media/tn1.jpg" alt="School IT" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
+                </div>
+            </div>
+        </div>
+
+        <div class="road-stop" data-side="right">
+            <div class="road-card">
+                <span class="road-num">02</span>
+                <div class="tl-period">2022 — Present</div>
+                <div class="tl-role">Freelance Videographer</div>
+                <div class="tl-org">Self-Employed · Curaçao &amp; Remote</div>
+                <div class="tl-desc">Shot 20+ projects for clients across Curaçao. Developed expertise in direct-to-sensor capture and post-production workflows.</div>
+                <div class="tl-img">
+                    <img src="media/tn2.png" alt="Freelance videography" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
+                </div>
+            </div>
+        </div>
+
+        <div class="road-stop" data-side="left">
+            <div class="road-card">
+                <span class="road-num">03</span>
+                <div class="tl-period">2024 — Present</div>
+                <div class="tl-role">Videographer — Bright Club</div>
+                <div class="tl-org">Documented their programs</div>
+                <div class="tl-desc">Documented events from Digital Kids Camp 2024 to the First Robotics Competition in Curaçao.</div>
+                <div class="tl-img">
+                    <img src="media/tn3.png" alt="Bright Club" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
+                </div>
+            </div>
+        </div>
+
+        <div class="road-stop" data-side="right">
+            <div class="road-card">
+                <span class="road-num">04</span>
+                <span class="cv-label">Education</span>
+                <div class="edu-card">
+                    <div class="edu-deg">Cinematography Masterclass</div>
+                    <div class="edu-school">Creative College Curacao / Bright Club</div>
+                    <div class="edu-yr">2024</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="road-stop" data-side="left">
+            <div class="road-card">
+                <span class="road-num">05</span>
+                <div class="tl-period">2026 — Present</div>
+                <div class="tl-role">Co-Founder Hack Club Curaçao</div>
+                <div class="tl-org">Coding &amp; Hardware Club</div>
+                <div class="tl-desc">Building a community of teenage makers and coders on the island. Managing workshops, hardware logistics, and community growth.</div>
+                <div class="tl-img">
+                    <img src="media/hcc-group.jpg" alt="Hack Club Curaçao" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
+                </div>
+            </div>
+        </div>
+
+        <div class="road-stop" data-side="right">
+            <div class="road-card">
+                <span class="road-num">06</span>
                 <span class="cv-label">Core Skills</span>
                 <div id="skill-bars">
                     <div class="skill-bar-wrap">
@@ -75,9 +149,7 @@
                         <div class="skill-bar-bg"><div class="skill-bar-fill" data-p="60"></div></div>
                     </div>
                 </div>
-            </section>
-            <section style="margin-bottom:3.5rem;">
-                <span class="cv-label">Tech Stack</span>
+                <span class="cv-label" style="margin-top:var(--sp-6);">Tech Stack</span>
                 <div class="tech-grid">
                     <span class="tech-tag">DaVinci Resolve</span>
                     <span class="tech-tag">Pixelmator Pro</span>
@@ -87,63 +159,10 @@
                     <span class="tech-tag">GitHub</span>
                     <span class="tech-tag">Python</span>
                 </div>
-            </section>
-            <section>
-                <span class="cv-label">Education</span>
-                <div class="edu-card">
-                    <div class="edu-deg">Cinematography Masterclass</div>
-                    <div class="edu-school">Creative College Curacao / Bright Club</div>
-                    <div class="edu-yr">2024</div>
-                </div>
-            </section>
-        </aside>
-
-        <section>
-            <span class="cv-label">Experience</span>
-            <div class="timeline">
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
-                    <div class="tl-period">2026 — Present</div>
-                    <div class="tl-role">Co-Founder Hack Club Curaçao</div>
-                    <div class="tl-org">Coding &amp; Hardware Club</div>
-                    <div class="tl-desc">Building a community of teenage makers and coders on the island. Managing workshops, hardware logistics, and community growth.</div>
-                    <div class="tl-img">
-                        <img src="media/hcc-group.jpg" alt="Hack Club Curaçao" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
-                    </div>
-                </div>
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
-                    <div class="tl-period">2024 — Present</div>
-                    <div class="tl-role">Videographer — Bright Club</div>
-                    <div class="tl-org">Documented their programs</div>
-                    <div class="tl-desc">Documented events from Digital Kids Camp 2024 to the First Robotics Competition in Curaçao.</div>
-                    <div class="tl-img">
-                        <img src="media/tn3.png" alt="Bright Club" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
-                    </div>
-                </div>
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
-                    <div class="tl-period">2022 — Present</div>
-                    <div class="tl-role">Freelance Videographer</div>
-                    <div class="tl-org">Self-Employed · Curaçao &amp; Remote</div>
-                    <div class="tl-desc">Shot 20+ projects for clients across Curaçao. Developed expertise in direct-to-sensor capture and post-production workflows.</div>
-                    <div class="tl-img">
-                        <img src="media/tn2.png" alt="Freelance videography" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
-                    </div>
-                </div>
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
-                    <div class="tl-period">2020 — 2022</div>
-                    <div class="tl-role">ICTer — De Meanderschool</div>
-                    <div class="tl-org">Student · Curaçao</div>
-                    <div class="tl-desc">Managed IT support and maintained the school's digital infrastructure.</div>
-                    <div class="tl-img">
-                        <img src="media/tn1.jpg" alt="School IT" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
-                    </div>
-                </div>
             </div>
-        </section>
-    </div>
+        </div>
+
+    </div><!-- /.cv-road -->
 </div><!-- /.container -->
 </main>
 

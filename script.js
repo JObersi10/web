@@ -482,6 +482,126 @@ function setupWordReveal() {
     return updateWords;
 }
 
+/* ── CV roadmap river — winding path drawn by scroll ── */
+function setupCvRoad() {
+    const road = document.getElementById('cv-road');
+    if (!road) return null;
+
+    const svg      = road.querySelector('.road-svg');
+    const basePath = road.querySelector('.road-path-base');
+    const drawPath = road.querySelector('.road-path-draw');
+    const tip      = road.querySelector('.road-tip');
+    const stops    = [...road.querySelectorAll('.road-stop')];
+    if (!svg || !drawPath || !stops.length) return null;
+
+    // node dots living on the river (one per stop)
+    const nodes = stops.map(() => {
+        const n = document.createElement('div');
+        n.className = 'road-node';
+        road.appendChild(n);
+        return n;
+    });
+
+    let pathLen = 0;
+    let anchors = []; // { x, y } per stop, in road-local px
+
+    function buildPath() {
+        const W = road.offsetWidth;
+        const H = road.offsetHeight;
+        const mobile = window.innerWidth <= 768;
+
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+        // anchor per stop: river bends into the free side of each card
+        anchors = stops.map(stop => {
+            const y = stop.offsetTop + stop.offsetHeight / 2;
+            let x;
+            if (mobile) {
+                // left rail with a gentle wiggle
+                x = 18 + (stop.dataset.side === 'right' ? 8 : -4);
+            } else {
+                x = stop.dataset.side === 'left' ? W * 0.72 : W * 0.28;
+            }
+            return { x, y };
+        });
+
+        // smooth S-curves with vertical tangents between points — river feel
+        const startX = mobile ? 18 : W / 2;
+        const pts = [{ x: startX, y: 0 }, ...anchors, { x: startX, y: H }];
+        let d = `M ${pts[0].x},${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) {
+            const p0 = pts[i - 1], p1 = pts[i];
+            const midY = (p1.y - p0.y) * 0.5;
+            d += ` C ${p0.x},${p0.y + midY} ${p1.x},${p1.y - midY} ${p1.x},${p1.y}`;
+        }
+
+        basePath.setAttribute('d', d);
+        drawPath.setAttribute('d', d);
+        pathLen = drawPath.getTotalLength();
+        drawPath.style.strokeDasharray  = pathLen;
+        drawPath.style.strokeDashoffset = pathLen;
+
+        // park each node on its anchor
+        nodes.forEach((n, i) => {
+            n.style.left = anchors[i].x + 'px';
+            n.style.top  = anchors[i].y + 'px';
+        });
+    }
+
+    function update() {
+        if (!pathLen) return;
+        const rect = road.getBoundingClientRect();
+        const H    = road.offsetHeight;
+        // river tip tracks a point 75% down the viewport
+        const drawnY   = Math.max(0, Math.min(H, window.innerHeight * 0.75 - rect.top));
+        const progress = drawnY / H;
+
+        drawPath.style.strokeDashoffset = pathLen * (1 - progress);
+
+        // glowing tip rides the drawn end
+        if (tip) {
+            if (progress > 0 && progress < 1) {
+                const pt = drawPath.getPointAtLength(pathLen * progress);
+                tip.style.left = pt.x + 'px';
+                tip.style.top  = pt.y + 'px';
+                tip.classList.add('on');
+            } else {
+                tip.classList.remove('on');
+            }
+        }
+
+        // light stops up as the river reaches them
+        stops.forEach((stop, i) => {
+            const hit = anchors[i] && anchors[i].y <= drawnY + 10;
+            stop.classList.toggle('road-active', hit);
+            nodes[i].classList.toggle('road-active', hit);
+        });
+    }
+
+    if (prefersReducedMotion) {
+        buildPath();
+        drawPath.style.strokeDashoffset = 0;
+        stops.forEach(s => s.classList.add('road-active'));
+        nodes.forEach(n => n.classList.add('road-active'));
+        return null;
+    }
+
+    buildPath();
+    update();
+
+    // re-measure when layout shifts (images load, resize)
+    let resizeT;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => { buildPath(); update(); }, 150);
+    }, { passive: true });
+    window.addEventListener('load', () => { buildPath(); update(); });
+
+    return update;
+}
+
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
@@ -492,6 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScramble();
     setupEasterEgg();
     const updateWords = setupWordReveal();
+    const updateRoad  = setupCvRoad();
     setupCuracaoIdle();
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
@@ -532,6 +653,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Word reveal
             if (updateWords) updateWords();
+
+            // CV roadmap river
+            if (updateRoad) updateRoad();
 
             scrollTick = false;
         });
