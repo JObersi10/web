@@ -415,6 +415,7 @@ nav::after {
 
 .page-wrap {
     padding-top: calc(var(--nav-h) + var(--sp-16));
+    padding-bottom: var(--sp-24);
     min-height: 100vh;
 }
 
@@ -1272,8 +1273,8 @@ nav::after {
 ═══════════════════════════════════════════ */
 .contact-grid {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: var(--sp-20);
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 5rem);
     align-items: start;
     margin-top: var(--sp-12);
 }
@@ -1379,12 +1380,106 @@ nav::after {
 .s-label { font-size: var(--text-sm); font-weight: 600; }
 .s-handle { color: var(--text-muted); font-size: var(--text-xs); letter-spacing: 0.05em; }
 
+/* WhatsApp CTA button */
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+    padding: 0.85rem var(--sp-6);
+    background: #1a3a2a;
+    border: 1px solid rgba(37,211,102,0.3);
+    border-radius: 100px;
+    color: #25d366;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.btn-whatsapp:hover {
+    background: #1f4835;
+    border-color: #25d366;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37,211,102,0.2);
+}
+
+/* Available for grid */
+.avail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    margin-top: var(--sp-2);
+}
+
+.avail-card {
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: border-color 0.3s, transform 0.3s;
+}
+.avail-card:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-3px);
+}
+.avail-icon { font-size: 1.4rem; display: block; margin-bottom: var(--sp-2); }
+.avail-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: var(--sp-2);
+}
+.avail-desc { color: var(--text-muted); font-size: var(--text-xs); line-height: 1.6; margin: 0; }
+
+/* Instagram embed section */
+.contact-ig-section {
+    margin-top: var(--sp-20);
+}
+
+.ig-embed-wrap {
+    max-width: 540px;
+    margin-bottom: var(--sp-5);
+}
+
+/* Ensure the Instagram widget fills the wrap and matches site dark theme */
+.ig-embed-wrap .instagram-media,
+.ig-embed-wrap iframe {
+    border-radius: 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.ig-follow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid rgba(59,130,246,0.3);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+}
+.ig-follow-link:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+
+@media (max-width: 768px) {
+    .avail-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+    .ig-embed-wrap { max-width: 100%; }
+}
+
 /* ═══════════════════════════════════════════
    CV PAGE
 ═══════════════════════════════════════════ */
 #page-cv {
     padding-top: calc(var(--nav-h) + var(--sp-16));
-    padding-bottom: var(--sp-16);
+    padding-bottom: var(--sp-24);
     min-height: 100vh;
     /* override .container's 88% width so bg covers full viewport, hiding the fixed footer */
     width: 100%;
