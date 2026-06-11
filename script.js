@@ -340,6 +340,27 @@ function triggerCuracaoStars(e) {
     });
 }
 
+/* ── Hero subtitle: letter-by-letter fast reveal ── */
+function setupHeroCharReveal() {
+    const el = document.getElementById('hero-sub');
+    if (!el || prefersReducedMotion) return;
+    const text = el.textContent;
+    el.innerHTML = text.split('').map(ch =>
+        `<span class="hero-char">${ch === ' ' ? '&nbsp;' : ch}</span>`
+    ).join('');
+    const chars = el.querySelectorAll('.hero-char');
+    let fired = false;
+    const obs = new IntersectionObserver(entries => {
+        if (!entries[0].isIntersecting || fired) return;
+        fired = true;
+        obs.disconnect();
+        chars.forEach((ch, i) => {
+            setTimeout(() => ch.classList.add('hc-active'), i * 18);
+        });
+    }, { threshold: 0.1 });
+    obs.observe(el);
+}
+
 /* ── Scroll-driven word-by-word reveal ── */
 function setupWordReveal() {
     const paragraphs = document.querySelectorAll('[data-word-reveal]');
@@ -425,7 +446,7 @@ function setupWordReveal() {
     const badge    = document.querySelector('.hackclub-badge');
     const mark     = document.querySelector('.curacao-mark');
     const editorial = document.querySelector('.about-editorial'); // cached — don't re-query per frame
-    let badgeThumped = false, markerFired = false;
+    let badgeThumped = false, badgeVisible = false, markerFired = false;
     let prevRunningReveal = 0;
 
     function updateWords() {
@@ -441,7 +462,13 @@ function setupWordReveal() {
             words.forEach((w, i) => w.classList.toggle('active', i < reveal));
         });
 
-        // Badge thump
+        // Badge fade-in: starts when para 2 begins (progress >= 0.55)
+        if (!badgeVisible && progress >= 0.55 && badge) {
+            badgeVisible = true;
+            badge.classList.add('badge-visible');
+        }
+
+        // Badge thump when its word is revealed
         if (!badgeThumped && runningSet && runningLocalIdx >= 0) {
             const pi = paragraphWordSets.indexOf(runningSet);
             const sched = paraSchedule[pi] || { start: 0, end: 1 };
@@ -615,6 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
+    setupHeroCharReveal();
     const updateWords = setupWordReveal();
     const updateRoad  = setupCvRoad();
     setupCuracaoIdle();
@@ -739,11 +767,26 @@ document.addEventListener('DOMContentLoaded', () => {
         javiiObserver.observe(el);
     });
 
-    /* Skill bars */
+    /* Skill bars — fill + count-up percentage number */
     document.querySelectorAll('.skill-bar-fill').forEach(bar => {
-        new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) bar.style.width = `${bar.dataset.p}%`;
-        }, { threshold: 0.4 }).observe(bar);
+        const target = parseInt(bar.dataset.p, 10);
+        // second span in .skill-bar-top is the percentage label
+        const numEl  = bar.closest('.skill-bar-wrap')?.querySelector('.skill-bar-top span:last-child');
+        const obs = new IntersectionObserver(entries => {
+            if (!entries[0].isIntersecting) return;
+            obs.disconnect();
+            bar.style.width = `${target}%`;
+            if (!numEl || prefersReducedMotion) { return; }
+            numEl.textContent = '0%';
+            const start = performance.now();
+            (function tick(now) {
+                const t   = Math.min(1, (now - start) / 1400);
+                const cur = Math.floor((1 - Math.pow(1 - t, 3)) * target);
+                numEl.textContent = cur + '%';
+                if (t < 1) requestAnimationFrame(tick);
+            })(start);
+        }, { threshold: 0.4 });
+        obs.observe(bar);
     });
 
     /* Stat count-up (ease-out cubic, fires once on viewport entry) */

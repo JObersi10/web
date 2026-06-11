@@ -197,11 +197,15 @@ button {
 nav {
     position: fixed;
     top: 10px;
-    left: 14px;
-    right: 14px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: fit-content;
+    min-width: min(640px, calc(100% - 28px));
+    max-width: calc(100% - 28px);
     z-index: var(--z-nav);
     height: calc(var(--nav-h) - 14px);
-    padding: 0 5%;
+    padding: 0 var(--sp-6);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -645,6 +649,20 @@ nav::after {
     z-index: 1;
 }
 
+/* Hero subtitle per-character reveal */
+.hero-char {
+    display: inline;
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(6px);
+    transition: opacity 0.18s ease, filter 0.18s ease, transform 0.18s cubic-bezier(0.16,1,0.3,1);
+}
+.hero-char.hc-active {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+}
+
 /* Gap between tagline and CTA button */
 #hero .btn-outline {
     margin-top: var(--sp-8);
@@ -793,7 +811,7 @@ nav::after {
     margin-top: var(--sp-5);
 }
 
-/* Hack Club inline badge — always visible, pops on scroll-reveal */
+/* Hack Club inline badge — fades in when second about-para begins revealing */
 .hackclub-badge {
     display: inline-flex;
     align-items: center;
@@ -805,20 +823,26 @@ nav::after {
     color: #ec5252;
     font-size: var(--text-sm);
     font-weight: 600;
-    /* always fully visible — never hidden by word-reveal */
-    opacity: 1 !important;
-    filter: none !important;
-    transform: scale(1);
-    transition: background 0.2s, border-color 0.2s,
-                transform 0.4s cubic-bezier(0.34,1.56,0.64,1),
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.92) translateY(4px);
+    transition: opacity 0.55s ease, filter 0.55s ease,
+                transform 0.55s cubic-bezier(0.34,1.56,0.64,1),
+                background 0.2s, border-color 0.2s,
                 box-shadow 0.3s ease;
     vertical-align: middle;
     white-space: nowrap;
     cursor: pointer;
 }
 
-.hackclub-badge:hover,
-.hackclub-badge.pop {
+.hackclub-badge.badge-visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1) translateY(0);
+}
+
+.hackclub-badge.badge-visible:hover,
+.hackclub-badge.badge-visible.pop {
     background: rgba(236,72,72,0.16);
     border-color: rgba(236,72,72,0.38);
     transform: scale(1.08) translateY(-2px);
@@ -1440,17 +1464,131 @@ nav::after {
     margin-top: var(--sp-20);
 }
 
-.ig-embed-wrap {
-    max-width: 540px;
-    margin-bottom: var(--sp-5);
+/* Custom Instagram card */
+.ig-card {
+    display: block;
+    max-width: 480px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
 }
 
-/* Ensure the Instagram widget fills the wrap and matches site dark theme */
-.ig-embed-wrap .instagram-media,
-.ig-embed-wrap iframe {
-    border-radius: 1.5rem !important;
-    width: 100% !important;
-    max-width: 100% !important;
+.ig-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(253,86,33,0.06) 0%, rgba(193,53,132,0.06) 50%, rgba(88,81,219,0.06) 100%);
+    pointer-events: none;
+}
+
+.ig-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(193,53,132,0.2);
+    border-color: rgba(193,53,132,0.25);
+}
+
+.ig-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-5) var(--sp-5) var(--sp-4);
+    position: relative;
+}
+
+.ig-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fd5621 0%, #c13584 50%, #5851db 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px rgba(193,53,132,0.4);
+}
+
+.ig-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ig-card-handle {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--text);
+}
+
+.ig-card-name {
+    font-size: var(--text-xs);
+    color: var(--text-mid);
+}
+
+.ig-card-bio {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ig-card-follow {
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #fd5621, #c13584);
+    color: #fff;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.ig-post-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 0 var(--sp-5) var(--sp-4);
+}
+
+.ig-post-thumb {
+    aspect-ratio: 1;
+    border-radius: 0.5rem;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ig-post-thumb svg {
+    width: 28px;
+    height: 28px;
+    opacity: 0.18;
+}
+
+.ig-card-footer {
+    padding: var(--sp-3) var(--sp-5);
+    border-top: 1px solid var(--border);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-align: center;
+    transition: color 0.2s;
+}
+
+.ig-card:hover .ig-card-footer {
+    color: #c13584;
 }
 
 .ig-follow-link {
