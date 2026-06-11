@@ -125,6 +125,7 @@ button {
         linear-gradient(90deg, rgba(96,165,250,0.055) 1px, transparent 1px);
     background-size: auto, auto, auto, 36px 36px, 36px 36px;
     background-position: left bottom, left bottom, left bottom, 0 0, 0 0;
+    background-color: var(--bg); /* solid base (after shorthand) — footer can't bleed through on fast scroll */
 }
 
 #bg-bloom {
@@ -193,27 +194,72 @@ button {
     #grain { animation: none; }
 }
 
-/* ── Navigation — liquid glass ───────────────────────────── */
+/* ── Navigation — Apple liquid glass ────────────────────── */
 nav {
     position: fixed;
-    top: 8px;
-    left: 12px;
-    right: 12px;
+    top: 10px;
+    left: 14px;
+    right: 14px;
     z-index: var(--z-nav);
-    height: calc(var(--nav-h) - 12px);
+    height: calc(var(--nav-h) - 14px);
     padding: 0 5%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    backdrop-filter: blur(40px) saturate(1.9) brightness(1.08);
-    -webkit-backdrop-filter: blur(40px) saturate(1.9) brightness(1.08);
-    background: rgba(8,18,38,0.42);
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 1.1rem;
+    /* glass base: moderate blur + saturation, no brightness boost that causes green cast */
+    backdrop-filter: blur(36px) saturate(1.55);
+    -webkit-backdrop-filter: blur(36px) saturate(1.55);
+    background: rgba(6,15,32,0.48);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 1.25rem;
     box-shadow:
-        0 4px 24px rgba(0,0,0,0.35),
-        0 1px 0 rgba(255,255,255,0.07) inset,
-        0 -1px 0 rgba(0,0,0,0.25) inset;
+        0 8px 32px rgba(0,0,0,0.45),
+        0 1px 0 rgba(255,255,255,0.12) inset; /* top specular */
+    overflow: hidden;
+    /* stacking context for ::before / ::after */
+    isolation: isolate;
+}
+
+/* Top-edge specular strip — simulates light hitting the glass rim */
+nav::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,0.28) 25%,
+        rgba(255,255,255,0.38) 50%,
+        rgba(255,255,255,0.28) 75%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Prismatic refraction edge — faint spectral shimmer beneath the rim */
+nav::after {
+    content: '';
+    position: absolute;
+    top: 1px; left: 8%; right: 8%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(147,197,253,0.35) 20%,
+        rgba(196,181,253,0.30) 50%,
+        rgba(147,197,253,0.35) 80%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Ensure nav children render above glass pseudo-elements */
+.nav-logo, .nav-links, #hamburger {
+    position: relative;
+    z-index: 2;
 }
 
 .nav-logo {
@@ -844,6 +890,9 @@ nav {
 ═══════════════════════════════════════════ */
 #home-services {
     padding: var(--sp-20) 0;
+    position: relative;
+    z-index: 2;
+    background: var(--bg); /* solid bg so it occludes any about-section overflow on mobile */
 }
 
 .services-grid {
