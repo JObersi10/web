@@ -318,10 +318,24 @@ function triggerCuracaoStars(e) {
 function setupHeroCharReveal() {
     const el = document.getElementById('hero-sub');
     if (!el || prefersReducedMotion) return;
-    const text = el.textContent;
-    el.innerHTML = text.split('').map(ch =>
-        `<span class="hero-char">${ch === ' ' ? '&nbsp;' : ch}</span>`
-    ).join('');
+
+    // Split each text node into .hero-char spans, preserving child elements (hero-word-your)
+    function splitTextNode(node) {
+        return node.textContent.split('').map(ch =>
+            `<span class="hero-char">${ch === ' ' ? '&nbsp;' : ch}</span>`
+        ).join('');
+    }
+    [...el.childNodes].forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const span = document.createElement('span');
+            span.innerHTML = splitTextNode(node);
+            node.replaceWith(span);
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            // preserve the element, split its inner text
+            node.innerHTML = splitTextNode(node);
+        }
+    });
+
     const chars = el.querySelectorAll('.hero-char');
     let fired = false;
     const obs = new IntersectionObserver(entries => {
@@ -331,6 +345,11 @@ function setupHeroCharReveal() {
         chars.forEach((ch, i) => {
             setTimeout(() => ch.classList.add('hc-active'), i * 18);
         });
+        // glow sweep on "your" 1.5s after reveal starts
+        const totalMs = chars.length * 18 + 400;
+        setTimeout(() => {
+            document.getElementById('hero-your')?.classList.add('glow-sweep');
+        }, Math.max(1500, totalMs));
     }, { threshold: 0.1 });
     obs.observe(el);
 }
