@@ -649,6 +649,7 @@ nav::after {
     max-width: 100%;
     position: relative;
     z-index: 1;
+    left: 20px;
 }
 
 /* Location + tagline row */
