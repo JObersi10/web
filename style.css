@@ -2394,8 +2394,9 @@ nav::after {
         align-items: flex-start;
         justify-content: flex-start;
     }
-    /* Hide scroll photos + see-my-work on mobile — saves ~140px, stats always in viewport */
-    .about-scroll-photos { display: none !important; }
+    /* Compact scroll photos — small enough that stats still fit in 100vh */
+    .about-scroll-photos { display: block; height: 80px; margin-bottom: var(--sp-2); }
+    /* Hide see-my-work inside about (exists in hero too) to save space for stats */
     #home-about .btn-accent { display: none; }
     /* Hide pill to save space */
     .about-editorial .pill { display: none; }
