@@ -286,8 +286,6 @@ nav::after {
     align-items: center;
     gap: var(--sp-2);
     transition: opacity 0.2s;
-    padding-right: 4px;
-    margin-left: -12px;
 }
 
 .nav-logo:hover { opacity: 0.7; }
@@ -2251,7 +2249,7 @@ nav::after {
 
     .container { width: 92%; }
 
-    nav { padding: 0 var(--sp-6) 0 0; }
+    nav { padding: 0 12px; }
 
     .nav-links { display: none; }
 
@@ -2278,8 +2276,8 @@ nav::after {
         -webkit-backdrop-filter: blur(24px) saturate(1.5);
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 999px;
-        padding: 0.45rem 1.25rem 0.45rem 0.35rem;
-        margin-left: 5px;
+        padding: 0.45rem 1rem 0.45rem 0.75rem;
+        margin-left: 0;
         box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.1) inset;
     }
 
