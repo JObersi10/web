@@ -137,8 +137,8 @@ button {
 
 #bg-bloom {
     position: fixed;
-    inset: 0; /* full viewport */
-    z-index: 3;
+    inset: 0;
+    z-index: 0;
     pointer-events: none;
     background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.18), transparent 35%);
     mix-blend-mode: screen;
@@ -421,7 +421,7 @@ nav::after {
 .page-wrap,
 #page-cv {
     position: relative;
-    z-index: 4; /* above bg-grad (2) and bg-bloom (3) so overlays stay decorative */
+    z-index: 1;
     background: var(--bg);
 }
 
