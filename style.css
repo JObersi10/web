@@ -2378,19 +2378,19 @@ nav::after {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About: remove sticky on mobile so stats are always visible */
+    /* About: keep sticky + word reveal, but let content overflow so stats never clip */
     .about-sticky {
-        position: relative;
-        top: auto;
-        height: auto;
+        position: sticky;
+        top: 0;
+        height: 100vh;
         overflow: visible;
         padding-top: var(--nav-h);
-        padding-bottom: var(--sp-10);
+        padding-bottom: 0;
         align-items: flex-start;
         justify-content: flex-start;
     }
-    /* Compact scroll-photos */
-    .about-scroll-photos { height: 150px; margin-bottom: var(--sp-3); }
+    /* Compact scroll-photos — small enough to leave room for stats */
+    .about-scroll-photos { height: 100px; margin-bottom: var(--sp-2); }
     /* Hide pill to save space */
     .about-editorial .pill { display: none; }
     /* Tighter heading */

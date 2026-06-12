@@ -412,19 +412,16 @@ function setupWordReveal() {
     const maxWords = Math.max(...paragraphWordSets.map(s => s.length));
     if (!maxWords) return;
 
-    // 2. Reduced-motion OR mobile: show everything immediately
-    const isMobile = () => window.innerWidth <= 768;
-    const revealAll = () => {
+    // 2. Reduced-motion: show everything immediately, skip scroll animation
+    if (prefersReducedMotion) {
         paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
         document.querySelectorAll('.about-float').forEach(f => f.classList.add('pop-in'));
         const editorial = document.querySelector('.about-editorial');
-        if (editorial) editorial.classList.add('photos-split');
-        const badge = document.querySelector('.hackclub-badge');
-        if (badge) badge.classList.add('badge-visible');
-    };
-    if (prefersReducedMotion || isMobile()) { revealAll(); return; }
+        if (editorial) editorial.classList.add('photos-split'); // show both photos immediately
+        return;
+    }
 
     // 3. Track height — based on longest paragraph × px-per-word
     const track = document.getElementById('about-scroll-track');
