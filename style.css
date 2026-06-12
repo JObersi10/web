@@ -108,7 +108,7 @@ button {
 #bg-grad {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: 2;
     pointer-events: none;
     will-change: background-position;
     transform: translateZ(0);

@@ -1,28 +1,3 @@
-const projects = [
-    {
-        title: 'Still in the Works',
-        cat: 'Coming Soon',
-        year: '2026',
-        featured: true,
-        comingSoon: true,
-        img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop',
-        desc: 'Something is being built. Check back soon.'
-    },
-    {
-        title: 'Salt & Shore',
-        cat: 'Documentary',
-        year: '2023',
-        img: 'https://images.unsplash.com/photo-1504439468489-c8920d796a29?q=80&w=2071&auto=format&fit=crop',
-        desc: 'Short documentary following traditional fishermen captured entirely in golden-hour natural light.'
-    },
-    {
-        title: 'Machina',
-        cat: 'Experimental',
-        year: '2023',
-        img: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1974&auto=format&fit=crop',
-        desc: 'Experimental macro series blending mechanical industry with organic movement.'
-    }
-];
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -181,37 +156,22 @@ function setupScramble() {
 /* ── Portfolio grid ── */
 function setupPortfolio() {
     if (!UI.grid) return;
-    UI.grid.innerHTML = projects.map((p, i) => `
-        <div class="portfolio-card reveal ${p.featured ? 'featured' : ''} ${p.comingSoon ? 'coming-soon' : ''}"
-             onclick="${p.comingSoon ? '' : `openModal(${i})`}"
-             role="${p.comingSoon ? 'presentation' : 'button'}"
-             tabindex="${p.comingSoon ? '-1' : '0'}"
-             aria-label="${p.comingSoon ? '' : `View project: ${p.title}`}">
-            <div class="card-bg" style="background-image:url('${p.img}')"></div>
-            ${p.comingSoon ? '<div class="coming-soon-overlay"><span class="coming-soon-label">Coming Soon</span></div>' : ''}
-            <div class="card-info">
-                <span class="card-tag">${p.cat}</span>
-                <div class="card-title">${p.title}</div>
-                <div class="card-year">${p.year}</div>
-            </div>
-        </div>`).join('');
-
-    // keyboard support for cards
-    UI.grid.querySelectorAll('.portfolio-card').forEach((card, i) => {
+    UI.grid.querySelectorAll('.portfolio-card:not(.coming-soon)').forEach(card => {
+        card.addEventListener('click', () => openModal(card));
         card.addEventListener('keydown', e => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(i); }
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card); }
         });
     });
 }
 
-function openModal(index) {
-    const p = projects[index];
-    if (!p || !UI.modal) return;
-    document.getElementById('m-title').innerText = p.title;
-    document.getElementById('m-tag').innerText   = p.cat;
-    document.getElementById('m-year').innerText  = p.year;
-    document.getElementById('m-desc').innerText  = p.desc;
-    document.getElementById('modal-media').innerHTML = `<img src="${p.img}" alt="${p.title}" loading="lazy">`;
+function openModal(card) {
+    if (!UI.modal) return;
+    const d = card.dataset;
+    document.getElementById('m-title').innerText = d.title;
+    document.getElementById('m-tag').innerText   = d.cat;
+    document.getElementById('m-year').innerText  = d.year;
+    document.getElementById('m-desc').innerText  = d.desc;
+    document.getElementById('modal-media').innerHTML = `<img src="${d.img}" alt="${d.title}" loading="lazy">`;
     UI.modal.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
