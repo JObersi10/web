@@ -2383,43 +2383,28 @@ nav::after {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About sticky: full height, flex column so stats always anchor to bottom */
+    /* About sticky: natural height, no 100vh constraint, no overflow tricks */
     .about-sticky {
         position: sticky;
         top: 0;
-        height: 100vh;
-        overflow: hidden;
+        height: auto;
+        overflow: visible;
         padding-top: var(--nav-h);
-        padding-bottom: 0;
-        align-items: stretch;
+        padding-bottom: var(--sp-6);
+        align-items: flex-start;
         justify-content: flex-start;
     }
-    /* Container and editorial fill the full height as a flex column */
-    .about-sticky .container {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    .about-editorial {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        padding-bottom: var(--sp-4);
-    }
     /* Compact scroll photos */
-    .about-scroll-photos { flex-shrink: 0; height: 80px; margin-bottom: var(--sp-1); }
+    .about-scroll-photos { height: 80px; margin-bottom: var(--sp-2); }
     /* Hide pill */
     .about-editorial .pill { display: none; }
     /* Tighter heading */
-    .about-editorial .section-heading { flex-shrink: 0; font-size: clamp(1.4rem, 6.5vw, 2rem); margin-bottom: var(--sp-2); }
-    /* Body text fills remaining space, overflow hidden clips gracefully */
-    .about-body-text { flex: 1; overflow: hidden; min-height: 0; font-size: 0.8rem; line-height: 1.55; }
-    .about-body-text p + p { margin-top: var(--sp-1); }
-    /* Stats always at bottom, never clipped */
-    .about-editorial .about-stats { flex-shrink: 0; margin-top: var(--sp-3); margin-bottom: var(--sp-2); }
-    /* Button always at bottom */
-    .about-editorial .btn-accent { flex-shrink: 0; }
+    .about-editorial .section-heading { font-size: clamp(1.4rem, 6.5vw, 2rem); margin-bottom: var(--sp-2); }
+    /* Tighter body text */
+    .about-body-text { font-size: 0.8rem; line-height: 1.55; }
+    .about-body-text p + p { margin-top: var(--sp-2); }
+    /* Stats */
+    .about-editorial .about-stats { margin-top: var(--sp-3); margin-bottom: var(--sp-2); }
     /* Tighter heading */
     .about-editorial .section-heading { font-size: clamp(1.5rem, 7vw, 2.2rem); margin-bottom: var(--sp-3); }
     /* Tighter body text — single rule, no duplicate */
