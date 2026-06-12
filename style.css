@@ -1691,7 +1691,11 @@ nav::after {
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
     padding: var(--sp-6);
+    box-sizing: border-box;
+    width: 100%;
 }
+/* Don't double-pad skill bars inside the card */
+.cv-sidebar-section #skill-bars { padding: 0; }
 
 /* ── CV ROADMAP RIVER ──────────────────────
    Winding SVG path drawn by scroll; stops
@@ -1905,8 +1909,9 @@ nav::after {
 }
 
 @media (max-width: 768px) {
-    .cv-road-layout { grid-template-columns: 1fr; }
+    .cv-road-layout { grid-template-columns: 1fr; max-width: 100%; }
     .cv-sidebar { position: static; }
+    .cv-sidebar-section { padding: var(--sp-4); }
     .road-intro { margin: calc(-1 * var(--sp-4)) 0 var(--sp-8); }
     /* river becomes a left rail; all cards on the right */
     .road-stop[data-side="left"],
@@ -2378,19 +2383,20 @@ nav::after {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About: keep sticky + word reveal, but let content overflow so stats never clip */
+    /* About: keep sticky + word reveal, stats must fit — hide decorative elements */
     .about-sticky {
         position: sticky;
         top: 0;
         height: 100vh;
-        overflow: visible;
+        overflow: hidden;
         padding-top: var(--nav-h);
         padding-bottom: 0;
         align-items: flex-start;
         justify-content: flex-start;
     }
-    /* Compact scroll-photos — small enough to leave room for stats */
-    .about-scroll-photos { height: 100px; margin-bottom: var(--sp-2); }
+    /* Hide scroll photos + see-my-work on mobile — saves ~140px, stats always in viewport */
+    .about-scroll-photos { display: none !important; }
+    #home-about .btn-accent { display: none; }
     /* Hide pill to save space */
     .about-editorial .pill { display: none; }
     /* Tighter heading */
