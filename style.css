@@ -209,7 +209,7 @@ nav {
     right: auto;
     transform: translateX(-50%);
     width: fit-content;
-    min-width: min(640px, calc(100% - 28px));
+    min-width: min(560px, calc(100% - 28px));
     max-width: calc(100% - 28px);
     z-index: var(--z-nav);
     height: calc(var(--nav-h) - 14px);
@@ -1043,20 +1043,6 @@ nav::after {
     margin-bottom: var(--sp-8);
 }
 
-.footer-cta-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-style: italic;
-    font-size: clamp(1.6rem, 4vw, 3.2rem);
-    letter-spacing: -0.03em;
-    text-transform: uppercase;
-    color: var(--text);
-    margin-bottom: var(--sp-6);
-    line-height: 1.1;
-}
-
-.footer-cta-text .accent { color: var(--accent); }
-
 .footer-inner {
     display: flex;
     align-items: center;
@@ -1520,6 +1506,7 @@ nav::after {
 
 @media (max-width: 768px) {
     .avail-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+    .coming-soon-label { font-size: var(--text-sm); padding: var(--sp-2) var(--sp-4); }
 }
 
 /* ═══════════════════════════════════════════
@@ -2201,8 +2188,10 @@ nav::after {
 ═══════════════════════════════════════════ */
 .w-letter {
     display: inline-block;
-    transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s ease;
+    position: relative;
+    z-index: 1;
     transform-origin: center;
+    transition: color 0.45s ease, transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s ease;
 }
 
 /* ═══════════════════════════════════════════
@@ -2485,10 +2474,6 @@ nav::after {
     z-index: 0;
 }
 
-.w-letter {
-    position: relative;
-    z-index: 1;
-}
 
 .curacao-path {
     stroke-dasharray: 320;
@@ -2581,6 +2566,7 @@ nav::after {
     clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     animation: star-mask-spin 18s linear infinite;
     transform-origin: center center;
+    will-change: transform;
     /* shadow on the wrap instead */
     filter: drop-shadow(0 24px 40px rgba(0,0,0,0.6));
 }
@@ -2776,9 +2762,6 @@ nav::after {
 }
 
 /* ── Curaçao letter idle pulse ───────────── */
-.w-letter {
-    transition: color 0.45s ease, transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-}
 
 .w-letter.idle-glow {
     color: var(--accent);

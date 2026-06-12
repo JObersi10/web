@@ -611,7 +611,6 @@ function setupCvRoad() {
 document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
-    setupBackToTop();
     setupGrain();
     setupMagnetic();
     setupScramble();
@@ -796,7 +795,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    /* Modal close on backdrop click */
+    /* Modal close — button + backdrop click */
+    document.querySelector('.modal-close')?.addEventListener('click', closeModal);
     UI.modal?.addEventListener('click', e => {
         if (e.target === UI.modal) closeModal();
     });
