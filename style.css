@@ -1666,7 +1666,7 @@ nav::after {
     margin-top: var(--sp-3);
 }
 
-.edu-deg { font-family: 'Syne', sans-serif; font-weight: 800; font-size: var(--text-base); text-transform: uppercase; }
+.edu-deg { font-family: 'Syne', sans-serif; font-weight: 800; font-size: var(--text-base); text-transform: uppercase; word-break: break-word; }
 .edu-school { color: var(--text-mid); font-size: var(--text-sm); margin: var(--sp-1) 0; }
 .edu-yr { font-size: var(--text-xs); font-weight: 700; color: var(--accent); }
 
@@ -2254,6 +2254,11 @@ nav::after {
     .nav-links { display: none; }
 
     #hamburger { display: flex; }
+
+    /* Mobile nav: space-between so JOBERSI is far left, burger far right */
+    nav {
+        justify-content: space-between;
+    }
 
     /* Mobile nav: transparent strip, two independent floating pills */
     nav {
