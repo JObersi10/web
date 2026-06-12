@@ -2251,7 +2251,7 @@ nav::after {
 
     .container { width: 92%; }
 
-    nav { padding: 0 var(--sp-6); }
+    nav { padding: 0 var(--sp-6) 0 var(--sp-3); }
 
     .nav-links { display: none; }
 
