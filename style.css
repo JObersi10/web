@@ -369,15 +369,15 @@ nav::after {
     padding: var(--sp-6) var(--sp-8);
     gap: var(--sp-4);
     background: rgba(2,2,5,0.97);
-    transform: translateX(100%);
-    transition: transform 0.35s cubic-bezier(0.2,1,0.3,1);
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.45s cubic-bezier(0.16,1,0.3,1);
     pointer-events: none;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
 
 #mobile-menu.open {
-    transform: translateX(0);
+    clip-path: inset(0 0 0% 0);
     pointer-events: auto;
 }
 
@@ -649,6 +649,7 @@ nav::after {
     max-width: 100%;
     position: relative;
     z-index: 1;
+    left: -20px;
 }
 
 /* Location + tagline row */
@@ -2249,7 +2250,7 @@ nav::after {
 
     .container { width: 92%; }
 
-    nav { padding: 0 var(--sp-6); }
+    nav { padding: 0 12px; }
 
     .nav-links { display: none; }
 
@@ -2277,6 +2278,7 @@ nav::after {
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 999px;
         padding: 0.45rem 1rem 0.45rem 0.75rem;
+        margin-left: 0;
         box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.1) inset;
     }
 
@@ -2368,7 +2370,13 @@ nav::after {
 
 /* ── Mobile polish pass ──────────────────── */
 @media (max-width: 768px) {
-    /* Hero tagline — left-align when it wraps on mobile */
+    /* Hero name — prevent italic slant from clipping the I */
+    .hero-name {
+        font-size: clamp(3rem, 14.5vw, 14.5vw);
+        width: 100%;
+        overflow: visible;
+        left: -10px;
+    }
     .hero-sub { text-align: left; align-self: flex-start; white-space: normal; font-size: 0.82rem; letter-spacing: 0.22em; line-height: 2.1; padding-right: 0; overflow: visible; width: 100%; }
     .hero-sub-line { display: block; }
     .hero-sub-l1 { text-align: left; }
@@ -2403,7 +2411,17 @@ nav::after {
         justify-content: flex-start;
     }
     /* Compact scroll photos */
-    .about-scroll-photos { height: 160px; margin-bottom: var(--sp-2); }
+    .about-scroll-photos { height: 200px; margin-bottom: var(--sp-2); }
+    .asp-pfp {
+        width: clamp(140px, 42vw, 170px);
+        height: clamp(140px, 42vw, 170px);
+        top: 8px;
+    }
+    .asp-star {
+        width: clamp(100px, 30vw, 120px);
+        height: clamp(100px, 30vw, 120px);
+        top: 28px;
+    }
     /* Hide pill */
     .about-editorial .pill { display: none; }
     /* Tighter heading */
