@@ -910,6 +910,7 @@ nav::after {
     gap: var(--sp-10);
     margin-top: var(--sp-8);
     flex-wrap: wrap;
+    padding: var(--sp-4) 0;
 }
 
 .about-stat-num {
@@ -1696,9 +1697,10 @@ nav::after {
 .cv-road {
     position: relative;
     padding: var(--sp-10) 0 var(--sp-16);
-    /* 3-D stage */
     perspective: 1100px;
     perspective-origin: 50% 30%;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .road-svg {
@@ -1771,6 +1773,7 @@ nav::after {
 .road-card {
     position: relative;
     width: min(46%, 460px);
+    max-width: 100%;
     padding: var(--sp-8);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -2283,16 +2286,18 @@ nav::after {
     .btn-accent, .btn-outline { display: block; width: 100%; text-align: center; margin-top: var(--sp-6); }
 
     /* CV */
-    .page-cv .section-heading { font-size: clamp(1.8rem, 8vw, 2.6rem); overflow: hidden; }
+    .page-cv .section-heading { font-size: clamp(1.6rem, 7vw, 2.4rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     #page-cv { padding-top: calc(var(--nav-h) + var(--sp-8)); padding-bottom: var(--sp-12); }
-    #page-cv .container { padding: 0 var(--sp-5); }
+    #page-cv .container { width: 100%; padding: 0 var(--sp-5); box-sizing: border-box; }
+    .cv-road-layout { overflow: hidden; }
     .cv-grid { gap: var(--sp-8); }
     .tl-role { font-size: var(--text-lg); }
     .tl-desc { max-width: 100%; }
     .timeline { padding-left: var(--sp-6); }
     .tl-dot { left: -1.6rem; }
     .tl-img { aspect-ratio: 16/9; max-height: 180px; }
-    #skill-bars { padding: 0 var(--sp-2); }
+    #skill-bars { padding: 0 var(--sp-3); }
+    .skill-bar-wrap { overflow: hidden; }
 
     /* Modal */
     .modal-card { border-radius: var(--radius-card); }
@@ -2307,7 +2312,7 @@ nav::after {
 /* ── Mobile polish pass ──────────────────── */
 @media (max-width: 768px) {
     /* Hero tagline — left-align when it wraps on mobile */
-    .hero-sub { text-align: left; white-space: normal; font-size: 0.65rem; letter-spacing: 0.35em; line-height: 1.9; }
+    .hero-sub { text-align: left; white-space: normal; font-size: 0.65rem; letter-spacing: 0.3em; line-height: 2; padding-right: 0; overflow: visible; }
     .hero-sub-br { display: block; }
 
     /* Hero meta — wrap neatly, hide extra seps on tiny screens */
