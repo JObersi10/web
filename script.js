@@ -185,6 +185,8 @@ function closeModal() {
 function toggleMenu(state) {
     if (UI.mobileMenu) UI.mobileMenu.classList.toggle('open', state);
     document.body.style.overflow = state ? 'hidden' : '';
+    const hamburger = document.getElementById('hamburger');
+    if (hamburger) hamburger.textContent = state ? '✕' : '☰';
 }
 
 /* ── Page transition ── */
@@ -814,8 +816,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* Nav */
-    document.getElementById('hamburger')?.addEventListener('click', () => toggleMenu(true));
-    document.getElementById('m-close')?.addEventListener('click',   () => toggleMenu(false));
+    document.getElementById('hamburger')?.addEventListener('click', () => {
+        const isOpen = UI.mobileMenu?.classList.contains('open');
+        toggleMenu(!isOpen);
+    });
+    document.getElementById('m-close')?.addEventListener('click', () => toggleMenu(false));
 
     /* Island-press animation on nav links and hamburger */
     document.querySelectorAll('.nav-link').forEach(link => {
