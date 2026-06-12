@@ -2402,14 +2402,8 @@ nav::after {
         align-items: flex-start;
         justify-content: flex-start;
     }
-    /* Compact scroll photos — break out of editorial padding so star has full width */
-    .about-scroll-photos {
-        height: 120px;
-        margin-left: calc(-1 * clamp(1.25rem, 5vw, 3rem));
-        margin-right: calc(-1 * clamp(1.25rem, 5vw, 3rem));
-        width: calc(100% + 2 * clamp(1.25rem, 5vw, 3rem));
-        margin-bottom: var(--sp-2);
-    }
+    /* Compact scroll photos */
+    .about-scroll-photos { height: 160px; margin-bottom: var(--sp-2); }
     /* Hide pill */
     .about-editorial .pill { display: none; }
     /* Tighter heading */
@@ -2751,10 +2745,10 @@ nav::after {
 .about-editorial.photos-split .asp-pfp {
     width:  clamp(140px, 42vw, 158px);
     height: clamp(140px, 42vw, 158px);
-    transform: translateX(calc(-50% - clamp(80px, 25vw, 100px)));
+    transform: translateX(calc(-50% - clamp(44px, 16vw, 70px)));
 }
 .about-editorial.photos-split .asp-star {
-    transform: translateX(calc(-50% + clamp(60px, 22vw, 85px)));
+    transform: translateX(calc(-50% + clamp(44px, 16vw, 70px)));
     opacity: 1;
 }
 
