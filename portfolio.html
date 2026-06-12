@@ -21,8 +21,6 @@
 <body>
 
 <div id="cursor"></div>
-<div id="bg-grad"></div>
-<div id="bg-bloom"></div>
 
 <nav>
     <a class="nav-logo" href="index.html" data-nav><span class="nav-dot"></span>JOBERSI</a>
@@ -47,13 +45,62 @@
 <button id="back-to-top" aria-label="Back to top">↑</button>
 
 <div class="page-wrap">
+    <div class="page-bg" aria-hidden="true"></div>
     <div class="container">
         <h1 class="section-heading reveal">Archive.</h1>
         <p class="reveal" style="color:var(--text-muted); margin-top:0.6rem; font-size:var(--text-xs); letter-spacing:0.18em; text-transform:uppercase; transition-delay:0.1s;">
             Selected works · 2018 → 2024 · Click to view
         </p>
 
-        <div class="portfolio-grid" id="portfolio-grid"></div>
+        <div class="portfolio-grid" id="portfolio-grid">
+
+            <!-- COMING SOON — featured slot -->
+            <div class="portfolio-card featured coming-soon reveal"
+                 role="presentation" tabindex="-1">
+                <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')"></div>
+                <div class="coming-soon-overlay"><span class="coming-soon-label">Coming Soon</span></div>
+                <div class="card-info">
+                    <span class="card-tag">Coming Soon</span>
+                    <div class="card-title">Still in the Works</div>
+                    <div class="card-year">2026</div>
+                </div>
+            </div>
+
+            <!-- PROJECT: Salt & Shore -->
+            <div class="portfolio-card reveal"
+                 role="button" tabindex="0"
+                 aria-label="View project: Salt &amp; Shore"
+                 data-title="Salt &amp; Shore"
+                 data-cat="Documentary"
+                 data-year="2023"
+                 data-img="https://images.unsplash.com/photo-1504439468489-c8920d796a29?q=80&w=2071&auto=format&fit=crop"
+                 data-desc="Short documentary following traditional fishermen captured entirely in golden-hour natural light.">
+                <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1504439468489-c8920d796a29?q=80&w=2071&auto=format&fit=crop')"></div>
+                <div class="card-info">
+                    <span class="card-tag">Documentary</span>
+                    <div class="card-title">Salt &amp; Shore</div>
+                    <div class="card-year">2023</div>
+                </div>
+            </div>
+
+            <!-- PROJECT: Machina -->
+            <div class="portfolio-card reveal"
+                 role="button" tabindex="0"
+                 aria-label="View project: Machina"
+                 data-title="Machina"
+                 data-cat="Experimental"
+                 data-year="2023"
+                 data-img="https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1974&auto=format&fit=crop"
+                 data-desc="Experimental macro series blending mechanical industry with organic movement.">
+                <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1974&auto=format&fit=crop')"></div>
+                <div class="card-info">
+                    <span class="card-tag">Experimental</span>
+                    <div class="card-title">Machina</div>
+                    <div class="card-year">2023</div>
+                </div>
+            </div>
+
+        </div>
 
     </div>
 </div>
@@ -146,8 +193,8 @@
         <div class="mboard-top">
             <div class="mboard-id">
                 <span class="mboard-sys-label">// JOBERSI.EXE v2.0</span>
-                <p class="mboard-tagline">I shoot.<br>I build around it.</p>
-                <a href="contact.html" class="btn-mboard" data-nav>Let's work together →</a>
+                <p class="mboard-tagline">I shoot and build your story around it</p>
+                <a href="contact.html" class="btn-mboard" data-nav>Contact Me →</a>
             </div>
             <nav aria-label="Footer navigation">
                 <span class="mboard-sys-label">// NAVIGATE</span>
@@ -183,7 +230,7 @@
 
 <div id="modal">
     <div class="modal-card">
-        <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+        <button class="modal-close" aria-label="Close">✕</button>
         <div class="modal-media" id="modal-media"></div>
         <div class="modal-info">
             <span class="card-tag" id="m-tag">Category</span>

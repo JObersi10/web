@@ -1,29 +1,12 @@
-const projects = [
-    {
-        title: 'Horizon Campaign',
-        cat: 'Brand Film',
-        year: '2024',
-        featured: true,
-        img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop',
-        desc: 'A cinematic brand film shot across the northern coast of Curaçao exploring the infinite horizon.'
-    },
-    {
-        title: 'Salt & Shore',
-        cat: 'Documentary',
-        year: '2023',
-        img: 'https://images.unsplash.com/photo-1504439468489-c8920d796a29?q=80&w=2071&auto=format&fit=crop',
-        desc: 'Short documentary following traditional fishermen captured entirely in golden-hour natural light.'
-    },
-    {
-        title: 'Machina',
-        cat: 'Experimental',
-        year: '2023',
-        img: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1974&auto=format&fit=crop',
-        desc: 'Experimental macro series blending mechanical industry with organic movement.'
-    }
-];
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ── Low-power mode when tab is hidden ── */
+let tabHidden = document.hidden;
+document.addEventListener('visibilitychange', () => {
+    tabHidden = document.hidden;
+    document.body.classList.toggle('tab-hidden', tabHidden);
+});
 
 const UI = {
     cursor:     document.getElementById('cursor'),
@@ -57,6 +40,7 @@ function setupCursor() {
     }
 
     window.addEventListener('mousemove', e => {
+        if (tabHidden) return;
         const dx = e.clientX - lastMouse.x;
         const dy = e.clientY - lastMouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -172,32 +156,22 @@ function setupScramble() {
 /* ── Portfolio grid ── */
 function setupPortfolio() {
     if (!UI.grid) return;
-    UI.grid.innerHTML = projects.map((p, i) => `
-        <div class="portfolio-card reveal ${p.featured ? 'featured' : ''}" onclick="openModal(${i})" role="button" tabindex="0" aria-label="View project: ${p.title}">
-            <div class="card-bg" style="background-image:url('${p.img}')"></div>
-            <div class="card-info">
-                <span class="card-tag">${p.cat}</span>
-                <div class="card-title">${p.title}</div>
-                <div class="card-year">${p.year}</div>
-            </div>
-        </div>`).join('');
-
-    // keyboard support for cards
-    UI.grid.querySelectorAll('.portfolio-card').forEach((card, i) => {
+    UI.grid.querySelectorAll('.portfolio-card:not(.coming-soon)').forEach(card => {
+        card.addEventListener('click', () => openModal(card));
         card.addEventListener('keydown', e => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(i); }
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card); }
         });
     });
 }
 
-function openModal(index) {
-    const p = projects[index];
-    if (!p || !UI.modal) return;
-    document.getElementById('m-title').innerText = p.title;
-    document.getElementById('m-tag').innerText   = p.cat;
-    document.getElementById('m-year').innerText  = p.year;
-    document.getElementById('m-desc').innerText  = p.desc;
-    document.getElementById('modal-media').innerHTML = `<img src="${p.img}" alt="${p.title}" loading="lazy">`;
+function openModal(card) {
+    if (!UI.modal) return;
+    const d = card.dataset;
+    document.getElementById('m-title').innerText = d.title;
+    document.getElementById('m-tag').innerText   = d.cat;
+    document.getElementById('m-year').innerText  = d.year;
+    document.getElementById('m-desc').innerText  = d.desc;
+    document.getElementById('modal-media').innerHTML = `<img src="${d.img}" alt="${d.title}" loading="lazy">`;
     UI.modal.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -243,10 +217,10 @@ function setupEasterEgg() {
         count++;
         if (!prefersReducedMotion) {
             el.animate([
-                { transform: 'scale(1)' },
-                { transform: 'scale(1.06) rotate(-3deg)' },
-                { transform: 'scale(1)' }
-            ], { duration: 200, easing: 'ease-in-out' });
+                { scale: '1' },
+                { scale: '1.07' },
+                { scale: '1' }
+            ], { duration: 200, easing: 'ease-in-out', composite: 'add' });
         }
         if (navigator.vibrate) navigator.vibrate(40);
         clearTimeout(timer);
@@ -340,6 +314,59 @@ function triggerCuracaoStars(e) {
     });
 }
 
+/* ── Hero subtitle: letter-by-letter fast reveal ── */
+function setupHeroCharReveal() {
+    const el = document.getElementById('hero-sub');
+    if (!el || prefersReducedMotion) return;
+
+    // Split text into .hero-char spans, preserving child elements
+    function splitTextNode(node) {
+        return node.textContent.split('').map(ch =>
+            `<span class="hero-char">${ch === ' ' ? '&nbsp;' : ch}</span>`
+        ).join('');
+    }
+    function splitChildNodes(container) {
+        [...container.childNodes].forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const span = document.createElement('span');
+                span.innerHTML = splitTextNode(node);
+                node.replaceWith(span);
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.classList.contains('hero-sub-line')) {
+                    splitChildNodes(node); // recurse into line wrappers
+                } else {
+                    node.innerHTML = splitTextNode(node); // leaf (hero-word-your)
+                }
+            }
+        });
+    }
+    splitChildNodes(el);
+
+    const chars = el.querySelectorAll('.hero-char');
+    let fired = false;
+    const obs = new IntersectionObserver(entries => {
+        if (!entries[0].isIntersecting || fired) return;
+        fired = true;
+        obs.disconnect();
+        chars.forEach((ch, i) => {
+            setTimeout(() => ch.classList.add('hc-active'), i * 18);
+        });
+        // glow sweep on "your" 1.5s after reveal starts
+        const totalMs = chars.length * 18 + 400;
+        setTimeout(() => {
+            const yourEl = document.getElementById('hero-your');
+            if (yourEl) {
+                yourEl.classList.add('glow-active');
+                // stagger each letter's animation like lyrics
+                yourEl.querySelectorAll('.hero-char').forEach((ch, i) => {
+                    ch.style.animationDelay = `${i * 55}ms`;
+                });
+            }
+        }, Math.max(1500, totalMs));
+    }, { threshold: 0.1 });
+    obs.observe(el);
+}
+
 /* ── Scroll-driven word-by-word reveal ── */
 function setupWordReveal() {
     const paragraphs = document.querySelectorAll('[data-word-reveal]');
@@ -421,11 +448,13 @@ function setupWordReveal() {
         { start: 0.55, end: 1.0  },
     ];
 
-    const section  = document.getElementById('home-about');
-    const badge    = document.querySelector('.hackclub-badge');
-    const mark     = document.querySelector('.curacao-mark');
-    const editorial = document.querySelector('.about-editorial'); // cached — don't re-query per frame
-    let badgeThumped = false, markerFired = false;
+    const section   = document.getElementById('home-about');
+    const badge     = document.querySelector('.hackclub-badge');
+    const mark      = document.querySelector('.curacao-mark');
+    const editorial = document.querySelector('.about-editorial');
+    const floatLeft  = document.querySelector('.about-float-left');
+    const floatRight = document.querySelector('.about-float-right');
+    let badgeThumped = false, badgeVisible = false, markerFired = false;
     let prevRunningReveal = 0;
 
     function updateWords() {
@@ -441,7 +470,13 @@ function setupWordReveal() {
             words.forEach((w, i) => w.classList.toggle('active', i < reveal));
         });
 
-        // Badge thump
+        // Badge fade-in: starts when para 2 begins (progress >= 0.55)
+        if (!badgeVisible && progress >= 0.55 && badge) {
+            badgeVisible = true;
+            badge.classList.add('badge-visible');
+        }
+
+        // Badge thump when its word is revealed
         if (!badgeThumped && runningSet && runningLocalIdx >= 0) {
             const pi = paragraphWordSets.indexOf(runningSet);
             const sched = paraSchedule[pi] || { start: 0, end: 1 };
@@ -474,24 +509,145 @@ function setupWordReveal() {
         }
     }
 
-    // Desktop float elements
-    const floatLeft  = document.querySelector('.about-float-left');
-    const floatRight = document.querySelector('.about-float-right');
-
     updateWords();
     return updateWords;
+}
+
+/* ── CV roadmap river — winding path drawn by scroll ── */
+function setupCvRoad() {
+    const road = document.getElementById('cv-road');
+    if (!road) return null;
+
+    const svg        = road.querySelector('.road-svg');
+    const groovePath = road.querySelector('.road-path-groove');
+    const basePath   = road.querySelector('.road-path-base');
+    const drawPath   = road.querySelector('.road-path-draw');
+    const tip        = road.querySelector('.road-tip');
+    const stops      = [...road.querySelectorAll('.road-stop')];
+    if (!svg || !drawPath || !stops.length) return null;
+
+    // node dots living on the river (one per stop)
+    const nodes = stops.map(() => {
+        const n = document.createElement('div');
+        n.className = 'road-node';
+        road.appendChild(n);
+        return n;
+    });
+
+    let pathLen = 0;
+    let anchors = []; // { x, y } per stop, in road-local px
+
+    function buildPath() {
+        const W = road.offsetWidth;
+        const H = road.offsetHeight;
+        const mobile = window.innerWidth <= 768;
+
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+        // anchor per stop: river bends into the free side of each card
+        anchors = stops.map(stop => {
+            const y = stop.offsetTop + stop.offsetHeight / 2;
+            let x;
+            if (mobile) {
+                // left rail, slight wiggle
+                x = 20 + (stop.dataset.side === 'right' ? 6 : -4);
+            } else {
+                // river bends toward the open gap beside each card
+                // cards are ~46% wide; river centre floats between them
+                x = stop.dataset.side === 'left' ? W * 0.75 : W * 0.25;
+            }
+            return { x, y };
+        });
+
+        // smooth S-curves with vertical tangents between points — river feel
+        const startX = mobile ? 18 : W / 2;
+        const pts = [{ x: startX, y: 0 }, ...anchors, { x: startX, y: H }];
+        let d = `M ${pts[0].x},${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) {
+            const p0 = pts[i - 1], p1 = pts[i];
+            const midY = (p1.y - p0.y) * 0.5;
+            d += ` C ${p0.x},${p0.y + midY} ${p1.x},${p1.y - midY} ${p1.x},${p1.y}`;
+        }
+
+        if (groovePath) groovePath.setAttribute('d', d);
+        basePath.setAttribute('d', d);
+        drawPath.setAttribute('d', d);
+        pathLen = drawPath.getTotalLength();
+        drawPath.style.strokeDasharray  = pathLen;
+        drawPath.style.strokeDashoffset = pathLen;
+
+        // park each node on its anchor
+        nodes.forEach((n, i) => {
+            n.style.left = anchors[i].x + 'px';
+            n.style.top  = anchors[i].y + 'px';
+        });
+    }
+
+    function update() {
+        if (!pathLen) return;
+        const rect = road.getBoundingClientRect();
+        const H    = road.offsetHeight;
+        // river tip tracks a point 75% down the viewport
+        const drawnY   = Math.max(0, Math.min(H, window.innerHeight * 0.75 - rect.top));
+        const progress = drawnY / H;
+
+        drawPath.style.strokeDashoffset = pathLen * (1 - progress);
+
+        // glowing tip rides the drawn end
+        if (tip) {
+            if (progress > 0 && progress < 1) {
+                const pt = drawPath.getPointAtLength(pathLen * progress);
+                tip.style.left = pt.x + 'px';
+                tip.style.top  = pt.y + 'px';
+                tip.classList.add('on');
+            } else {
+                tip.classList.remove('on');
+            }
+        }
+
+        // light stops up as the river reaches them
+        stops.forEach((stop, i) => {
+            const hit = anchors[i] && anchors[i].y <= drawnY + 10;
+            stop.classList.toggle('road-active', hit);
+            nodes[i].classList.toggle('road-active', hit);
+        });
+    }
+
+    if (prefersReducedMotion) {
+        buildPath();
+        drawPath.style.strokeDashoffset = 0;
+        stops.forEach(s => s.classList.add('road-active'));
+        nodes.forEach(n => n.classList.add('road-active'));
+        return null;
+    }
+
+    buildPath();
+    update();
+
+    // re-measure when layout shifts (images load, resize)
+    let resizeT;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => { buildPath(); update(); }, 150);
+    }, { passive: true });
+    window.addEventListener('load', () => { buildPath(); update(); });
+
+    return update;
 }
 
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
-    setupBackToTop();
     setupGrain();
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
+    setupHeroCharReveal();
     const updateWords = setupWordReveal();
+    const updateRoad  = setupCvRoad();
     setupCuracaoIdle();
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
@@ -502,7 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let scrollTick   = false;
 
     function onScroll() {
-        if (scrollTick) return;
+        if (scrollTick || tabHidden) return;
         scrollTick = true;
         requestAnimationFrame(() => {
             const y = window.scrollY;
@@ -532,6 +688,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Word reveal
             if (updateWords) updateWords();
+
+            // CV roadmap river
+            if (updateRoad) updateRoad();
 
             scrollTick = false;
         });
@@ -611,11 +770,26 @@ document.addEventListener('DOMContentLoaded', () => {
         javiiObserver.observe(el);
     });
 
-    /* Skill bars */
+    /* Skill bars — fill + count-up percentage number */
     document.querySelectorAll('.skill-bar-fill').forEach(bar => {
-        new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) bar.style.width = `${bar.dataset.p}%`;
-        }, { threshold: 0.4 }).observe(bar);
+        const target = parseInt(bar.dataset.p, 10);
+        // second span in .skill-bar-top is the percentage label
+        const numEl  = bar.closest('.skill-bar-wrap')?.querySelector('.skill-bar-top span:last-child');
+        const obs = new IntersectionObserver(entries => {
+            if (!entries[0].isIntersecting) return;
+            obs.disconnect();
+            bar.style.width = `${target}%`;
+            if (!numEl || prefersReducedMotion) { return; }
+            numEl.textContent = '0%';
+            const start = performance.now();
+            (function tick(now) {
+                const t   = Math.min(1, (now - start) / 1400);
+                const cur = Math.floor((1 - Math.pow(1 - t, 3)) * target);
+                numEl.textContent = cur + '%';
+                if (t < 1) requestAnimationFrame(tick);
+            })(start);
+        }, { threshold: 0.4 });
+        obs.observe(bar);
     });
 
     /* Stat count-up (ease-out cubic, fires once on viewport entry) */
@@ -643,6 +817,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('hamburger')?.addEventListener('click', () => toggleMenu(true));
     document.getElementById('m-close')?.addEventListener('click',   () => toggleMenu(false));
 
+    /* Island-press animation on nav links and hamburger */
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            link.classList.remove('island-press');
+            void link.offsetWidth; // reflow to restart
+            link.classList.add('island-press');
+            link.addEventListener('animationend', () => link.classList.remove('island-press'), { once: true });
+        });
+    });
+    const hamburger = document.getElementById('hamburger');
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.remove('island-press');
+            void hamburger.offsetWidth;
+            hamburger.classList.add('island-press');
+            hamburger.addEventListener('animationend', () => hamburger.classList.remove('island-press'), { once: true });
+        });
+    }
+
     document.querySelectorAll('a[data-nav]').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
@@ -651,7 +844,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    /* Modal close on backdrop click */
+    /* Modal close — button + backdrop click */
+    document.querySelector('.modal-close')?.addEventListener('click', closeModal);
     UI.modal?.addEventListener('click', e => {
         if (e.target === UI.modal) closeModal();
     });

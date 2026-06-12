@@ -46,11 +46,16 @@
 
 <button id="back-to-top" aria-label="Back to top">↑</button>
 
-<main id="page-cv" class="container page-cv">
+<main id="page-cv" class="page-cv">
+<div class="container">
     <h2 class="section-heading reveal">Curriculum</h2>
-    <div class="cv-grid">
-        <aside>
-            <section style="margin-bottom:3.5rem;">
+    <p class="road-intro reveal">Follow the river — from first gig to right now.</p>
+
+    <div class="cv-road-layout">
+
+        <!-- LEFT SIDEBAR: static identity info -->
+        <aside class="cv-sidebar">
+            <section class="cv-sidebar-section reveal">
                 <span class="cv-label">Core Skills</span>
                 <div id="skill-bars">
                     <div class="skill-bar-wrap">
@@ -75,7 +80,8 @@
                     </div>
                 </div>
             </section>
-            <section style="margin-bottom:3.5rem;">
+
+            <section class="cv-sidebar-section reveal">
                 <span class="cv-label">Tech Stack</span>
                 <div class="tech-grid">
                     <span class="tech-tag">DaVinci Resolve</span>
@@ -87,7 +93,8 @@
                     <span class="tech-tag">Python</span>
                 </div>
             </section>
-            <section>
+
+            <section class="cv-sidebar-section reveal">
                 <span class="cv-label">Education</span>
                 <div class="edu-card">
                     <div class="edu-deg">Cinematography Masterclass</div>
@@ -97,52 +104,80 @@
             </section>
         </aside>
 
-        <section>
-            <span class="cv-label">Experience</span>
-            <div class="timeline">
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
-                    <div class="tl-period">2026 — Present</div>
-                    <div class="tl-role">Co-Founder Hack Club Curaçao</div>
-                    <div class="tl-org">Coding &amp; Hardware Club</div>
-                    <div class="tl-desc">Building a community of teenage makers and coders on the island. Managing workshops, hardware logistics, and community growth.</div>
+        <!-- RIGHT: roadmap river — experience only -->
+        <div class="cv-road" id="cv-road">
+            <svg class="road-svg" aria-hidden="true">
+                <defs>
+                    <filter id="river-glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+                        <feColorMatrix in="blur" type="saturate" values="2" result="colored"/>
+                        <feMerge><feMergeNode in="colored"/></feMerge>
+                    </filter>
+                </defs>
+                <!-- groove: fat blurred shadow gives the river depth -->
+                <path class="road-path road-path-groove" fill="none"/>
+                <!-- faint dashed full route -->
+                <path class="road-path road-path-base" fill="none"/>
+                <!-- drawn portion -->
+                <path class="road-path road-path-draw" fill="none"/>
+            </svg>
+            <div class="road-tip" aria-hidden="true"></div>
+
+            <div class="road-stop" data-side="left">
+                <div class="road-card">
+                    <span class="road-num">01</span>
+                    <div class="tl-period">2020 — 2022</div>
+                    <div class="tl-role">ICTer — De Meander</div>
+                    <div class="tl-org">Student · Curaçao</div>
+                    <div class="tl-desc">Managed IT support and maintained the school's digital infrastructure.</div>
                     <div class="tl-img">
-                        <img src="media/hcc-group.jpg" alt="Hack Club Curaçao" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
+                        <img src="media/tn1.jpg" alt="School IT">
                     </div>
                 </div>
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
-                    <div class="tl-period">2024 — Present</div>
-                    <div class="tl-role">Videographer — Bright Club</div>
-                    <div class="tl-org">Documented their programs</div>
-                    <div class="tl-desc">Documented events from Digital Kids Camp 2024 to the First Robotics Competition in Curaçao.</div>
-                    <div class="tl-img">
-                        <img src="media/tn3.png" alt="Bright Club" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
-                    </div>
-                </div>
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
+            </div>
+
+            <div class="road-stop" data-side="right">
+                <div class="road-card">
+                    <span class="road-num">02</span>
                     <div class="tl-period">2022 — Present</div>
                     <div class="tl-role">Freelance Videographer</div>
                     <div class="tl-org">Self-Employed · Curaçao &amp; Remote</div>
                     <div class="tl-desc">Shot 20+ projects for clients across Curaçao. Developed expertise in direct-to-sensor capture and post-production workflows.</div>
                     <div class="tl-img">
-                        <img src="media/tn2.png" alt="Freelance videography" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
-                    </div>
-                </div>
-                <div class="tl-item reveal">
-                    <div class="tl-dot"></div>
-                    <div class="tl-period">2020 — 2022</div>
-                    <div class="tl-role">ICTer — De Meanderschool</div>
-                    <div class="tl-org">Student · Curaçao</div>
-                    <div class="tl-desc">Managed IT support and maintained the school's digital infrastructure.</div>
-                    <div class="tl-img">
-                        <img src="media/tn1.jpg" alt="School IT" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
+                        <img src="media/tn2.png" alt="Freelance videography">
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+
+            <div class="road-stop" data-side="left">
+                <div class="road-card">
+                    <span class="road-num">03</span>
+                    <div class="tl-period">2024 — Present</div>
+                    <div class="tl-role">Videographer — Bright Club</div>
+                    <div class="tl-org">Documented their programs</div>
+                    <div class="tl-desc">Documented events from Digital Kids Camp 2024 to the First Robotics Competition in Curaçao.</div>
+                    <div class="tl-img">
+                        <img src="media/tn3.png" alt="Bright Club">
+                    </div>
+                </div>
+            </div>
+
+            <div class="road-stop" data-side="right">
+                <div class="road-card">
+                    <span class="road-num">04</span>
+                    <div class="tl-period">2026 — Present</div>
+                    <div class="tl-role">Co-Founder Hack Club Curaçao</div>
+                    <div class="tl-org">Coding &amp; Hardware Club</div>
+                    <div class="tl-desc">Building a community of teenage makers and coders on the island. Managing workshops, hardware logistics, and community growth.</div>
+                    <div class="tl-img">
+                        <img src="media/hcc-group.jpg" alt="Hack Club Curaçao">
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /.cv-road -->
+    </div><!-- /.cv-road-layout -->
+</div><!-- /.container -->
 </main>
 
 <footer class="mboard-footer" id="site-footer">
@@ -233,8 +268,8 @@
         <div class="mboard-top">
             <div class="mboard-id">
                 <span class="mboard-sys-label">// JOBERSI.EXE v2.0</span>
-                <p class="mboard-tagline">I shoot.<br>I build around it.</p>
-                <a href="contact.html" class="btn-mboard" data-nav>Let's work together →</a>
+                <p class="mboard-tagline">I shoot and build your story around it</p>
+                <a href="contact.html" class="btn-mboard" data-nav>Contact Me →</a>
             </div>
             <nav aria-label="Footer navigation">
                 <span class="mboard-sys-label">// NAVIGATE</span>
