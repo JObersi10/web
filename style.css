@@ -963,6 +963,23 @@ nav::after {
     transform: scale(1.03);
 }
 
+/* ── About mobile footer (stats + CTA below scroll track) ── */
+.about-mobile-footer {
+    display: none; /* hidden on desktop — shown via mobile media query */
+    padding: var(--sp-10) 0 var(--sp-8);
+    text-align: center;
+    background: var(--bg);
+    position: relative;
+    z-index: 2;
+}
+.about-mobile-footer .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-8);
+}
+.about-mobile-footer .btn-accent { display: inline-flex; }
+
 /* ═══════════════════════════════════════════
    SERVICES SECTION
 ═══════════════════════════════════════════ */
@@ -2308,6 +2325,9 @@ nav::after {
     .about-stats { gap: var(--sp-8); }
     .about-cover { transform: none; }
 
+    /* About mobile footer — visible below the scroll track */
+    .about-mobile-footer { display: block; }
+
     /* Services */
     .services-grid { grid-template-columns: 1fr; gap: var(--sp-3); }
     #home-services { padding: var(--sp-20) 0 var(--sp-16); }
@@ -2394,10 +2414,11 @@ nav::after {
         align-items: flex-start;
         justify-content: flex-start;
     }
-    /* Compact scroll photos — small enough that stats still fit in 100vh */
-    .about-scroll-photos { display: block; height: 80px; margin-bottom: var(--sp-2); }
-    /* Hide see-my-work inside about (exists in hero too) to save space for stats */
-    #home-about .btn-accent { display: none; }
+    /* Compact scroll photos */
+    .about-scroll-photos { display: block; height: 90px; margin-bottom: var(--sp-2); }
+    /* Hide stats + button inside sticky — they live in the mobile footer block instead */
+    .about-editorial .about-stats { display: none; }
+    .about-editorial .btn-accent { display: none; }
     /* Hide pill to save space */
     .about-editorial .pill { display: none; }
     /* Tighter heading */
