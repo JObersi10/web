@@ -448,10 +448,12 @@ function setupWordReveal() {
         { start: 0.55, end: 1.0  },
     ];
 
-    const section  = document.getElementById('home-about');
-    const badge    = document.querySelector('.hackclub-badge');
-    const mark     = document.querySelector('.curacao-mark');
-    const editorial = document.querySelector('.about-editorial'); // cached — don't re-query per frame
+    const section   = document.getElementById('home-about');
+    const badge     = document.querySelector('.hackclub-badge');
+    const mark      = document.querySelector('.curacao-mark');
+    const editorial = document.querySelector('.about-editorial');
+    const floatLeft  = document.querySelector('.about-float-left');
+    const floatRight = document.querySelector('.about-float-right');
     let badgeThumped = false, badgeVisible = false, markerFired = false;
     let prevRunningReveal = 0;
 
@@ -506,10 +508,6 @@ function setupWordReveal() {
             if (floatRight) floatRight.classList.toggle('pop-in', progress >= 0.55);
         }
     }
-
-    // Desktop float elements
-    const floatLeft  = document.querySelector('.about-float-left');
-    const floatRight = document.querySelector('.about-float-right');
 
     updateWords();
     return updateWords;

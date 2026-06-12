@@ -2401,15 +2401,10 @@ nav::after {
     /* Tighter heading */
     .about-editorial .section-heading { font-size: clamp(1.4rem, 6.5vw, 2rem); margin-bottom: var(--sp-2); }
     /* Tighter body text */
-    .about-body-text { font-size: 0.8rem; line-height: 1.55; }
+    .about-body-text { font-size: 0.82rem; line-height: 1.6; }
     .about-body-text p + p { margin-top: var(--sp-2); }
     /* Stats */
     .about-editorial .about-stats { margin-top: var(--sp-3); margin-bottom: var(--sp-2); }
-    /* Tighter heading */
-    .about-editorial .section-heading { font-size: clamp(1.5rem, 7vw, 2.2rem); margin-bottom: var(--sp-3); }
-    /* Tighter body text — single rule, no duplicate */
-    .about-body-text { font-size: 0.85rem; line-height: 1.6; }
-    .about-body-text p + p { margin-top: var(--sp-2); }
 
     /* Stats — 3 equal columns, never clip */
     .about-stats {
@@ -2824,10 +2819,6 @@ nav::after {
 #home-about .about-body-text {
     margin-top: 0;
     margin-bottom: var(--sp-6);
-}
-
-.about-body-text p + p {
-    margin-top: var(--sp-4);
 }
 
 .about-stats {
