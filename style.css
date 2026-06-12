@@ -827,9 +827,10 @@ nav::after {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding-top: calc(var(--nav-h) + 5vh);
-    padding-bottom: var(--sp-4);
-    overflow: visible;
+    /* push content down so heading lands at ~20% from top — clearly visible */
+    padding-top: calc(var(--nav-h) + 8vh);
+    padding-bottom: var(--sp-8);
+    overflow: hidden;
 }
 
 .about-editorial {
@@ -843,7 +844,7 @@ nav::after {
 
 .about-editorial .section-heading {
     font-size: clamp(2.2rem, 5.5vw, 4.5rem);
-    margin-bottom: var(--sp-5);
+    margin-bottom: var(--sp-8);
     line-height: 1.05;
 }
 
@@ -918,7 +919,7 @@ nav::after {
     display: flex;
     justify-content: center;
     gap: var(--sp-10);
-    margin-top: var(--sp-5);
+    margin-top: var(--sp-8);
     flex-wrap: wrap;
 }
 
@@ -2908,8 +2909,8 @@ nav::after {
 
 /* ── "See my work" inside about section — give it spacing ─── */
 #home-about .btn-accent {
-    margin-top: var(--sp-5) !important;
-    margin-bottom: 0 !important;
+    margin-top: var(--sp-8) !important;
+    margin-bottom: var(--sp-10) !important;
     display: inline-flex;
 }
 
