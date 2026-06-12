@@ -813,6 +813,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('hamburger')?.addEventListener('click', () => toggleMenu(true));
     document.getElementById('m-close')?.addEventListener('click',   () => toggleMenu(false));
 
+    /* Island-press animation on nav links and hamburger */
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            link.classList.remove('island-press');
+            void link.offsetWidth; // reflow to restart
+            link.classList.add('island-press');
+            link.addEventListener('animationend', () => link.classList.remove('island-press'), { once: true });
+        });
+    });
+    const hamburger = document.getElementById('hamburger');
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.remove('island-press');
+            void hamburger.offsetWidth;
+            hamburger.classList.add('island-press');
+            hamburger.addEventListener('animationend', () => hamburger.classList.remove('island-press'), { once: true });
+        });
+    }
+
     document.querySelectorAll('a[data-nav]').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();

@@ -308,30 +308,21 @@ nav::after {
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--text);
-    opacity: 0.35;
+    opacity: 0.7;
     transition: opacity 0.25s;
     position: relative;
-    padding-bottom: 3px;
+    padding: 0.35rem 0.9rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px;
 }
 
 .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
+    display: none;
 }
 
 .nav-link:hover,
 .nav-link.active { opacity: 1; }
-
-.nav-link.active::after,
-.nav-link:hover::after { transform: scaleX(1); }
 
 #hamburger {
     display: none;
@@ -349,6 +340,21 @@ nav::after {
 }
 
 #hamburger:hover { border-color: var(--accent); }
+
+/* ── Island-press animation ──────────────────────────────── */
+@keyframes island-press {
+    0%   { transform: scale(1); }
+    20%  { transform: scaleX(0.9) scaleY(1.08); }
+    50%  { transform: scaleX(1.05) scaleY(0.96); }
+    75%  { transform: scaleX(0.98) scaleY(1.01); }
+    100% { transform: scale(1); }
+}
+.nav-link.island-press {
+    animation: island-press 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+#hamburger.island-press {
+    animation: island-press 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
 
 /* ── Mobile menu ─────────────────────────────────────────── */
 #mobile-menu {
@@ -2236,6 +2242,39 @@ nav::after {
 
     #hamburger { display: flex; }
 
+    /* Mobile nav: transparent strip, two independent floating pills */
+    nav {
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: none;
+        box-shadow: none;
+    }
+    nav::before, nav::after { display: none; }
+
+    .nav-logo {
+        background: rgba(6,15,32,0.55);
+        backdrop-filter: blur(24px) saturate(1.5);
+        -webkit-backdrop-filter: blur(24px) saturate(1.5);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 999px;
+        padding: 0.45rem 1rem 0.45rem 0.75rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.1) inset;
+    }
+
+    #hamburger {
+        background: rgba(6,15,32,0.55);
+        backdrop-filter: blur(24px) saturate(1.5);
+        -webkit-backdrop-filter: blur(24px) saturate(1.5);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 999px;
+        width: auto;
+        height: auto;
+        padding: 0.45rem 0.9rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.1) inset;
+        font-size: 1rem;
+    }
+
     .page-wrap {
         padding-top: calc(var(--nav-h) + var(--sp-10));
         padding-bottom: var(--sp-12);
@@ -2331,15 +2370,15 @@ nav::after {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About sticky: keep sticky+height:100vh, overflow visible so nothing clips */
+    /* About: remove sticky on mobile so stats are always visible */
     .about-sticky {
-        position: sticky;
-        top: 0;
-        height: 100vh;
+        position: relative;
+        top: auto;
+        height: auto;
         overflow: visible;
         padding-top: var(--nav-h);
-        padding-bottom: 0;
-        align-items: center;
+        padding-bottom: var(--sp-10);
+        align-items: flex-start;
         justify-content: flex-start;
     }
     /* Compact scroll-photos */
@@ -2357,7 +2396,8 @@ nav::after {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: var(--sp-2);
-        margin-top: var(--sp-6);
+        margin-top: var(--sp-4);
+        margin-bottom: var(--sp-4);
         text-align: center;
     }
     .about-stat { min-width: 0; }
