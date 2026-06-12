@@ -2371,7 +2371,12 @@ nav::after {
 
 /* ── Mobile polish pass ──────────────────── */
 @media (max-width: 768px) {
-    /* Hero tagline — left-align when it wraps on mobile */
+    /* Hero name — prevent italic slant from clipping the I */
+    .hero-name {
+        font-size: clamp(3rem, 14.5vw, 14.5vw);
+        width: 100%;
+        overflow: visible;
+    }
     .hero-sub { text-align: left; align-self: flex-start; white-space: normal; font-size: 0.82rem; letter-spacing: 0.22em; line-height: 2.1; padding-right: 0; overflow: visible; width: 100%; }
     .hero-sub-line { display: block; }
     .hero-sub-l1 { text-align: left; }
