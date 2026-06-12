@@ -2745,10 +2745,10 @@ nav::after {
 .about-editorial.photos-split .asp-pfp {
     width:  clamp(140px, 42vw, 158px);
     height: clamp(140px, 42vw, 158px);
-    transform: translateX(calc(-50% - clamp(44px, 16vw, 70px)));
+    transform: translateX(calc(-50% - clamp(80px, 25vw, 100px)));
 }
 .about-editorial.photos-split .asp-star {
-    transform: translateX(calc(-50% + clamp(44px, 16vw, 70px)));
+    transform: translateX(calc(-50% + clamp(52px, 19vw, 76px)));
     opacity: 1;
 }
 
