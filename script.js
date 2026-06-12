@@ -1,11 +1,12 @@
 const projects = [
     {
-        title: 'Horizon Campaign',
-        cat: 'Brand Film',
-        year: '2024',
+        title: 'Still in the Works',
+        cat: 'Coming Soon',
+        year: '2026',
         featured: true,
+        comingSoon: true,
         img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop',
-        desc: 'A cinematic brand film shot across the northern coast of Curaçao exploring the infinite horizon.'
+        desc: 'Something is being built. Check back soon.'
     },
     {
         title: 'Salt & Shore',
@@ -181,8 +182,13 @@ function setupScramble() {
 function setupPortfolio() {
     if (!UI.grid) return;
     UI.grid.innerHTML = projects.map((p, i) => `
-        <div class="portfolio-card reveal ${p.featured ? 'featured' : ''}" onclick="openModal(${i})" role="button" tabindex="0" aria-label="View project: ${p.title}">
+        <div class="portfolio-card reveal ${p.featured ? 'featured' : ''} ${p.comingSoon ? 'coming-soon' : ''}"
+             onclick="${p.comingSoon ? '' : `openModal(${i})`}"
+             role="${p.comingSoon ? 'presentation' : 'button'}"
+             tabindex="${p.comingSoon ? '-1' : '0'}"
+             aria-label="${p.comingSoon ? '' : `View project: ${p.title}`}">
             <div class="card-bg" style="background-image:url('${p.img}')"></div>
+            ${p.comingSoon ? '<div class="coming-soon-overlay"><span class="coming-soon-label">Coming Soon</span></div>' : ''}
             <div class="card-info">
                 <span class="card-tag">${p.cat}</span>
                 <div class="card-title">${p.title}</div>

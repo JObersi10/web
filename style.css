@@ -421,7 +421,7 @@ nav::after {
 .page-wrap,
 #page-cv {
     position: relative;
-    z-index: 1;
+    z-index: 4; /* above bg-grad (2) and bg-bloom (3) so overlays stay decorative */
     background: var(--bg);
 }
 
@@ -1997,6 +1997,42 @@ nav::after {
     aspect-ratio: 16/9;
 }
 
+.portfolio-card.coming-soon {
+    cursor: default;
+}
+
+.portfolio-card.coming-soon:hover {
+    transform: none;
+    border-color: var(--border);
+}
+
+.portfolio-card.coming-soon .card-bg {
+    filter: grayscale(1) brightness(0.25);
+}
+
+.coming-soon-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.coming-soon-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: var(--text-xl);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: var(--sp-3) var(--sp-6);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.04);
+}
+
 .card-bg {
     position: absolute;
     inset: 0;
@@ -2226,7 +2262,7 @@ nav::after {
     .tl-desc { max-width: 100%; }
     .timeline { padding-left: var(--sp-6); }
     .tl-dot { left: -1.6rem; }
-    .tl-img { display: none; }
+    .tl-img { aspect-ratio: 16/9; max-height: 180px; }
 
     /* Modal */
     .modal-card { border-radius: var(--radius-card); }
