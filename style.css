@@ -817,6 +817,7 @@ nav::after {
     /* JS will set height = 100vh + (wordCount * 55px) */
     min-height: 100vh;
     position: relative;
+    overflow: clip;
 }
 
 .about-sticky {
@@ -826,10 +827,9 @@ nav::after {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    /* push content down so heading lands at ~20% from top — clearly visible */
-    padding-top: calc(var(--nav-h) + 8vh);
-    padding-bottom: var(--sp-8);
-    overflow: hidden;
+    padding-top: calc(var(--nav-h) + 5vh);
+    padding-bottom: var(--sp-4);
+    overflow: visible;
 }
 
 .about-editorial {
@@ -843,7 +843,7 @@ nav::after {
 
 .about-editorial .section-heading {
     font-size: clamp(2.2rem, 5.5vw, 4.5rem);
-    margin-bottom: var(--sp-8);
+    margin-bottom: var(--sp-5);
     line-height: 1.05;
 }
 
@@ -918,7 +918,7 @@ nav::after {
     display: flex;
     justify-content: center;
     gap: var(--sp-10);
-    margin-top: var(--sp-8);
+    margin-top: var(--sp-5);
     flex-wrap: wrap;
 }
 
@@ -1329,11 +1329,14 @@ nav::after {
 }
 
 @media (max-width: 600px) {
+    :root { --footer-h: 620px; }
     .mboard-top {
         grid-template-columns: 1fr;
-        gap: var(--sp-6);
+        gap: var(--sp-5);
     }
-    .mboard-content { padding-top: var(--sp-10); }
+    .mboard-content { padding-top: var(--sp-8); }
+    .mboard-sys-label { margin-bottom: var(--sp-2); }
+    .mboard-tagline { margin-bottom: var(--sp-4); }
 }
 
 /* ═══════════════════════════════════════════
@@ -2905,8 +2908,8 @@ nav::after {
 
 /* ── "See my work" inside about section — give it spacing ─── */
 #home-about .btn-accent {
-    margin-top: var(--sp-8) !important;
-    margin-bottom: var(--sp-10) !important;
+    margin-top: var(--sp-5) !important;
+    margin-bottom: 0 !important;
     display: inline-flex;
 }
 
