@@ -693,6 +693,9 @@ nav::after {
     max-width: 100%;
 }
 
+/* Invisible on desktop — become line breaks on mobile */
+.hero-sub-br { display: none; }
+
 /* Hero subtitle per-character reveal */
 .hero-char {
     display: inline;
@@ -2280,14 +2283,16 @@ nav::after {
     .btn-accent, .btn-outline { display: block; width: 100%; text-align: center; margin-top: var(--sp-6); }
 
     /* CV */
-    .page-cv .section-heading { font-size: clamp(2rem, 9vw, 3rem); }
+    .page-cv .section-heading { font-size: clamp(1.8rem, 8vw, 2.6rem); overflow: hidden; }
     #page-cv { padding-top: calc(var(--nav-h) + var(--sp-8)); padding-bottom: var(--sp-12); }
+    #page-cv .container { padding: 0 var(--sp-5); }
     .cv-grid { gap: var(--sp-8); }
     .tl-role { font-size: var(--text-lg); }
     .tl-desc { max-width: 100%; }
     .timeline { padding-left: var(--sp-6); }
     .tl-dot { left: -1.6rem; }
     .tl-img { aspect-ratio: 16/9; max-height: 180px; }
+    #skill-bars { padding: 0 var(--sp-2); }
 
     /* Modal */
     .modal-card { border-radius: var(--radius-card); }
@@ -2302,7 +2307,8 @@ nav::after {
 /* ── Mobile polish pass ──────────────────── */
 @media (max-width: 768px) {
     /* Hero tagline — left-align when it wraps on mobile */
-    .hero-sub { text-align: left; }
+    .hero-sub { text-align: left; white-space: normal; font-size: 0.65rem; letter-spacing: 0.35em; line-height: 1.9; }
+    .hero-sub-br { display: block; }
 
     /* Hero meta — wrap neatly, hide extra seps on tiny screens */
     .hero-meta { gap: var(--sp-2) var(--sp-3); }
@@ -2795,31 +2801,17 @@ nav::after {
     animation: badge-thump 0.85s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
 }
 
-/* ── "your" glow sweep ───────────────────── */
-.hero-word-your {
-    position: relative;
-    display: inline;
+/* ── "your" Apple Music–style letter glow ── */
+.hero-word-your { display: inline; }
+.hero-word-your .hero-char { transition: opacity 0.18s ease, filter 0.18s ease, transform 0.18s cubic-bezier(0.16,1,0.3,1); }
+.hero-word-your.glow-active .hero-char {
+    animation: your-letter-pop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
-.hero-word-your::after {
-    content: '';
-    position: absolute;
-    inset: -2px -4px;
-    border-radius: 4px;
-    background: linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.55) 40%, rgba(147,197,253,0.7) 60%, transparent 100%);
-    background-size: 200% 100%;
-    background-position: 200% 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-}
-.hero-word-your.glow-sweep::after {
-    opacity: 1;
-    animation: your-glow 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
-}
-@keyframes your-glow {
-    0%   { background-position: 200% 0; opacity: 1; }
-    60%  { background-position: -20% 0; opacity: 1; }
-    100% { background-position: -20% 0; opacity: 0; }
+@keyframes your-letter-pop {
+    0%   { color: inherit; text-shadow: none;                               transform: scale(1);    }
+    35%  { color: #93c5fd;  text-shadow: 0 0 18px rgba(147,197,253,0.9);   transform: scale(1.18); }
+    65%  { color: #bfdbfe;  text-shadow: 0 0 28px rgba(191,219,254,0.7);   transform: scale(1.12); }
+    100% { color: inherit; text-shadow: none;                               transform: scale(1);    }
 }
 
 /* ── See Work button — fix arrow spacing ─── */

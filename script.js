@@ -348,7 +348,14 @@ function setupHeroCharReveal() {
         // glow sweep on "your" 1.5s after reveal starts
         const totalMs = chars.length * 18 + 400;
         setTimeout(() => {
-            document.getElementById('hero-your')?.classList.add('glow-sweep');
+            const yourEl = document.getElementById('hero-your');
+            if (yourEl) {
+                yourEl.classList.add('glow-active');
+                // stagger each letter's animation like lyrics
+                yourEl.querySelectorAll('.hero-char').forEach((ch, i) => {
+                    ch.style.animationDelay = `${i * 55}ms`;
+                });
+            }
         }, Math.max(1500, totalMs));
     }, { threshold: 0.1 });
     obs.observe(el);
