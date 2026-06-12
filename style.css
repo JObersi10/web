@@ -2375,7 +2375,7 @@ nav::after {
         font-size: clamp(3rem, 14.5vw, 14.5vw);
         width: 100%;
         overflow: visible;
-        left: -15px;
+        left: -10px;
     }
     .hero-sub { text-align: left; align-self: flex-start; white-space: normal; font-size: 0.82rem; letter-spacing: 0.22em; line-height: 2.1; padding-right: 0; overflow: visible; width: 100%; }
     .hero-sub-line { display: block; }
