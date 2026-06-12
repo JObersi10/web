@@ -319,22 +319,28 @@ function setupHeroCharReveal() {
     const el = document.getElementById('hero-sub');
     if (!el || prefersReducedMotion) return;
 
-    // Split each text node into .hero-char spans, preserving child elements (hero-word-your)
+    // Split text into .hero-char spans, preserving child elements
     function splitTextNode(node) {
         return node.textContent.split('').map(ch =>
             `<span class="hero-char">${ch === ' ' ? '&nbsp;' : ch}</span>`
         ).join('');
     }
-    [...el.childNodes].forEach(node => {
-        if (node.nodeType === Node.TEXT_NODE) {
-            const span = document.createElement('span');
-            span.innerHTML = splitTextNode(node);
-            node.replaceWith(span);
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-            // preserve the element, split its inner text
-            node.innerHTML = splitTextNode(node);
-        }
-    });
+    function splitChildNodes(container) {
+        [...container.childNodes].forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const span = document.createElement('span');
+                span.innerHTML = splitTextNode(node);
+                node.replaceWith(span);
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.classList.contains('hero-sub-line')) {
+                    splitChildNodes(node); // recurse into line wrappers
+                } else {
+                    node.innerHTML = splitTextNode(node); // leaf (hero-word-your)
+                }
+            }
+        });
+    }
+    splitChildNodes(el);
 
     const chars = el.querySelectorAll('.hero-char');
     let fired = false;
@@ -406,16 +412,19 @@ function setupWordReveal() {
     const maxWords = Math.max(...paragraphWordSets.map(s => s.length));
     if (!maxWords) return;
 
-    // 2. Reduced-motion: show everything immediately, skip scroll animation
-    if (prefersReducedMotion) {
+    // 2. Reduced-motion OR mobile: show everything immediately
+    const isMobile = () => window.innerWidth <= 768;
+    const revealAll = () => {
         paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
         document.querySelectorAll('.about-float').forEach(f => f.classList.add('pop-in'));
         const editorial = document.querySelector('.about-editorial');
-        if (editorial) editorial.classList.add('photos-split'); // show both photos immediately
-        return;
-    }
+        if (editorial) editorial.classList.add('photos-split');
+        const badge = document.querySelector('.hackclub-badge');
+        if (badge) badge.classList.add('badge-visible');
+    };
+    if (prefersReducedMotion || isMobile()) { revealAll(); return; }
 
     // 3. Track height — based on longest paragraph × px-per-word
     const track = document.getElementById('about-scroll-track');

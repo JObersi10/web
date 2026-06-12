@@ -699,8 +699,8 @@ nav::after {
     max-width: 100%;
 }
 
-/* Invisible on desktop — become line breaks on mobile */
-.hero-sub-br { display: none; }
+/* Line wrappers — inline on desktop, block on mobile */
+.hero-sub-line { display: inline; }
 
 /* Hero subtitle per-character reveal */
 .hero-char {
@@ -1686,7 +1686,12 @@ nav::after {
     gap: var(--sp-10);
 }
 
-.cv-sidebar-section { /* just a spacing wrapper */ }
+.cv-sidebar-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: var(--sp-6);
+}
 
 /* ── CV ROADMAP RIVER ──────────────────────
    Winding SVG path drawn by scroll; stops
@@ -2351,8 +2356,11 @@ nav::after {
 /* ── Mobile polish pass ──────────────────── */
 @media (max-width: 768px) {
     /* Hero tagline — left-align when it wraps on mobile */
-    .hero-sub { text-align: left; align-self: flex-start; white-space: normal; font-size: 0.65rem; letter-spacing: 0.3em; line-height: 2; padding-right: 0; overflow: visible; }
-    .hero-sub-br { display: block; }
+    .hero-sub { text-align: left; align-self: flex-start; white-space: normal; font-size: 0.82rem; letter-spacing: 0.22em; line-height: 2.1; padding-right: 0; overflow: visible; width: 100%; }
+    .hero-sub-line { display: block; }
+    .hero-sub-l1 { text-align: left; }
+    .hero-sub-l2 { text-align: center; }
+    .hero-sub-l3 { text-align: right; }
 
     /* Hero meta — wrap neatly, hide extra seps on tiny screens */
     .hero-meta { gap: var(--sp-2) var(--sp-3); }
