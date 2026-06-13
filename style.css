@@ -817,6 +817,7 @@ nav::after {
     /* JS will set height = 100vh + (wordCount * 55px) */
     min-height: 100vh;
     position: relative;
+    overflow: clip;
 }
 
 .about-sticky {
@@ -1329,11 +1330,14 @@ nav::after {
 }
 
 @media (max-width: 600px) {
+    :root { --footer-h: 620px; }
     .mboard-top {
         grid-template-columns: 1fr;
-        gap: var(--sp-6);
+        gap: var(--sp-5);
     }
-    .mboard-content { padding-top: var(--sp-10); }
+    .mboard-content { padding-top: var(--sp-8); }
+    .mboard-sys-label { margin-bottom: var(--sp-2); }
+    .mboard-tagline { margin-bottom: var(--sp-4); }
 }
 
 /* ═══════════════════════════════════════════
