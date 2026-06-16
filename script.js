@@ -171,7 +171,9 @@ function openModal(card) {
     document.getElementById('m-tag').innerText   = d.cat;
     document.getElementById('m-year').innerText  = d.year;
     document.getElementById('m-desc').innerText  = d.desc;
-    document.getElementById('modal-media').innerHTML = `<img src="${d.img}" alt="${d.title}" loading="lazy">`;
+    document.getElementById('modal-media').innerHTML = d.video
+        ? `<iframe src="${d.video}" title="${d.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+        : `<img src="${d.img}" alt="${d.title}" loading="lazy">`;
     UI.modal.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -478,6 +480,18 @@ function setupWordReveal() {
             badge.classList.add('badge-visible');
         }
 
+        // Client cards explosion — fires at 0.55, animates out when scrolling back up past 0.50
+        const statsWrap = document.querySelector('.about-stats-wrap');
+        if (statsWrap) {
+            if (!statsWrap.classList.contains('float-active') && !statsWrap.classList.contains('float-exit') && progress >= 0.55) {
+                statsWrap.classList.add('float-active');
+            } else if (statsWrap.classList.contains('float-active') && progress < 0.50) {
+                statsWrap.classList.remove('float-active');
+                statsWrap.classList.add('float-exit');
+                setTimeout(() => statsWrap.classList.remove('float-exit'), 550);
+            }
+        }
+
         // Badge thump when its word is revealed
         if (!badgeThumped && runningSet && runningLocalIdx >= 0) {
             const pi = paragraphWordSets.indexOf(runningSet);
@@ -754,6 +768,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.08 });
 
     document.querySelectorAll('.reveal, .service-card, .gear-card').forEach(el => revealObserver.observe(el));
+
+    /* Reduced motion: show client cards instantly */
+    if (prefersReducedMotion) {
+        document.querySelectorAll('.client-card').forEach(c => { c.style.opacity = '1'; c.style.animation = 'none'; });
+    }
 
     /* javii-reveal (blur + slide) */
     const javiiObserver = new IntersectionObserver(entries => {
