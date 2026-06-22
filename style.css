@@ -2477,7 +2477,7 @@ nav::after {
 
     /* About — sticky scroll (keep enabled on tablet/mobile) */
     #home-about { padding: 0; }
-    .about-sticky { padding: calc(var(--nav-h) + var(--sp-10)) 0 var(--sp-10); align-items: flex-start; }
+    .about-sticky { padding: calc(var(--nav-h) + var(--sp-10)) 0 var(--sp-10); align-items: flex-start; overflow: visible; }
     .about-editorial .section-heading { font-size: clamp(2rem, 8vw, 3rem); }
     .about-body-text { font-size: var(--text-base); }
     .about-stats { gap: var(--sp-8); }
