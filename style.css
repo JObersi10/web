@@ -3137,6 +3137,11 @@ nav::after {
     margin-top: var(--sp-8) !important;
     margin-bottom: var(--sp-10) !important;
     display: inline-flex;
+    /* Sit above the floating client-logo cards (.about-stats-wrap is
+       position:relative, so its absolutely-positioned cards would
+       otherwise paint over this static button) */
+    position: relative;
+    z-index: 5;
 }
 
 /* ── Footer tagline — fluid sizing, always left-aligned on small screens ─── */
