@@ -181,6 +181,8 @@ function openModal(card) {
 function closeModal() {
     if (UI.modal) UI.modal.classList.remove('open');
     document.body.style.overflow = '';
+    const media = document.getElementById('modal-media');
+    if (media) media.innerHTML = '';
 }
 
 /* ── Mobile menu ── */
