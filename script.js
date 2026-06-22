@@ -433,7 +433,7 @@ function setupWordReveal() {
     const track = document.getElementById('about-scroll-track');
     const PX_PER_WORD = 52;
     if (track) {
-        track.style.height = `calc(100vh + ${maxWords * PX_PER_WORD + 200}px)`;
+        track.style.height = `calc(100vh + ${maxWords * PX_PER_WORD + 320}px)`;
     }
 
     // 4. Find "running" word in its paragraph for badge thump timing
