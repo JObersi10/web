@@ -989,11 +989,13 @@ nav::after {
 .client-card:hover img { filter: none; opacity: 1; }
 .client-card:hover { border-color: var(--accent); animation-play-state: paused; }
 
-/* Corners — hidden until explosion fires */
-.cc-1 { top:    -14px; left:  0; width: 116px; height: 86px; }
-.cc-2 { top:    -14px; right: 0; width: 116px; height: 86px; }
-.cc-3 { bottom: -14px; left:  0; }
-.cc-4 { bottom: -14px; right: 0; }
+/* Corners — hidden until explosion fires. Pulled fully inside the wrap
+   (no negative offsets) so they can never visually extend over content
+   below, like the "See my work" button. */
+.cc-1 { top:    6px; left:  0; width: 116px; height: 86px; }
+.cc-2 { top:    6px; right: 0; width: 116px; height: 86px; }
+.cc-3 { bottom: 6px; left:  0; }
+.cc-4 { bottom: 6px; right: 0; }
 
 /* GPU promotion only while animating */
 .about-stats-wrap.float-active .client-card,
@@ -3134,14 +3136,15 @@ nav::after {
 
 /* ── "See my work" inside about section — give it spacing ─── */
 #home-about .btn-accent {
-    margin-top: var(--sp-8) !important;
+    margin-top: var(--sp-12) !important;
     margin-bottom: var(--sp-10) !important;
     display: inline-flex;
-    /* Sit above the floating client-logo cards (.about-stats-wrap is
-       position:relative, so its absolutely-positioned cards would
-       otherwise paint over this static button) */
-    position: relative;
-    z-index: 5;
+    /* Force this above anything else in the about section (floating
+       client-logo cards, overflow from the word-reveal text, etc.) —
+       own stacking context, highest z-index, can't be covered. */
+    position: relative !important;
+    isolation: isolate;
+    z-index: 9999 !important;
 }
 
 /* ── Footer tagline — fluid sizing, always left-aligned on small screens ─── */
