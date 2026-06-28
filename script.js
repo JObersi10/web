@@ -418,23 +418,73 @@ function setupWordReveal() {
     const maxWords = Math.max(...paragraphWordSets.map(s => s.length));
     if (!maxWords) return;
 
-    // 2. Reduced-motion: show everything immediately, skip scroll animation
-    if (prefersReducedMotion) {
+    // 2. Reduced-motion or true mobile: show everything immediately, skip the
+    //    scroll-tied reveal. On mobile #home-about isn't pinned (CSS switches
+    //    .about-sticky to height:auto — see style.css) so the section just
+    //    scrolls by at normal speed; the scroll-driven word-by-word math
+    //    assumes a held-in-place pin and needs far more scroll distance than
+    //    a normal mobile scroll-through provides, so the text (and badge/
+    //    cards, which gate on the same progress value) never finish revealing
+    //    before the section is gone.
+    if (prefersReducedMotion || window.matchMedia('(max-width: 768px)').matches) {
         paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
         document.querySelectorAll('.about-float').forEach(f => f.classList.add('pop-in'));
         const editorial = document.querySelector('.about-editorial');
         if (editorial) editorial.classList.add('photos-split'); // show both photos immediately
+        const badgeEl = document.querySelector('.hackclub-badge');
+        if (badgeEl) badgeEl.classList.add('badge-visible');
+        const statsWrapEl = document.querySelector('.about-stats-wrap');
+        if (statsWrapEl) statsWrapEl.classList.add('float-active');
         return;
     }
 
-    // 3. Track height — based on longest paragraph × px-per-word
+    // 3. Track height — based on longest paragraph × px-per-word, PLUS
+    //    however much the pinned content's own height exceeds the viewport.
+    //    Without that second term, #home-services starts (in document flow)
+    //    before the sticky's overflowing tail (cards/stats/button) has fully
+    //    scrolled past, so the two visibly overlap/clip into each other at
+    //    any viewport where the About content is taller than 100vh (common
+    //    at short/square aspect ratios). Measured live so it self-corrects
+    //    across every aspect ratio instead of guessing a fixed buffer.
     const track = document.getElementById('about-scroll-track');
     const PX_PER_WORD = 52;
-    if (track) {
-        track.style.height = `calc(100vh + ${maxWords * PX_PER_WORD + 320}px)`;
+    const aboutSticky = document.querySelector('.about-sticky');
+    const aboutEditorial = document.querySelector('.about-editorial');
+    const aboutStatsWrap = document.querySelector('.about-stats-wrap');
+
+    function measureAboutOverflow() {
+        if (!aboutSticky || !aboutEditorial) return 0;
+        const hadSplit = aboutEditorial.classList.contains('photos-split');
+        const hadFloat = aboutStatsWrap && aboutStatsWrap.classList.contains('float-active');
+        // Measure the tallest visual state (photos split, cards exploded),
+        // not whatever transient state the reveal happens to be in.
+        if (!hadSplit) aboutEditorial.classList.add('photos-split');
+        if (aboutStatsWrap && !hadFloat) aboutStatsWrap.classList.add('float-active');
+
+        const cs = getComputedStyle(aboutSticky);
+        const contentHeight = aboutEditorial.getBoundingClientRect().height
+            + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+
+        if (!hadSplit) aboutEditorial.classList.remove('photos-split');
+        if (aboutStatsWrap && !hadFloat) aboutStatsWrap.classList.remove('float-active');
+
+        return Math.max(0, Math.ceil(contentHeight - window.innerHeight));
     }
+
+    function updateTrackHeight() {
+        if (!track) return;
+        const overflow = measureAboutOverflow();
+        track.style.height = `calc(100vh + ${maxWords * PX_PER_WORD + 320 + overflow}px)`;
+    }
+    updateTrackHeight();
+
+    let aboutResizeT;
+    window.addEventListener('resize', () => {
+        clearTimeout(aboutResizeT);
+        aboutResizeT = setTimeout(updateTrackHeight, 150);
+    });
 
     // 4. Find "running" word in its paragraph for badge thump timing
     let runningSet = null, runningLocalIdx = -1;
@@ -465,8 +515,18 @@ function setupWordReveal() {
 
     function updateWords() {
         if (!section) return;
-        const rect     = section.getBoundingClientRect();
-        const trackH   = section.offsetHeight - window.innerHeight;
+        const rect = section.getBoundingClientRect();
+        // The sticky pin's actual release point is governed by its own
+        // rendered height, not the viewport height — .about-sticky uses
+        // min-height:100vh (see style.css), so on any viewport where the
+        // content overflows 100vh, the sticky box itself is taller than
+        // the viewport and unpins *before* `offsetHeight - innerHeight` of
+        // scroll has happened. Using window.innerHeight here understated
+        // that gap, so the pin released early and cut the word reveal
+        // short. aboutSticky already exists (defined above for the
+        // track-height calc) — reuse it instead of re-querying.
+        const stickyH  = aboutSticky ? aboutSticky.offsetHeight : window.innerHeight;
+        const trackH   = section.offsetHeight - stickyH;
         const progress = trackH > 0 ? Math.max(0, Math.min(1, -rect.top / trackH)) : 0;
 
         paragraphWordSets.forEach((words, pi) => {
@@ -528,6 +588,19 @@ function setupWordReveal() {
     }
 
     updateWords();
+
+    // Re-sync once everything (fonts, images) has actually finished loading.
+    // Track height/word-progress are both computed from live layout measurements
+    // taken at DOMContentLoaded, before web fonts swap in or images settle —
+    // if a returning visitor's scroll position is restored at/near the bottom
+    // of the page (Chrome restores scroll on reload), there's no further user
+    // scroll to trigger a recompute, so the reveal can get stuck showing
+    // whatever was measured against that pre-layout-settle geometry.
+    window.addEventListener('load', () => {
+        updateTrackHeight();
+        updateWords();
+    });
+
     return updateWords;
 }
 
@@ -786,11 +859,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, { threshold: 0.05, rootMargin: '0px 0px -16px 0px' });
 
-    document.querySelectorAll('.javii-reveal').forEach((el, i) => {
+    const javiiEls = document.querySelectorAll('.javii-reveal');
+    javiiEls.forEach((el, i) => {
         if (!prefersReducedMotion) {
             el.style.transitionDelay = `${i * 0.045}s`;
         }
         javiiObserver.observe(el);
+    });
+
+    // Chrome restores scroll position on reload AFTER DOMContentLoaded (often
+    // well after — confirmed via measurement, not assumption), so an element
+    // that's already scrolled past by the time that jump happens can land
+    // straight in the "above the viewport" state without ever passing through
+    // "intersecting", and IntersectionObserver only fires on threshold
+    // crossings — it never gets the "entering" callback that would reveal it.
+    // Re-check once the page (and any restored scroll position) has settled.
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            javiiEls.forEach(el => {
+                if (!el.classList.contains('active') && el.getBoundingClientRect().bottom < 0) {
+                    el.classList.add('active');
+                    javiiObserver.unobserve(el);
+                }
+            });
+        }, 300);
     });
 
     /* Skill bars — fill + count-up percentage number */
