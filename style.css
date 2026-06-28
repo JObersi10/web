@@ -157,6 +157,10 @@ button {
     pointer-events: none;
     z-index: var(--z-cursor);
     mix-blend-mode: difference;
+    /* hidden until the first real mousemove moves it off (0,0) — see
+       setupCursor() in script.js, which sets opacity:1 there. Without this,
+       the dot flashes visibly in the top-left corner on load. */
+    opacity: 0;
     transition: width 0.3s ease, height 0.3s ease, opacity 0.2s ease;
     will-change: left, top, width, height;
 }
@@ -824,14 +828,22 @@ nav::after {
 .about-sticky {
     position: sticky;
     top: 0;
-    height: 100vh;
+    /* min-height (not a fixed height) — when content is taller than 100vh
+       (short/square viewports), the box grows to actually contain it
+       instead of clipping it via overflow:visible past its own bottom
+       edge. With a fixed height:100vh, the overflowing tail (cards,
+       button) rendered below the box's real bottom and visually
+       collided with #home-services, which starts immediately after that
+       (too-short) box in document flow — see script.js's updateTrackHeight,
+       which sizes the scroll-track to match this real, possibly-taller box. */
+    min-height: 100vh;
     display: flex;
     align-items: flex-start;
     justify-content: center;
     /* push content down so heading lands at ~20% from top — clearly visible */
     padding-top: calc(var(--nav-h) + 8vh);
     padding-bottom: var(--sp-8);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .about-editorial {
@@ -951,6 +963,11 @@ nav::after {
     position: relative;
     margin-top: var(--sp-8);
     padding: var(--sp-6) var(--sp-10);
+    /* Keeps the top corner cards (cc-1/cc-2, 86px tall, top:6px) clear of
+       the bottom corner cards (cc-3/cc-4, 86px tall, bottom:6px) — below
+       184px (6+86+86+6) the corners clip into each other regardless of
+       viewport size. */
+    min-height: 190px;
 }
 
 /* Desktop: overlay absolutely on top of the stats block */
@@ -989,11 +1006,13 @@ nav::after {
 .client-card:hover img { filter: none; opacity: 1; }
 .client-card:hover { border-color: var(--accent); animation-play-state: paused; }
 
-/* Corners — hidden until explosion fires */
-.cc-1 { top:    -14px; left:  0; width: 116px; height: 86px; }
-.cc-2 { top:    -14px; right: 0; width: 116px; height: 86px; }
-.cc-3 { bottom: -14px; left:  0; }
-.cc-4 { bottom: -14px; right: 0; }
+/* Corners — hidden until explosion fires. Pulled fully inside the wrap
+   (no negative offsets) so they can never visually extend over content
+   below, like the "See my work" button. */
+.cc-1 { top:    6px; left:  0; width: 116px; height: 86px; }
+.cc-2 { top:    6px; right: 0; width: 116px; height: 86px; }
+.cc-3 { bottom: 6px; left:  0; }
+.cc-4 { bottom: 6px; right: 0; }
 
 /* GPU promotion only while animating */
 .about-stats-wrap.float-active .client-card,
@@ -2898,10 +2917,11 @@ nav::after {
 .star-mask-wrap img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* contain (not cover) — show the whole photo, letterboxed inside the
+       square, instead of cropping/zooming in to fill it. */
+    object-fit: contain;
     /* use individual `rotate` property so `scale` stays independent — avoids
        jitter caused by two transform-based animations drifting out of sync */
-    scale: 1.55;
     transform-origin: center center;
     animation: star-img-counter 18s linear infinite;
 }
@@ -2919,21 +2939,11 @@ nav::after {
 @media (prefers-reduced-motion: reduce) {
     .star-mask-wrap,
     .star-mask-wrap img { animation: none; }
-    .star-mask-wrap img { scale: 1.3; }
 }
 
 /* hide side photos on narrow screens */
 @media (max-width: 1300px) {
     .about-float { display: none; }
-}
-
-/* ── Mobile about photo strip (legacy — hidden when scroll photos active) ── */
-.about-mobile-photos {
-    display: none;
-    gap: var(--sp-4);
-    justify-content: center;
-    align-items: center;
-    margin-bottom: var(--sp-8);
 }
 
 /* ── Mobile scroll-driven about photos ─────────────────────
@@ -2943,7 +2953,11 @@ nav::after {
 .about-scroll-photos {
     display: none;
     position: relative;
-    width: 100%;
+    /* Bleed past .about-editorial's own side padding so the pfp/star sit
+       over that gutter instead of being squeezed into the narrower text
+       column width. */
+    width: calc(100% + 2 * clamp(1.25rem, 5vw, 3rem));
+    margin-left: calc(-1 * clamp(1.25rem, 5vw, 3rem));
     height: 215px;
     margin-bottom: var(--sp-6);
     overflow: hidden; /* clip images to container bounds */
@@ -2951,7 +2965,6 @@ nav::after {
 
 @media (max-width: 1300px) {
     .about-scroll-photos { display: block; }
-    .about-mobile-photos  { display: none !important; }
 }
 
 /* Profile picture — starts centered */
@@ -2988,74 +3001,18 @@ nav::after {
     z-index: 1;
 }
 
-/* Split state: pfp → left, star → right */
+/* Split state: pfp → left, star → right. Offsets are equal-and-opposite
+   (same clamp on both sides) so the pair is centered as a group instead of
+   skewing left — previously pfp shifted further (80–100px) than star
+   shifted back (52–76px). */
 .about-editorial.photos-split .asp-pfp {
     width:  clamp(140px, 42vw, 158px);
     height: clamp(140px, 42vw, 158px);
-    transform: translateX(calc(-50% - clamp(80px, 25vw, 100px)));
+    transform: translateX(calc(-50% - clamp(66px, 22vw, 88px)));
 }
 .about-editorial.photos-split .asp-star {
-    transform: translateX(calc(-50% + clamp(52px, 19vw, 76px)));
+    transform: translateX(calc(-50% + clamp(66px, 22vw, 88px)));
     opacity: 1;
-}
-
-.about-mobile-photo {
-    flex-shrink: 0;
-    overflow: hidden;
-    border: 1.5px solid var(--border-accent);
-}
-
-.about-mobile-photo:first-child {
-    width: 115px; height: 115px;
-    border-radius: 50%;
-}
-
-/* Star photo: let star-mask-wrap handle the clip inside */
-.about-mobile-photo--star {
-    width: 115px; height: 115px;
-    overflow: visible;
-    border: none;
-    border-radius: 0;
-    background: none;
-}
-
-.about-mobile-photo img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-}
-
-/* Showcase image below CTA button */
-.about-showcase {
-    margin-top: var(--sp-10);
-    width: calc(100% + 3rem);
-    margin-left: -1.5rem;
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    border-radius: var(--radius-card);
-    transform: rotate(-1.2deg);
-    box-shadow: 0 28px 70px rgba(0,0,0,0.55);
-}
-
-.about-showcase img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    filter: brightness(0.86);
-    transition: transform 0.6s ease;
-}
-
-.about-showcase:hover img { transform: scale(1.03); }
-
-@media (max-width: 768px) {
-    .about-showcase {
-        width: 100%;
-        margin-left: 0;
-        transform: rotate(-0.5deg);
-        margin-top: var(--sp-8);
-    }
-}
-
-@media (max-width: 1300px) {
-    .about-mobile-photos { display: flex; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3134,9 +3091,15 @@ nav::after {
 
 /* ── "See my work" inside about section — give it spacing ─── */
 #home-about .btn-accent {
-    margin-top: var(--sp-8) !important;
+    margin-top: var(--sp-12) !important;
     margin-bottom: var(--sp-10) !important;
     display: inline-flex;
+    /* Force this above anything else in the about section (floating
+       client-logo cards, overflow from the word-reveal text, etc.) —
+       own stacking context, highest z-index, can't be covered. */
+    position: relative !important;
+    isolation: isolate;
+    z-index: 9999 !important;
 }
 
 /* ── Footer tagline — fluid sizing, always left-aligned on small screens ─── */
