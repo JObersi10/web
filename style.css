@@ -1508,6 +1508,32 @@ nav::after {
 /* ═══════════════════════════════════════════
    CONTACT PAGE
 ═══════════════════════════════════════════ */
+.connect-tagline {
+    color: var(--text-muted);
+    font-size: var(--text-base);
+    margin: var(--sp-3) 0 0;
+}
+.connect-tagline .wiggle {
+    display: inline-flex;
+    vertical-align: middle;
+    color: var(--accent);
+    transform-origin: 70% 70%;
+}
+/* Plays once when the line scrolls into view (.reveal adds .active via
+   IntersectionObserver in script.js) — not an idle ambient loop. */
+.connect-tagline.active .wiggle {
+    animation: tagline-wave 0.8s cubic-bezier(0.34,1.56,0.64,1) 1;
+    animation-delay: 0.35s;
+}
+@keyframes tagline-wave {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(16deg); }
+    60% { transform: rotate(-9deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .connect-tagline.active .wiggle { animation: none; }
+}
+
 .contact-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1658,9 +1684,110 @@ nav::after {
 }
 .avail-card:hover {
     border-color: var(--border-accent);
-    transform: translateY(-3px);
+    transform: translateY(-3px) rotate(-0.6deg);
 }
-.avail-icon { font-size: 1.4rem; display: block; margin-bottom: var(--sp-2); }
+.avail-icon {
+    display: block;
+    margin-bottom: var(--sp-3);
+    color: var(--accent);
+}
+.avail-icon svg {
+    width: 26px;
+    height: 26px;
+    overflow: visible;
+}
+
+/* Icon animations — triggered on :hover and by JS .icon-idle class (periodic idle bursts).
+   Drone props each spin around their own bounding-box center (transform-box: fill-box). */
+
+/* Clapperboard — hinged top bar claps with spring rebound wave */
+.icon-clapper .clap-top { transform-origin: 2px 8px; }
+.avail-card:hover .icon-clapper .clap-top,
+.avail-card.icon-idle .icon-clapper .clap-top {
+    animation: clap-action 0.8s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+/* Drone — each propeller spins around its own center */
+.icon-drone .prop {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+.avail-card:hover .icon-drone .prop { animation: prop-spin 0.38s linear infinite; }
+.avail-card.icon-idle .icon-drone .prop { animation: prop-spin 0.38s linear 4; }
+.avail-card:hover .icon-drone .prop-tr,
+.avail-card.icon-idle .icon-drone .prop-tr { animation-delay: -0.09s; }
+.avail-card:hover .icon-drone .prop-bl,
+.avail-card.icon-idle .icon-drone .prop-bl { animation-delay: -0.19s; }
+.avail-card:hover .icon-drone .prop-br,
+.avail-card.icon-idle .icon-drone .prop-br { animation-delay: -0.29s; }
+
+/* Scissors — each blade rotates opposite direction around the blade crossing point */
+.icon-scissors .sc-top,
+.icon-scissors .sc-bot {
+    transform-box: view-box;
+    transform-origin: 12.7px 12px;
+}
+.avail-card:hover .icon-scissors .sc-top,
+.avail-card.icon-idle .icon-scissors .sc-top {
+    animation: sc-top-snip 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.avail-card:hover .icon-scissors .sc-bot,
+.avail-card.icon-idle .icon-scissors .sc-bot {
+    animation: sc-bot-snip 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+/* Collab — friendly head-nod */
+.icon-collab { transform-box: fill-box; transform-origin: 50% 100%; }
+.avail-card:hover .icon-collab,
+.avail-card.icon-idle .icon-collab {
+    animation: collab-action 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+@keyframes clap-action {
+    0%   { transform: rotate(0deg); }
+    20%  { transform: rotate(-22deg); }
+    40%  { transform: rotate(5deg); }
+    55%  { transform: rotate(-13deg); }
+    70%  { transform: rotate(2deg); }
+    84%  { transform: rotate(-6deg); }
+    100% { transform: rotate(0deg); }
+}
+@keyframes sc-top-snip {
+    0%   { transform: rotate(0deg); }
+    30%  { transform: rotate(-20deg); }
+    55%  { transform: rotate(5deg); }
+    75%  { transform: rotate(-8deg); }
+    100% { transform: rotate(0deg); }
+}
+@keyframes sc-bot-snip {
+    0%   { transform: rotate(0deg); }
+    30%  { transform: rotate(20deg); }
+    55%  { transform: rotate(-5deg); }
+    75%  { transform: rotate(8deg); }
+    100% { transform: rotate(0deg); }
+}
+@keyframes collab-action {
+    0%   { transform: rotate(0deg); }
+    18%  { transform: rotate(13deg); }
+    40%  { transform: rotate(-5deg); }
+    60%  { transform: rotate(7deg); }
+    82%  { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+}
+@keyframes prop-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .avail-card:hover .icon-clapper .clap-top,
+    .avail-card.icon-idle .icon-clapper .clap-top,
+    .avail-card:hover .icon-scissors .sc-top,
+    .avail-card.icon-idle .icon-scissors .sc-top,
+    .avail-card:hover .icon-scissors .sc-bot,
+    .avail-card.icon-idle .icon-scissors .sc-bot,
+    .avail-card:hover .icon-collab,
+    .avail-card.icon-idle .icon-collab { animation: none; }
+    .avail-card:hover .icon-drone .prop,
+    .avail-card.icon-idle .icon-drone .prop { animation: none; }
+}
 .avail-title {
     font-family: 'Syne', sans-serif;
     font-weight: 700;
@@ -1693,6 +1820,68 @@ nav::after {
 @media (max-width: 768px) {
     .avail-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
     .coming-soon-label { font-size: var(--text-sm); padding: var(--sp-2) var(--sp-4); }
+}
+
+/* Connect page — process + FAQ sections */
+.contact-section {
+    margin-top: var(--sp-20);
+}
+
+.contact-section .social-label {
+    display: block;
+    margin-bottom: var(--sp-2);
+}
+
+.contact-section-sub {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    margin: 0 0 var(--sp-8);
+}
+
+.faq-list {
+    margin-top: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+}
+
+.faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--sp-5) var(--sp-6);
+    transition: border-color 0.3s;
+}
+.faq-item:hover { border-color: var(--border-accent); }
+
+.faq-item summary {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+    content: '+';
+    font-family: 'Syne', sans-serif;
+    color: var(--accent);
+    font-size: var(--text-lg);
+    flex-shrink: 0;
+    transition: transform 0.25s;
+}
+.faq-item[open] summary::after { transform: rotate(45deg); }
+
+.faq-item p {
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    margin: var(--sp-3) 0 0;
 }
 
 /* ═══════════════════════════════════════════
@@ -2361,15 +2550,26 @@ nav::after {
     display: flex;
     flex-direction: column;
     gap: var(--sp-4);
+    /* Grid items default to a content-based min-width (the widest
+       unbreakable word, e.g. "Competition" at this font size) — without
+       this, a long project title can force the whole .modal-card grid
+       track wider than the explicit container, blowing the popup out
+       past the viewport on mobile. min-width:0 lets it actually shrink
+       and wrap instead. */
+    min-width: 0;
 }
+
+.modal-media { min-width: 0; }
 
 .m-title {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
-    font-size: var(--text-3xl);
+    font-size: clamp(1.5rem, 5vw, var(--text-3xl));
     text-transform: uppercase;
     font-style: italic;
-    line-height: 1;
+    line-height: 1.05;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .m-desc { font-size: var(--text-sm); color: var(--text-mid); line-height: 1.8; }
@@ -2543,8 +2743,13 @@ nav::after {
     #skill-bars { padding: 0 var(--sp-3); }
     .skill-bar-wrap { overflow: hidden; }
 
-    /* Modal */
-    .modal-card { border-radius: var(--radius-card); }
+    /* Modal — tighter outer/inner padding so more width goes to actual
+       content on narrow phones; max-height + scroll so a long description
+       doesn't push the close button or video off-screen. */
+    #modal { padding: var(--sp-3); }
+    .modal-card { border-radius: var(--radius-card); max-height: 90vh; }
+    .modal-info { padding: var(--sp-6); }
+    .m-title { font-size: clamp(1.3rem, 7vw, 1.8rem); }
 }
 
 /* ── Small phone ── */
@@ -2584,12 +2789,13 @@ nav::after {
     /* Badge — hide on small screens, already handled at 900px */
     .hero-badge { display: none; }
 
-    /* About sticky: natural height, no 100vh constraint, no overflow tricks */
+    /* About sticky: same pinned min-height:100vh behavior as desktop now
+       (see base .about-sticky rule) — mobile reveal is scroll-tied again,
+       so it needs the pin held in place to have scroll distance to run
+       against, same as desktop. */
     .about-sticky {
         position: sticky;
         top: 0;
-        height: auto;
-        overflow: visible;
         padding-top: var(--nav-h);
         padding-bottom: var(--sp-6);
         align-items: flex-start;

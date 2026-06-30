@@ -204,6 +204,26 @@ function navTo(url) {
     setTimeout(() => window.location.href = url, 350);
 }
 
+/* ── Avail-card icon idle animations ── */
+function setupIconIdle() {
+    const cards = document.querySelectorAll('.avail-card');
+    if (!cards.length || prefersReducedMotion) return;
+
+    // Each card fires its idle burst at a different cadence so they never sync up.
+    const cadences  = [5200, 6800, 7400, 9100]; // ms between bursts
+    const initDelay = [1000, 2600, 4100, 5800];  // stagger first fire
+    const holdMs    = 1100;                       // ≥ longest animation duration
+
+    cards.forEach((card, i) => {
+        const fire = () => {
+            card.classList.add('icon-idle');
+            setTimeout(() => card.classList.remove('icon-idle'), holdMs);
+            setTimeout(fire, cadences[i]);
+        };
+        setTimeout(fire, initDelay[i]);
+    });
+}
+
 /* ── Back to top ── */
 function setupBackToTop() {
     const btn = document.getElementById('back-to-top');
@@ -418,15 +438,12 @@ function setupWordReveal() {
     const maxWords = Math.max(...paragraphWordSets.map(s => s.length));
     if (!maxWords) return;
 
-    // 2. Reduced-motion or true mobile: show everything immediately, skip the
-    //    scroll-tied reveal. On mobile #home-about isn't pinned (CSS switches
-    //    .about-sticky to height:auto — see style.css) so the section just
-    //    scrolls by at normal speed; the scroll-driven word-by-word math
-    //    assumes a held-in-place pin and needs far more scroll distance than
-    //    a normal mobile scroll-through provides, so the text (and badge/
-    //    cards, which gate on the same progress value) never finish revealing
-    //    before the section is gone.
-    if (prefersReducedMotion || window.matchMedia('(max-width: 768px)').matches) {
+    // 2. Reduced-motion: show everything immediately, skip the scroll-tied
+    //    reveal. Mobile now uses the same pinned scroll-tied reveal as
+    //    desktop (see .about-sticky in style.css — no longer height:auto on
+    //    mobile) so the word-by-word animation has a held section to run
+    //    against, matching the pre-PR14 behavior this was reverted from.
+    if (prefersReducedMotion) {
         paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
@@ -740,6 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateWords = setupWordReveal();
     const updateRoad  = setupCvRoad();
     setupCuracaoIdle();
+    setupIconIdle();
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
     const backTopBtn = setupBackToTop();
@@ -796,14 +814,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (aboutBtn && aboutSection) {
         aboutBtn.addEventListener('click', e => {
             e.preventDefault();
-            const target   = aboutSection.getBoundingClientRect().top + window.scrollY;
-            const trackEl  = document.getElementById('about-scroll-track');
-            const trackEnd = trackEl
-                ? target + trackEl.offsetHeight - window.innerHeight
+            const target    = aboutSection.getBoundingClientRect().top + window.scrollY;
+            const trackEl   = document.getElementById('about-scroll-track');
+            // Same fix as updateWords()'s progress calc: .about-sticky is
+            // min-height:100vh, not a fixed height, so on viewports where
+            // the content overflows 100vh the pin's real release point is
+            // governed by the sticky's own (taller) rendered height, not
+            // window.innerHeight. Using innerHeight here overshot the
+            // target — scrolled past where the pin actually ends.
+            const stickyEl  = document.querySelector('.about-sticky');
+            const stickyH   = stickyEl ? stickyEl.offsetHeight : window.innerHeight;
+            const trackEnd  = trackEl
+                ? target + trackEl.offsetHeight - stickyH
                 : target;
             const start    = window.scrollY;
             const distance = trackEnd - start;
-            const duration = Math.min(5500, Math.max(2600, Math.abs(distance) * 2.2));
+            const duration = Math.min(1800, Math.max(500, Math.abs(distance) * 0.7));
             let startTime  = null;
 
             // easeOutQuart — rockets fast, then decelerates into the text reveal
@@ -850,16 +876,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* javii-reveal (blur + slide) */
+    let javiiEls = Array.from(document.querySelectorAll('.javii-reveal'));
+
+    // Earlier attempt forced these instantly 'active' on mobile, reasoning
+    // that the IntersectionObserver "wasn't firing reliably" there — that was
+    // wrong, traced to an instant `window.scrollTo()` jump in a test script
+    // skipping the intersecting frame, not a real bug. Forcing it instant
+    // made the fade-in transition run at page load (before the element is
+    // even scrolled to), so by the time you actually see it on mobile it's
+    // already finished animating — looks like it never animated at all.
     const javiiObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-                javiiObserver.unobserve(entry.target);
-            }
+            if (entry.isIntersecting) revealJavii(entry.target);
         });
     }, { threshold: 0.05, rootMargin: '0px 0px -16px 0px' });
 
-    const javiiEls = document.querySelectorAll('.javii-reveal');
+    function revealJavii(el) {
+        if (el.classList.contains('active')) return;
+        el.classList.add('active');
+        javiiObserver.unobserve(el);
+        javiiEls = javiiEls.filter(e => e !== el);
+    }
+
     javiiEls.forEach((el, i) => {
         if (!prefersReducedMotion) {
             el.style.transitionDelay = `${i * 0.045}s`;
@@ -867,23 +905,33 @@ document.addEventListener('DOMContentLoaded', () => {
         javiiObserver.observe(el);
     });
 
-    // Chrome restores scroll position on reload AFTER DOMContentLoaded (often
-    // well after — confirmed via measurement, not assumption), so an element
-    // that's already scrolled past by the time that jump happens can land
-    // straight in the "above the viewport" state without ever passing through
-    // "intersecting", and IntersectionObserver only fires on threshold
-    // crossings — it never gets the "entering" callback that would reveal it.
-    // Re-check once the page (and any restored scroll position) has settled.
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            javiiEls.forEach(el => {
-                if (!el.classList.contains('active') && el.getBoundingClientRect().bottom < 0) {
-                    el.classList.add('active');
-                    javiiObserver.unobserve(el);
-                }
-            });
-        }, 300);
-    });
+    // Browsers restore scroll position on reload, often via a jump straight
+    // to the restored offset rather than a frame-by-frame scroll — measured
+    // this directly: an element's intersection ratio can go from "below the
+    // fold" to "already scrolled past" without ever crossing the observer's
+    // threshold in between, so IntersectionObserver never fires for it at
+    // all. A blind "if it's already passed, force it visible" timeout (the
+    // previous fix here) over-corrected: it could reveal something *before*
+    // you'd actually scrolled back to see it, so by the time it entered view
+    // there was no animation left to watch — looked like it never played.
+    // Instead, re-derive intersection from real geometry, in two places: once
+    // shortly after load (catches "the restored position already has this
+    // element visible right now"), and on every scroll (catches "scrolled
+    // back to something the observer missed" — covers the reload-jump case
+    // without ever revealing something the user hasn't scrolled to yet).
+    function recheckJaviiVisibility() {
+        if (!javiiEls.length) return;
+        const vh = window.innerHeight;
+        javiiEls.slice().forEach(el => {
+            const r = el.getBoundingClientRect();
+            if (r.bottom > 0 && r.top < vh - 16) revealJavii(el);
+        });
+    }
+
+    window.addEventListener('load', () => setTimeout(recheckJaviiVisibility, 300));
+    window.addEventListener('scroll', () => {
+        if (javiiEls.length) requestAnimationFrame(recheckJaviiVisibility);
+    }, { passive: true });
 
     /* Skill bars — fill + count-up percentage number */
     document.querySelectorAll('.skill-bar-fill').forEach(bar => {
