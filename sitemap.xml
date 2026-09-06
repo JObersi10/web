@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Using the default GitHub Pages project URL for jobersi10/web
+  (https://jobersi10.github.io/web/) per your call to skip a custom domain
+  for now. I couldn't verify Pages is actually enabled/live at this URL —
+  this repo has no gh-pages branch or Pages deploy workflow visible from
+  here — so double check it resolves once deployed, and swap this whole
+  block for a real custom domain later if you get one.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://jobersi10.github.io/web/index.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://jobersi10.github.io/web/portfolio.html</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://jobersi10.github.io/web/cv.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://jobersi10.github.io/web/gear.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://jobersi10.github.io/web/contact.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+</urlset>
