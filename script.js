@@ -757,14 +757,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Back to top button
             if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
 
-            // Cutting mat parallax — each layer drifts at its own speed
+            // Cutting mat parallax — near/major/minor layers drift at
+            // clearly separated, slow speeds so the grid reads as depth
+            // instead of one flat plane scrolling with the page.
             if (bgGrad && !prefersReducedMotion) {
-                const d45 = (y * 0.20).toFixed(1);
-                const d30 = (y * 0.12).toFixed(1);
-                const dG  = (y * 0.28).toFixed(1);
-                // 5 layers: 45°, 30°, 60°, h-grid, v-grid
+                const dNear  = (y * 0.05).toFixed(1);  // 45° cutting guide
+                const dMajor = (y * 0.025).toFixed(1); // 140px grid
+                const dMinor = (y * 0.012).toFixed(1); // 28px grid
+                // 5 layers: 45° guide, major h-grid, major v-grid, minor h-grid, minor v-grid
                 bgGrad.style.backgroundPosition =
-                    `left -${d45}px, left -${d30}px, left -${d30}px, 0 -${dG}px, -${dG}px 0`;
+                    `left -${dNear}px, 0 -${dMajor}px, -${dMajor}px 0, 0 -${dMinor}px, -${dMinor}px 0`;
             }
 
             // Clip bg overlays off the footer as it gets revealed

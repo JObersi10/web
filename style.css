@@ -105,34 +105,41 @@ button {
 }
 
 /* ── Backgrounds ────────────────────────────────────────── */
+/* Cutting mat, rebuilt: one 45° cutting guide (near layer) + a major/minor
+   grid pair (5:1 ratio, like real cutting-mat rulings) instead of three
+   overlapping diagonal angles — the old 45/30/60° crosshatch read as messy
+   noise rather than a mat. Each group parallaxes at its own (slow) speed —
+   see the scroll handler in script.js — so the grid separates into readable
+   depth instead of scrolling as one flat plane. A slight perspective tilt +
+   radial vignette mask sell the "surface" read without a full 3D transform
+   rig: cheap, and safe against the stacking-context issues documented
+   elsewhere in this file for fixed full-viewport layers. */
 #bg-grad {
     position: fixed;
-    inset: 0;
+    inset: -6%;
     z-index: 2;
     pointer-events: none;
     will-change: background-position;
-    transform: translateZ(0);
-    /* Cutting mat: diagonal angle guides (30/45/60°) + square grid. No vignette tint. */
+    transform: perspective(1400px) rotateX(4deg) scale(1.05) translateZ(0);
+    transform-origin: 50% 0%;
     background:
+        /* near layer — single cutting guide, wide spacing so it reads as
+           one clean diagonal rather than a crosshatch */
         repeating-linear-gradient(
             45deg,
-            transparent 0px, transparent 48px,
-            rgba(96,165,250,0.09) 48px, rgba(96,165,250,0.09) 49px
+            transparent 0px, transparent 139px,
+            rgba(96,165,250,0.07) 139px, rgba(96,165,250,0.07) 140px
         ),
-        repeating-linear-gradient(
-            30deg,
-            transparent 0px, transparent 96px,
-            rgba(96,165,250,0.055) 96px, rgba(96,165,250,0.055) 97px
-        ),
-        repeating-linear-gradient(
-            60deg,
-            transparent 0px, transparent 96px,
-            rgba(96,165,250,0.055) 96px, rgba(96,165,250,0.055) 97px
-        ),
-        linear-gradient(rgba(96,165,250,0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(96,165,250,0.055) 1px, transparent 1px);
-    background-size: auto, auto, auto, 36px 36px, 36px 36px;
-    background-position: left bottom, left bottom, left bottom, 0 0, 0 0;
+        /* major grid — every 5th minor line, cutting-mat "5cm" rulings */
+        linear-gradient(rgba(96,165,250,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.10) 1px, transparent 1px),
+        /* minor grid — far layer, fine 1cm-style squares */
+        linear-gradient(rgba(96,165,250,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.045) 1px, transparent 1px);
+    background-size: auto, 140px 140px, 140px 140px, 28px 28px, 28px 28px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+    mask-image: radial-gradient(120% 85% at 50% 0%, #000 55%, transparent 100%);
+    -webkit-mask-image: radial-gradient(120% 85% at 50% 0%, #000 55%, transparent 100%);
 }
 
 #bg-bloom {
@@ -445,34 +452,7 @@ nav::after {
     min-height: 100vh;
 }
 
-/* Local grid bg — used on pages that don't have the global bg-grad overlay */
-.page-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background:
-        repeating-linear-gradient(
-            45deg,
-            transparent 0px, transparent 48px,
-            rgba(96,165,250,0.09) 48px, rgba(96,165,250,0.09) 49px
-        ),
-        repeating-linear-gradient(
-            30deg,
-            transparent 0px, transparent 96px,
-            rgba(96,165,250,0.055) 96px, rgba(96,165,250,0.055) 97px
-        ),
-        repeating-linear-gradient(
-            60deg,
-            transparent 0px, transparent 96px,
-            rgba(96,165,250,0.055) 96px, rgba(96,165,250,0.055) 97px
-        ),
-        linear-gradient(rgba(96,165,250,0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(96,165,250,0.055) 1px, transparent 1px);
-    background-size: auto, auto, auto, 36px 36px, 36px 36px;
-}
-
-/* Ensure container sits above the local grid */
+/* Ensure container sits above the shared #bg-grad cutting mat */
 .page-wrap > .container {
     position: relative;
     z-index: 1;

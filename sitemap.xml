@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TODO: replace REPLACE_WITH_YOUR_DOMAIN below with the site's real
+  production domain (e.g. jobersi.com) before this is useful — it wasn't
+  found anywhere in the repo (no CNAME file, no absolute URLs), so it
+  can't be filled in automatically.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://REPLACE_WITH_YOUR_DOMAIN/index.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://REPLACE_WITH_YOUR_DOMAIN/portfolio.html</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://REPLACE_WITH_YOUR_DOMAIN/cv.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://REPLACE_WITH_YOUR_DOMAIN/gear.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://REPLACE_WITH_YOUR_DOMAIN/contact.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+</urlset>
