@@ -256,7 +256,7 @@ function triggerRickRoll() {
                 Close [X]
             </button>
             <iframe width="100%" height="100%"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&origin=${encodeURIComponent(location.origin)}"
                 frameborder="0"
                 allow="autoplay; encrypted-media"
                 allowfullscreen
