@@ -253,6 +253,7 @@ button {
 @media (prefers-reduced-motion: reduce) {
     #grain { animation: none; }
     .client-card { animation: none; }
+    .ambient-blob { animation: none; }
 }
 
 /* ── Navigation — Apple liquid glass ────────────────────── */
@@ -3030,6 +3031,24 @@ nav::after {
 @keyframes blob-float-3 {
     0%,100% { transform: translate(0,0) scale(1); }
     50%     { transform: translate(4vw,-8vh) scale(1.1); }
+}
+
+/* Mobile: both of these run unconditionally forever on every page, no
+   visibility/viewport gating at all — #grain repositions a huge
+   (viewport + 200px) element in ~25 discrete jumps/sec via steps(1), and
+   the 3 ambient blobs continuously animate transform+scale on heavily
+   blurred (80-100px) layers, forcing the GPU to keep recompositing those
+   filter layers indefinitely. Desktop GPUs (including Chrome's device
+   emulation, which doesn't throttle the GPU) shrug this off; real phone
+   GPUs visibly choke on it. Freezing both removes the continuous cost —
+   the static grain texture and blob shapes still render, they just stop
+   moving, since a still blurred layer is painted once and cached instead
+   of recomposited every frame. */
+@media (max-width: 768px) {
+    #grain,
+    .ambient-blob {
+        animation: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
