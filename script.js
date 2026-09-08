@@ -465,7 +465,7 @@ function setupWordReveal() {
     //    a normal mobile scroll-through provides, so the text (and badge/
     //    cards, which gate on the same progress value) never finish revealing
     //    before the section is gone.
-    if (prefersReducedMotion || window.matchMedia('(max-width: 768px)').matches) {
+    function revealAboutInstantly() {
         paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
@@ -475,7 +475,14 @@ function setupWordReveal() {
         const badgeEl = document.querySelector('.hackclub-badge');
         if (badgeEl) badgeEl.classList.add('badge-visible');
         const statsWrapEl = document.querySelector('.about-stats-wrap');
-        if (statsWrapEl) statsWrapEl.classList.add('float-active');
+        if (statsWrapEl) {
+            statsWrapEl.classList.add('float-active');
+            statsWrapEl.querySelectorAll('.javii-reveal').forEach(el => el.classList.add('active'));
+        }
+    }
+
+    if (prefersReducedMotion || window.matchMedia('(max-width: 768px)').matches) {
+        revealAboutInstantly();
         return;
     }
 
@@ -514,6 +521,19 @@ function setupWordReveal() {
 
     function updateTrackHeight() {
         if (!track) return;
+        // Viewport can cross into mobile width after this section was set
+        // up in desktop (pinned) mode — e.g. resizing or rotating without a
+        // full reload. CSS already drops the pin at this breakpoint
+        // (.about-sticky goes height:auto), but the track's own inline
+        // height was set for the pinned scroll-jack range and won't shrink
+        // on its own, which leaves the sticky box held in place for that
+        // leftover scroll distance — looking like the pin/reveal animation
+        // is still running on mobile. Clearing it lets the track collapse
+        // back to CSS's plain min-height:100vh, matching a native mobile load.
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            track.style.height = '';
+            return;
+        }
         const overflow = measureAboutOverflow();
         track.style.height = `calc(100vh + ${maxWords * PX_PER_WORD + 320 + overflow}px)`;
     }
@@ -549,11 +569,27 @@ function setupWordReveal() {
     const editorial = document.querySelector('.about-editorial');
     const floatLeft  = document.querySelector('.about-float-left');
     const floatRight = document.querySelector('.about-float-right');
-    let badgeThumped = false, badgeVisible = false, markerFired = false;
+    // Stat numbers/labels ("20+ Projects" etc.) — pulled out of the generic
+    // javii-reveal IntersectionObserver (see DOMContentLoaded setup) so
+    // they can be gated on paragraph-2 progress instead of just "section
+    // in view", same as the badge and the floating client cards.
+    const statNumEls = aboutStatsWrap ? aboutStatsWrap.querySelectorAll('.javii-reveal') : [];
+    let badgeThumped = false, markerFired = false;
     let prevRunningReveal = 0;
 
     function updateWords() {
         if (!section) return;
+
+        // Same viewport-crossed-into-mobile guard as updateTrackHeight —
+        // if it fires, drop the pin/track and show everything instantly
+        // instead of continuing the progress-based reveal on a layout that
+        // CSS has already un-pinned.
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            updateTrackHeight();
+            revealAboutInstantly();
+            return;
+        }
+
         const rect = section.getBoundingClientRect();
         // The sticky pin's actual release point is governed by its own
         // rendered height, not the viewport height — .about-sticky uses
@@ -575,14 +611,20 @@ function setupWordReveal() {
             words.forEach((w, i) => w.classList.toggle('active', i < reveal));
         });
 
-        // Badge fade-in: starts when para 2 begins (progress >= 0.55)
-        if (!badgeVisible && progress >= 0.55 && badge) {
-            badgeVisible = true;
-            badge.classList.add('badge-visible');
+        // Badge fade in/out with paragraph 2 — reversible (not a one-time
+        // latch) so scrolling back up past 0.55 hides it again instead of
+        // leaving it stuck visible.
+        if (badge) badge.classList.toggle('badge-visible', progress >= 0.55);
+
+        // Stat numbers ("20+ Projects" etc.) — same paragraph-2 gate as the
+        // badge, reversible for the same reason.
+        if (statNumEls.length) {
+            const showStats = progress >= 0.55;
+            statNumEls.forEach(el => el.classList.toggle('active', showStats));
         }
 
         // Client cards explosion — fires at 0.55, animates out when scrolling back up past 0.50
-        const statsWrap = document.querySelector('.about-stats-wrap');
+        const statsWrap = aboutStatsWrap;
         if (statsWrap) {
             if (!statsWrap.classList.contains('float-active') && !statsWrap.classList.contains('float-exit') && progress >= 0.55) {
                 statsWrap.classList.add('float-active');
@@ -785,6 +827,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backTopBtn = setupBackToTop();
     const topEgg     = setupTopEasterEgg();
     let lastScrollY   = window.scrollY;
+    let topEggHideT;
     const bgGrad     = document.getElementById('bg-grad');
     const bgBloom    = document.getElementById('bg-bloom');
     const bgBacker   = document.getElementById('bg-backer');
@@ -800,12 +843,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // Back to top button
             if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
 
-            // "Found the top" note — snaps in while scrolling UP near the
-            // top of the page, fades out on scroll-down or once you're
-            // away from the top.
+            // "Found the top" note — snaps in while actively scrolling UP
+            // near the top of the page (Snapchat pull-to-reveal style), and
+            // fades back out as soon as scrolling stops — not left sitting
+            // there. clearTimeout+re-set on every qualifying scroll event
+            // keeps it visible through a continuous scroll-up gesture and
+            // only starts the hide countdown once the gesture actually ends.
             if (topEgg) {
                 const scrollingUp = y < lastScrollY;
-                topEgg.classList.toggle('visible', scrollingUp && y < 120);
+                clearTimeout(topEggHideT);
+                if (scrollingUp && y < 120) {
+                    topEgg.classList.add('visible');
+                    topEggHideT = setTimeout(() => topEgg.classList.remove('visible'), 550);
+                } else {
+                    topEgg.classList.remove('visible');
+                }
             }
             lastScrollY = y;
 
@@ -939,7 +991,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, { threshold: 0.05, rootMargin: '0px 0px -16px 0px' });
 
-    const javiiEls = document.querySelectorAll('.javii-reveal');
+    // About-section stat numbers ("20+ Projects" etc.) are excluded here —
+    // they're gated on word-reveal progress (paragraph 2) by
+    // setupWordReveal()'s updateWords() instead of "section in view", so
+    // this generic observer would otherwise reveal them the instant the
+    // pinned About section scrolls into place, well before paragraph 2.
+    const javiiEls = [...document.querySelectorAll('.javii-reveal')]
+        .filter(el => !el.closest('#home-about .about-stats-wrap'));
     javiiEls.forEach((el, i) => {
         if (!prefersReducedMotion) {
             el.style.transitionDelay = `${i * 0.045}s`;
