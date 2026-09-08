@@ -89,6 +89,87 @@ function setupGrain() {
     document.body.appendChild(el);
 }
 
+/* ── Top overscroll easter egg ──
+   Pull past the very top of the page (wheel-up or a touch swipe-down)
+   while already at scrollY 0 and a little note peeks out from behind
+   the nav, like there's a "floor above the top" — same idea as an iOS
+   rubber-band bounce, done in JS since raw overscroll isn't reliably
+   hookable cross-browser. Never calls preventDefault — this rides
+   alongside native scroll/bounce, never fights it. */
+function setupTopEasterEgg() {
+    const el = document.createElement('div');
+    el.id = 'top-egg';
+    el.setAttribute('aria-hidden', 'true');
+    el.textContent = '· you found the top ·';
+    document.body.appendChild(el);
+
+    const REVEAL_PX = 34;
+    const THRESHOLD = 0.62;
+    let pull = 0;          // 0-1
+    let locked = false;    // fully revealed + holding
+    let hideTimer = null;
+    let touchStartY = null;
+
+    function render(instant) {
+        el.classList.toggle('tugging', !!instant);
+        el.classList.toggle('settling', !instant);
+        el.style.transform = `translateY(${(pull - 1) * REVEAL_PX}px)`;
+    }
+
+    function settleOpen() {
+        locked = true;
+        pull = 1;
+        render(false);
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => {
+            locked = false;
+            pull = 0;
+            render(false);
+        }, 1400);
+    }
+
+    function settleClosed() {
+        pull = 0;
+        render(false);
+    }
+
+    let wheelIdleTimer = null;
+    function nudge(deltaPull) {
+        if (locked || tabHidden) return;
+        if (window.scrollY > 0) { if (pull) settleClosed(); return; }
+        pull = Math.max(0, Math.min(1, pull + deltaPull));
+        render(true);
+        if (pull >= 1) settleOpen();
+    }
+
+    window.addEventListener('wheel', e => {
+        if (window.scrollY > 0 || locked) return;
+        if (e.deltaY < 0) {
+            nudge(-e.deltaY / 220);
+            clearTimeout(wheelIdleTimer);
+            wheelIdleTimer = setTimeout(() => {
+                if (!locked) { if (pull >= THRESHOLD) settleOpen(); else if (pull > 0) settleClosed(); }
+            }, 140);
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchstart', e => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', e => {
+        if (touchStartY === null || window.scrollY > 0) return;
+        const dy = e.touches[0].clientY - touchStartY;
+        if (dy > 0) nudge(dy / 260);
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+        touchStartY = null;
+        if (!locked && pull > 0 && pull < THRESHOLD) settleClosed();
+        else if (!locked && pull >= THRESHOLD) settleOpen();
+    }, { passive: true });
+}
+
 /* ── Magnetic buttons — proximity snap (desktop only) ── */
 function setupMagnetic() {
     if (window.matchMedia('(hover: none)').matches) return;
@@ -733,6 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
     setupGrain();
+    setupTopEasterEgg();
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
@@ -760,10 +842,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // Cutting mat parallax — near/major/minor layers drift at
             // clearly separated, slow speeds so the grid reads as depth
             // instead of one flat plane scrolling with the page.
+            //
+            // Driven by scroll PROGRESS (0-1 across the page), not raw
+            // scroll pixels — a fixed px-per-pixel speed made the grid
+            // visibly race through many more tile-repeats on long pages
+            // (e.g. cv.html) than on short ones (e.g. contact.html) for
+            // the same on-screen scroll gesture, since a flick down a
+            // long page covers far more raw pixels. Scaling by progress
+            // instead means the background completes the same total
+            // drift by the bottom of every page, regardless of length.
             if (bgGrad && !prefersReducedMotion) {
-                const dNear  = (y * 0.05).toFixed(1);  // 45° cutting guide
-                const dMajor = (y * 0.025).toFixed(1); // 140px grid
-                const dMinor = (y * 0.012).toFixed(1); // 28px grid
+                const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+                const progress  = Math.min(1, y / maxScroll);
+                const dNear  = (progress * 90).toFixed(1);  // 45° cutting guide
+                const dMajor = (progress * 45).toFixed(1);  // 140px grid
+                const dMinor = (progress * 22).toFixed(1);  // 28px grid
                 // 5 layers: 45° guide, major h-grid, major v-grid, minor h-grid, minor v-grid
                 bgGrad.style.backgroundPosition =
                     `left -${dNear}px, 0 -${dMajor}px, -${dMajor}px 0, 0 -${dMinor}px, -${dMinor}px 0`;
