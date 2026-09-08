@@ -199,13 +199,10 @@ button {
     body     { cursor: auto; }
 }
 
-/* ── Little corner note — always there, no popup/reveal, anchored to a
-   fixed corner offset so it can never end up "out of bounds" at any
-   viewport size (unlike a top-of-page strip competing with the nav). */
-/* Lives just BELOW the nav pill (not behind/under it — nothing to clip),
-   hidden until a scroll-up-near-top gesture reveals it with a snappy
-   spring, Snapchat-pull-style, then fades back out. max-width + ellipsis
-   is a hard guarantee against overflow at any viewport width. */
+/* ── Little corner note — plain static text, always there. No scroll-tied
+   show/hide, no transition — just sits just below the nav pill (fixed
+   position, so it can end up partly behind the nav on some viewports,
+   which is fine). max-width + ellipsis guards against overflow. */
 #top-egg {
     position: fixed;
     top: calc(var(--nav-h) + 4px);
@@ -223,13 +220,8 @@ button {
     text-transform: uppercase;
     text-align: center;
     pointer-events: none;
-    opacity: 0;
-    transform: translate(-50%, -10px);
-    transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
-}
-#top-egg.visible {
     opacity: 0.65;
-    transform: translate(-50%, 0);
+    transform: translateX(-50%);
 }
 
 /* ── Grain overlay ──────────────────────────────────────── */

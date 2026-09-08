@@ -89,11 +89,8 @@ function setupGrain() {
     document.body.appendChild(el);
 }
 
-/* ── "Found the top" note — reveals with a snap when you scroll UP near
-   the top of the page (like Snapchat's pull-to-reveal), fades back out
-   once you scroll down or away from the top. Driven entirely by the
-   shared scroll handler below (see onScroll) — no separate wheel/touch
-   listeners, so there's nothing left to glitch on repeated scroll-ups. */
+/* ── "Found the top" note — plain static text, always in the DOM, no
+   scroll-tied show/hide logic at all. */
 function setupTopEasterEgg() {
     const el = document.createElement('div');
     el.id = 'top-egg';
@@ -825,9 +822,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
     const backTopBtn = setupBackToTop();
-    const topEgg     = setupTopEasterEgg();
-    let lastScrollY   = window.scrollY;
-    let topEggHideT;
+    setupTopEasterEgg();
     const bgGrad     = document.getElementById('bg-grad');
     const bgBloom    = document.getElementById('bg-bloom');
     const bgBacker   = document.getElementById('bg-backer');
@@ -842,24 +837,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Back to top button
             if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
-
-            // "Found the top" note — snaps in while actively scrolling UP
-            // near the top of the page (Snapchat pull-to-reveal style), and
-            // fades back out as soon as scrolling stops — not left sitting
-            // there. clearTimeout+re-set on every qualifying scroll event
-            // keeps it visible through a continuous scroll-up gesture and
-            // only starts the hide countdown once the gesture actually ends.
-            if (topEgg) {
-                const scrollingUp = y < lastScrollY;
-                clearTimeout(topEggHideT);
-                if (scrollingUp && y < 120) {
-                    topEgg.classList.add('visible');
-                    topEggHideT = setTimeout(() => topEgg.classList.remove('visible'), 550);
-                } else {
-                    topEgg.classList.remove('visible');
-                }
-            }
-            lastScrollY = y;
 
             // Cutting mat parallax — near/major/minor layers drift at
             // clearly separated, slow speeds so the grid reads as depth
