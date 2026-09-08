@@ -89,18 +89,13 @@ function setupGrain() {
     document.body.appendChild(el);
 }
 
-/* ── Top-of-page marker ──
-   A little tag tucked behind the nav that slides into view whenever
-   you're scrolled all the way to the top of the page. No gesture
-   tracking (that was glitchy on repeated scroll-ups) — it's just
-   there when you're at the top, gone once you scroll down. */
+/* ── Little corner note — always visible, no popup/reveal logic at all. */
 function setupTopEasterEgg() {
     const el = document.createElement('div');
     el.id = 'top-egg';
     el.setAttribute('aria-hidden', 'true');
     el.textContent = 'haiiiii :3 ^ω^';
     document.body.appendChild(el);
-    return el;
 }
 
 /* ── Magnetic buttons — proximity snap (desktop only) ── */
@@ -364,23 +359,14 @@ function setupHeroCharReveal() {
 
     const chars = el.querySelectorAll('.hero-char');
 
-    // The "your" glow is a one-time intro moment — once you've seen it this
-    // session, revisiting/reloading the home page just shows the text
-    // straight away instead of replaying the whole reveal + glow again.
-    let seen = false;
-    try { seen = sessionStorage.getItem('heroIntroSeen') === '1'; } catch (e) {}
-
-    if (seen) {
-        chars.forEach(ch => ch.classList.add('hc-active'));
-        return;
-    }
-
+    // Plays once per page load (IntersectionObserver disconnects itself
+    // after the first fire), never again on the same load no matter how
+    // many times you scroll the hero in and out of view.
     let fired = false;
     const obs = new IntersectionObserver(entries => {
         if (!entries[0].isIntersecting || fired) return;
         fired = true;
         obs.disconnect();
-        try { sessionStorage.setItem('heroIntroSeen', '1'); } catch (e) {}
         chars.forEach((ch, i) => {
             setTimeout(() => ch.classList.add('hc-active'), i * 18);
         });
@@ -770,7 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
     const backTopBtn = setupBackToTop();
-    const topEgg     = setupTopEasterEgg();
+    setupTopEasterEgg();
     const bgGrad     = document.getElementById('bg-grad');
     const bgBloom    = document.getElementById('bg-bloom');
     const bgBacker   = document.getElementById('bg-backer');
@@ -785,9 +771,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Back to top button
             if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
-
-            // Top-of-page marker — visible only right at the very top
-            if (topEgg) topEgg.classList.toggle('visible', y <= 0);
 
             // Cutting mat parallax — near/major/minor layers drift at
             // clearly separated, slow speeds so the grid reads as depth

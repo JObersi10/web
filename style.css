@@ -199,35 +199,27 @@ button {
     body     { cursor: auto; }
 }
 
-/* ── Top overscroll easter egg — a little "you're home" note that
-   peeks down from behind the nav when you pull past the very top of
-   the page (wheel-up or swipe-down while already at scrollY 0). Height
-   stays fixed so it doesn't reflow layout; reveal is a transform. ── */
+/* ── Little corner note — always there, no popup/reveal, anchored to a
+   fixed corner offset so it can never end up "out of bounds" at any
+   viewport size (unlike a top-of-page strip competing with the nav). */
 #top-egg {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 34px;
-    z-index: 199; /* just under --z-nav (200) so the nav pill still reads on top */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6em;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border-accent);
-    color: var(--accent);
+    bottom: var(--sp-8);
+    left: var(--sp-8);
+    z-index: 40;
+    color: var(--text-muted);
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 0.68rem;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    transform: translateY(-100%);
     pointer-events: none;
-    will-change: transform;
-    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    opacity: 0.55;
 }
-#top-egg.visible { transform: translateY(0); }
+
+@media (max-width: 768px) {
+    #top-egg { display: none; }
+}
 
 /* ── Grain overlay ──────────────────────────────────────── */
 #grain {
@@ -2363,6 +2355,9 @@ nav::after {
 .modal-card {
     width: 100%;
     max-width: 1100px;
+    min-width: 0; /* flex/grid items default to min-width:auto — without
+        this, long unbroken content (the all-caps title) forces the card
+        wider than the viewport instead of wrapping, clipping it on mobile */
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 2rem;
@@ -2380,6 +2375,7 @@ nav::after {
     background: #000;
     position: relative;
     min-height: 280px;
+    min-width: 0;
 }
 
 .modal-media img {
@@ -2403,6 +2399,7 @@ nav::after {
     display: flex;
     flex-direction: column;
     gap: var(--sp-4);
+    min-width: 0;
 }
 
 .m-title {
@@ -2412,6 +2409,7 @@ nav::after {
     text-transform: uppercase;
     font-style: italic;
     line-height: 1;
+    overflow-wrap: break-word;
 }
 
 .m-desc { font-size: var(--text-sm); color: var(--text-mid); line-height: 1.8; }
@@ -2436,6 +2434,12 @@ nav::after {
 }
 
 .modal-close:hover { background: rgba(255,255,255,0.14); }
+
+@media (max-width: 768px) {
+    .modal-info { padding: var(--sp-6); gap: var(--sp-3); }
+    .m-title { font-size: clamp(1.4rem, 7vw, 2rem); }
+    .m-desc { font-size: 0.82rem; line-height: 1.7; }
+}
 
 /* ═══════════════════════════════════════════
    SECTION-HEADING LETTER SCATTER (about)
