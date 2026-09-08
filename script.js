@@ -89,13 +89,18 @@ function setupGrain() {
     document.body.appendChild(el);
 }
 
-/* ── Little corner note — always visible, no popup/reveal logic at all. */
+/* ── "Found the top" note — reveals with a snap when you scroll UP near
+   the top of the page (like Snapchat's pull-to-reveal), fades back out
+   once you scroll down or away from the top. Driven entirely by the
+   shared scroll handler below (see onScroll) — no separate wheel/touch
+   listeners, so there's nothing left to glitch on repeated scroll-ups. */
 function setupTopEasterEgg() {
     const el = document.createElement('div');
     el.id = 'top-egg';
     el.setAttribute('aria-hidden', 'true');
     el.textContent = 'haiiiii :3 ^ω^';
     document.body.appendChild(el);
+    return el;
 }
 
 /* ── Magnetic buttons — proximity snap (desktop only) ── */
@@ -213,6 +218,26 @@ function navTo(url) {
     setTimeout(() => window.location.href = url, 350);
 }
 
+/* ── Avail-card icon idle animations ── */
+function setupIconIdle() {
+    const cards = document.querySelectorAll('.avail-card');
+    if (!cards.length || prefersReducedMotion) return;
+
+    // Each card fires its idle burst at a different cadence so they never sync up.
+    const cadences  = [5200, 6800, 7400, 9100]; // ms between bursts
+    const initDelay = [1000, 2600, 4100, 5800];  // stagger first fire
+    const holdMs    = 1100;                       // ≥ longest animation duration
+
+    cards.forEach((card, i) => {
+        const fire = () => {
+            card.classList.add('icon-idle');
+            setTimeout(() => card.classList.remove('icon-idle'), holdMs);
+            setTimeout(fire, cadences[i]);
+        };
+        setTimeout(fire, initDelay[i]);
+    });
+}
+
 /* ── Back to top ── */
 function setupBackToTop() {
     const btn = document.getElementById('back-to-top');
@@ -256,9 +281,10 @@ function triggerRickRoll() {
                 Close [X]
             </button>
             <iframe width="100%" height="100%"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&origin=${encodeURIComponent(location.origin)}"
+                src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&origin=${encodeURIComponent(location.origin)}"
                 frameborder="0"
                 allow="autoplay; encrypted-media"
+                referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen
                 title="Rick Astley - Never Gonna Give You Up">
             </iframe>
@@ -746,6 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
     setupGrain();
+    setupIconIdle();
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
@@ -756,7 +783,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
     const backTopBtn = setupBackToTop();
-    setupTopEasterEgg();
+    const topEgg     = setupTopEasterEgg();
+    let lastScrollY   = window.scrollY;
     const bgGrad     = document.getElementById('bg-grad');
     const bgBloom    = document.getElementById('bg-bloom');
     const bgBacker   = document.getElementById('bg-backer');
@@ -771,6 +799,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Back to top button
             if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
+
+            // "Found the top" note — snaps in while scrolling UP near the
+            // top of the page, fades out on scroll-down or once you're
+            // away from the top.
+            if (topEgg) {
+                const scrollingUp = y < lastScrollY;
+                topEgg.classList.toggle('visible', scrollingUp && y < 120);
+            }
+            lastScrollY = y;
 
             // Cutting mat parallax — near/major/minor layers drift at
             // clearly separated, slow speeds so the grid reads as depth
