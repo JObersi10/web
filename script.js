@@ -17,60 +17,84 @@ const UI = {
     body:       document.body
 };
 
-/* ── Custom cursor ── */
+/* ── Custom cursor — off by default, opt-in only via the footer toggle
+   (see setupCursorToggle(); the toggle button only exists in index.html's
+   footer, so this stays an index-only experiment). ── */
 let lastMouse = { x: 0, y: 0 };
 let cursorAngle = 0;
+let cursorEnabled = false;
+let cursorIdleTimer;
 
-function setupCursor() {
-    if (!UI.cursor) return;
-    if (window.matchMedia('(hover: none)').matches) {
-        UI.cursor.style.display = 'none';
+function cursorMove(e) {
+    if (tabHidden) return;
+    const dx = e.clientX - lastMouse.x;
+    const dy = e.clientY - lastMouse.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const isExpanded = UI.cursor.classList.contains('active');
+    const intensity = isExpanded ? 0.01 : 0.15;
+    const stretch = Math.min(dist * intensity, 0.4);
+
+    if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        cursorAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+    }
+
+    UI.cursor.style.left = `${e.clientX}px`;
+    UI.cursor.style.top  = `${e.clientY}px`;
+    UI.cursor.style.transform = `translate(-50%,-50%) rotate(${cursorAngle}deg) scale(${1 + stretch},${1 - stretch})`;
+
+    lastMouse.x = e.clientX;
+    lastMouse.y = e.clientY;
+
+    UI.cursor.classList.toggle('active', !!e.target.closest('button,a,.btn-accent,.btn-outline,.nav-link,.portfolio-card'));
+    resetCursorIdle();
+}
+
+function resetCursorIdle() {
+    UI.cursor.style.opacity = '1';
+    clearTimeout(cursorIdleTimer);
+    cursorIdleTimer = setTimeout(() => { UI.cursor.style.opacity = '0'; }, 3000);
+}
+
+function cursorOut(e) {
+    if (!e.relatedTarget && !e.toElement) {
+        UI.cursor.style.opacity = '0';
+        clearTimeout(cursorIdleTimer);
+    }
+}
+
+function enableCursor() {
+    if (cursorEnabled || !UI.cursor) return;
+    cursorEnabled = true;
+    UI.body.classList.add('cursor-enabled');
+    window.addEventListener('mousemove', cursorMove);
+    window.addEventListener('mouseout', cursorOut);
+    window.addEventListener('mouseover', resetCursorIdle);
+}
+
+function disableCursor() {
+    if (!cursorEnabled) return;
+    cursorEnabled = false;
+    UI.body.classList.remove('cursor-enabled');
+    window.removeEventListener('mousemove', cursorMove);
+    window.removeEventListener('mouseout', cursorOut);
+    window.removeEventListener('mouseover', resetCursorIdle);
+    clearTimeout(cursorIdleTimer);
+    UI.cursor.style.opacity = '0';
+}
+
+function setupCursorToggle() {
+    const toggle = document.getElementById('cursor-toggle');
+    if (!toggle || !UI.cursor) return;
+    if (window.matchMedia('(hover: none)').matches || prefersReducedMotion) {
+        toggle.style.display = 'none';
         return;
     }
-    if (prefersReducedMotion) {
-        UI.cursor.style.display = 'none';
-        return;
-    }
-
-    let idleTimer;
-    function resetIdle() {
-        UI.cursor.style.opacity = '1';
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => { UI.cursor.style.opacity = '0'; }, 3000);
-    }
-
-    window.addEventListener('mousemove', e => {
-        if (tabHidden) return;
-        const dx = e.clientX - lastMouse.x;
-        const dy = e.clientY - lastMouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const isExpanded = UI.cursor.classList.contains('active');
-        const intensity = isExpanded ? 0.01 : 0.15;
-        const stretch = Math.min(dist * intensity, 0.4);
-
-        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-            cursorAngle = Math.atan2(dy, dx) * (180 / Math.PI);
-        }
-
-        UI.cursor.style.left = `${e.clientX}px`;
-        UI.cursor.style.top  = `${e.clientY}px`;
-        UI.cursor.style.transform = `translate(-50%,-50%) rotate(${cursorAngle}deg) scale(${1 + stretch},${1 - stretch})`;
-
-        lastMouse.x = e.clientX;
-        lastMouse.y = e.clientY;
-
-        UI.cursor.classList.toggle('active', !!e.target.closest('button,a,.btn-accent,.btn-outline,.nav-link,.portfolio-card'));
-        resetIdle();
+    toggle.addEventListener('click', () => {
+        const next = !cursorEnabled;
+        if (next) enableCursor(); else disableCursor();
+        toggle.classList.toggle('on', next);
+        toggle.setAttribute('aria-pressed', String(next));
     });
-
-    window.addEventListener('mouseout', e => {
-        if (!e.relatedTarget && !e.toElement) {
-            UI.cursor.style.opacity = '0';
-            clearTimeout(idleTimer);
-        }
-    });
-
-    window.addEventListener('mouseover', resetIdle);
 }
 
 /* ── Fit hero name to viewport width ── */
@@ -87,6 +111,17 @@ function setupGrain() {
     const el = document.createElement('div');
     el.id = 'grain';
     document.body.appendChild(el);
+}
+
+/* ── "Found the top" note — plain static text, always in the DOM, no
+   scroll-tied show/hide logic at all. */
+function setupTopEasterEgg() {
+    const el = document.createElement('div');
+    el.id = 'top-egg';
+    el.setAttribute('aria-hidden', 'true');
+    el.textContent = 'haiiiii :3 ^ω^';
+    document.body.appendChild(el);
+    return el;
 }
 
 /* ── Magnetic buttons — proximity snap (desktop only) ── */
@@ -204,6 +239,26 @@ function navTo(url) {
     setTimeout(() => window.location.href = url, 350);
 }
 
+/* ── Avail-card icon idle animations ── */
+function setupIconIdle() {
+    const cards = document.querySelectorAll('.avail-card');
+    if (!cards.length || prefersReducedMotion) return;
+
+    // Each card fires its idle burst at a different cadence so they never sync up.
+    const cadences  = [5200, 6800, 7400, 9100]; // ms between bursts
+    const initDelay = [1000, 2600, 4100, 5800];  // stagger first fire
+    const holdMs    = 1100;                       // ≥ longest animation duration
+
+    cards.forEach((card, i) => {
+        const fire = () => {
+            card.classList.add('icon-idle');
+            setTimeout(() => card.classList.remove('icon-idle'), holdMs);
+            setTimeout(fire, cadences[i]);
+        };
+        setTimeout(fire, initDelay[i]);
+    });
+}
+
 /* ── Back to top ── */
 function setupBackToTop() {
     const btn = document.getElementById('back-to-top');
@@ -247,9 +302,10 @@ function triggerRickRoll() {
                 Close [X]
             </button>
             <iframe width="100%" height="100%"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&origin=${encodeURIComponent(location.origin)}"
                 frameborder="0"
                 allow="autoplay; encrypted-media"
+                referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen
                 title="Rick Astley - Never Gonna Give You Up">
             </iframe>
@@ -349,6 +405,10 @@ function setupHeroCharReveal() {
     splitChildNodes(el);
 
     const chars = el.querySelectorAll('.hero-char');
+
+    // Plays once per page load (IntersectionObserver disconnects itself
+    // after the first fire), never again on the same load no matter how
+    // many times you scroll the hero in and out of view.
     let fired = false;
     const obs = new IntersectionObserver(entries => {
         if (!entries[0].isIntersecting || fired) return;
@@ -426,7 +486,7 @@ function setupWordReveal() {
     //    a normal mobile scroll-through provides, so the text (and badge/
     //    cards, which gate on the same progress value) never finish revealing
     //    before the section is gone.
-    if (prefersReducedMotion || window.matchMedia('(max-width: 768px)').matches) {
+    function revealAboutInstantly() {
         paragraphWordSets.flat().forEach(w => w.classList.add('active'));
         const markEl = document.querySelector('.curacao-mark');
         if (markEl) markEl.classList.add('marker-active');
@@ -436,7 +496,14 @@ function setupWordReveal() {
         const badgeEl = document.querySelector('.hackclub-badge');
         if (badgeEl) badgeEl.classList.add('badge-visible');
         const statsWrapEl = document.querySelector('.about-stats-wrap');
-        if (statsWrapEl) statsWrapEl.classList.add('float-active');
+        if (statsWrapEl) {
+            statsWrapEl.classList.add('float-active');
+            statsWrapEl.querySelectorAll('.javii-reveal').forEach(el => el.classList.add('active'));
+        }
+    }
+
+    if (prefersReducedMotion || window.matchMedia('(max-width: 768px)').matches) {
+        revealAboutInstantly();
         return;
     }
 
@@ -475,6 +542,19 @@ function setupWordReveal() {
 
     function updateTrackHeight() {
         if (!track) return;
+        // Viewport can cross into mobile width after this section was set
+        // up in desktop (pinned) mode — e.g. resizing or rotating without a
+        // full reload. CSS already drops the pin at this breakpoint
+        // (.about-sticky goes height:auto), but the track's own inline
+        // height was set for the pinned scroll-jack range and won't shrink
+        // on its own, which leaves the sticky box held in place for that
+        // leftover scroll distance — looking like the pin/reveal animation
+        // is still running on mobile. Clearing it lets the track collapse
+        // back to CSS's plain min-height:100vh, matching a native mobile load.
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            track.style.height = '';
+            return;
+        }
         const overflow = measureAboutOverflow();
         track.style.height = `calc(100vh + ${maxWords * PX_PER_WORD + 320 + overflow}px)`;
     }
@@ -510,11 +590,27 @@ function setupWordReveal() {
     const editorial = document.querySelector('.about-editorial');
     const floatLeft  = document.querySelector('.about-float-left');
     const floatRight = document.querySelector('.about-float-right');
-    let badgeThumped = false, badgeVisible = false, markerFired = false;
+    // Stat numbers/labels ("20+ Projects" etc.) — pulled out of the generic
+    // javii-reveal IntersectionObserver (see DOMContentLoaded setup) so
+    // they can be gated on paragraph-2 progress instead of just "section
+    // in view", same as the badge and the floating client cards.
+    const statNumEls = aboutStatsWrap ? aboutStatsWrap.querySelectorAll('.javii-reveal') : [];
+    let badgeThumped = false, markerFired = false;
     let prevRunningReveal = 0;
 
     function updateWords() {
         if (!section) return;
+
+        // Same viewport-crossed-into-mobile guard as updateTrackHeight —
+        // if it fires, drop the pin/track and show everything instantly
+        // instead of continuing the progress-based reveal on a layout that
+        // CSS has already un-pinned.
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            updateTrackHeight();
+            revealAboutInstantly();
+            return;
+        }
+
         const rect = section.getBoundingClientRect();
         // The sticky pin's actual release point is governed by its own
         // rendered height, not the viewport height — .about-sticky uses
@@ -536,14 +632,20 @@ function setupWordReveal() {
             words.forEach((w, i) => w.classList.toggle('active', i < reveal));
         });
 
-        // Badge fade-in: starts when para 2 begins (progress >= 0.55)
-        if (!badgeVisible && progress >= 0.55 && badge) {
-            badgeVisible = true;
-            badge.classList.add('badge-visible');
+        // Badge fade in/out with paragraph 2 — reversible (not a one-time
+        // latch) so scrolling back up past 0.55 hides it again instead of
+        // leaving it stuck visible.
+        if (badge) badge.classList.toggle('badge-visible', progress >= 0.55);
+
+        // Stat numbers ("20+ Projects" etc.) — same paragraph-2 gate as the
+        // badge, reversible for the same reason.
+        if (statNumEls.length) {
+            const showStats = progress >= 0.55;
+            statNumEls.forEach(el => el.classList.toggle('active', showStats));
         }
 
         // Client cards explosion — fires at 0.55, animates out when scrolling back up past 0.50
-        const statsWrap = document.querySelector('.about-stats-wrap');
+        const statsWrap = aboutStatsWrap;
         if (statsWrap) {
             if (!statsWrap.classList.contains('float-active') && !statsWrap.classList.contains('float-exit') && progress >= 0.55) {
                 statsWrap.classList.add('float-active');
@@ -730,9 +832,10 @@ function setupCvRoad() {
 
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
-    setupCursor();
+    setupCursorToggle();
     setupPortfolio();
     setupGrain();
+    setupIconIdle();
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
@@ -743,8 +846,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
     const backTopBtn = setupBackToTop();
+    setupTopEasterEgg();
     const bgGrad     = document.getElementById('bg-grad');
     const bgBloom    = document.getElementById('bg-bloom');
+    const bgBacker   = document.getElementById('bg-backer');
     const footerEl   = document.getElementById('site-footer');
     let scrollTick   = false;
 
@@ -757,24 +862,38 @@ document.addEventListener('DOMContentLoaded', () => {
             // Back to top button
             if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
 
-            // Cutting mat parallax — each layer drifts at its own speed
+            // Cutting mat parallax — near/major/minor layers drift at
+            // clearly separated, slow speeds so the grid reads as depth
+            // instead of one flat plane scrolling with the page.
+            //
+            // Driven by scroll PROGRESS (0-1 across the page), not raw
+            // scroll pixels — a fixed px-per-pixel speed made the grid
+            // visibly race through many more tile-repeats on long pages
+            // (e.g. cv.html) than on short ones (e.g. contact.html) for
+            // the same on-screen scroll gesture, since a flick down a
+            // long page covers far more raw pixels. Scaling by progress
+            // instead means the background completes the same total
+            // drift by the bottom of every page, regardless of length.
             if (bgGrad && !prefersReducedMotion) {
-                const d45 = (y * 0.20).toFixed(1);
-                const d30 = (y * 0.12).toFixed(1);
-                const dG  = (y * 0.28).toFixed(1);
-                // 5 layers: 45°, 30°, 60°, h-grid, v-grid
+                const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+                const progress  = Math.min(1, y / maxScroll);
+                const dNear  = (progress * 90).toFixed(1);  // 45° cutting guide
+                const dMajor = (progress * 45).toFixed(1);  // 140px grid
+                const dMinor = (progress * 22).toFixed(1);  // 28px grid
+                // 5 layers: 45° guide, major h-grid, major v-grid, minor h-grid, minor v-grid
                 bgGrad.style.backgroundPosition =
-                    `left -${d45}px, left -${d30}px, left -${d30}px, 0 -${dG}px, -${dG}px 0`;
+                    `left -${dNear}px, 0 -${dMajor}px, -${dMajor}px 0, 0 -${dMinor}px, -${dMinor}px 0`;
             }
 
             // Clip bg overlays off the footer as it gets revealed
-            if (footerEl && (bgGrad || bgBloom)) {
+            if (footerEl && (bgGrad || bgBloom || bgBacker)) {
                 const maxScroll = document.body.scrollHeight - window.innerHeight;
                 const footerH   = footerEl.offsetHeight;
                 const revealed  = Math.max(0, y - (maxScroll - footerH));
                 const clip      = revealed + 'px';
-                if (bgGrad)  bgGrad.style.bottom  = clip;
-                if (bgBloom) bgBloom.style.bottom = clip;
+                if (bgGrad)   bgGrad.style.bottom   = clip;
+                if (bgBloom)  bgBloom.style.bottom  = clip;
+                if (bgBacker) bgBacker.style.bottom = clip;
             }
 
             // Word reveal
@@ -806,6 +925,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const duration = Math.min(5500, Math.max(2600, Math.abs(distance) * 2.2));
             let startTime  = null;
 
+            // CSS has `scroll-behavior: smooth` on <html> — left on, every
+            // scrollTo() call below would kick off its own native smooth
+            // animation toward that frame's target, fighting the easing
+            // curve here and reading as stutter instead of one clean glide.
+            // Switch to instant scrolling just for this animation, restore
+            // it after so anchor links elsewhere keep their native smoothing.
+            const htmlEl = document.documentElement;
+            const prevScrollBehavior = htmlEl.style.scrollBehavior;
+            htmlEl.style.scrollBehavior = 'auto';
+
             // easeOutQuart — rockets fast, then decelerates into the text reveal
             function easeOutQuart(t) {
                 return 1 - Math.pow(1 - t, 4);
@@ -815,7 +944,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const elapsed  = ts - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 window.scrollTo(0, start + distance * easeOutQuart(progress));
-                if (progress < 1) requestAnimationFrame(step);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    htmlEl.style.scrollBehavior = prevScrollBehavior;
+                }
             }
             requestAnimationFrame(step);
         });
@@ -859,7 +992,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, { threshold: 0.05, rootMargin: '0px 0px -16px 0px' });
 
-    const javiiEls = document.querySelectorAll('.javii-reveal');
+    // About-section stat numbers ("20+ Projects" etc.) are excluded here —
+    // they're gated on word-reveal progress (paragraph 2) by
+    // setupWordReveal()'s updateWords() instead of "section in view", so
+    // this generic observer would otherwise reveal them the instant the
+    // pinned About section scrolls into place, well before paragraph 2.
+    const javiiEls = [...document.querySelectorAll('.javii-reveal')]
+        .filter(el => !el.closest('#home-about .about-stats-wrap'));
     javiiEls.forEach((el, i) => {
         if (!prefersReducedMotion) {
             el.style.transitionDelay = `${i * 0.045}s`;
