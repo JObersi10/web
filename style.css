@@ -2762,10 +2762,15 @@ nav::after {
     }
     nav::before, nav::after { display: none; }
 
+    /* Solid instead of blurred — these two pills are fixed and stay on
+       screen through the entire scroll, so backdrop-filter here meant
+       the browser resampling + reblurring whatever scrolls underneath
+       them on every single frame, for the whole page, on every mobile
+       load. That's a real, continuous scroll-jank cost real phone GPUs
+       feel and desktop/emulation doesn't. A solid enough background
+       reads the same at a glance without the per-frame cost. */
     .nav-logo {
-        background: rgba(6,15,32,0.55);
-        backdrop-filter: blur(24px) saturate(1.5);
-        -webkit-backdrop-filter: blur(24px) saturate(1.5);
+        background: rgba(6,15,32,0.88);
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 999px;
         padding: 0.45rem 1rem 0.45rem 0.75rem;
@@ -2774,9 +2779,7 @@ nav::after {
     }
 
     #hamburger {
-        background: rgba(6,15,32,0.55);
-        backdrop-filter: blur(24px) saturate(1.5);
-        -webkit-backdrop-filter: blur(24px) saturate(1.5);
+        background: rgba(6,15,32,0.88);
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 999px;
         width: auto;
