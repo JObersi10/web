@@ -79,7 +79,6 @@ body {
     font-size: var(--text-base);
     color: var(--text);
     overflow-x: hidden;
-    cursor: none;
     line-height: 1.75;
     transition: opacity 0.4s ease;
     background: var(--bg); /* base color — cutting mat lives on #bg-grad above */
@@ -169,7 +168,16 @@ button {
     background: var(--bg);
 }
 
-/* ── Custom cursor ──────────────────────────────────────── */
+/* ── Custom cursor — off by default, opt-in via the footer toggle
+   (index.html only, see .mboard-cursor-toggle) — see script.js's
+   enableCursor()/disableCursor(). The `*` here needs to outrank
+   `button { cursor: pointer }`'s plain type selector, which a class
+   selector on an ancestor already does. ── */
+body.cursor-enabled,
+body.cursor-enabled * {
+    cursor: none;
+}
+
 #cursor {
     position: fixed;
     top: 0;
@@ -1542,6 +1550,43 @@ nav::after {
     letter-spacing: 0.22em;
     text-transform: uppercase;
     font-weight: 600;
+}
+
+/* Custom-cursor experiment toggle — index.html footer only */
+.mboard-cursor-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: auto;
+    font-family: inherit;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(0,255,65,0.4);
+    transition: color 0.2s ease;
+}
+
+.mboard-cursor-toggle:hover {
+    color: rgba(0,255,65,0.7);
+}
+
+.mboard-cursor-dot {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(0,255,65,0.25);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mboard-cursor-toggle.on {
+    color: rgba(0,255,65,0.85);
+}
+
+.mboard-cursor-toggle.on .mboard-cursor-dot {
+    background: #00ff41;
+    box-shadow: 0 0 8px rgba(0,255,65,0.7);
 }
 
 /* Giant watermark "JOBERSI" */

@@ -17,60 +17,84 @@ const UI = {
     body:       document.body
 };
 
-/* ── Custom cursor ── */
+/* ── Custom cursor — off by default, opt-in only via the footer toggle
+   (see setupCursorToggle(); the toggle button only exists in index.html's
+   footer, so this stays an index-only experiment). ── */
 let lastMouse = { x: 0, y: 0 };
 let cursorAngle = 0;
+let cursorEnabled = false;
+let cursorIdleTimer;
 
-function setupCursor() {
-    if (!UI.cursor) return;
-    if (window.matchMedia('(hover: none)').matches) {
-        UI.cursor.style.display = 'none';
+function cursorMove(e) {
+    if (tabHidden) return;
+    const dx = e.clientX - lastMouse.x;
+    const dy = e.clientY - lastMouse.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const isExpanded = UI.cursor.classList.contains('active');
+    const intensity = isExpanded ? 0.01 : 0.15;
+    const stretch = Math.min(dist * intensity, 0.4);
+
+    if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        cursorAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+    }
+
+    UI.cursor.style.left = `${e.clientX}px`;
+    UI.cursor.style.top  = `${e.clientY}px`;
+    UI.cursor.style.transform = `translate(-50%,-50%) rotate(${cursorAngle}deg) scale(${1 + stretch},${1 - stretch})`;
+
+    lastMouse.x = e.clientX;
+    lastMouse.y = e.clientY;
+
+    UI.cursor.classList.toggle('active', !!e.target.closest('button,a,.btn-accent,.btn-outline,.nav-link,.portfolio-card'));
+    resetCursorIdle();
+}
+
+function resetCursorIdle() {
+    UI.cursor.style.opacity = '1';
+    clearTimeout(cursorIdleTimer);
+    cursorIdleTimer = setTimeout(() => { UI.cursor.style.opacity = '0'; }, 3000);
+}
+
+function cursorOut(e) {
+    if (!e.relatedTarget && !e.toElement) {
+        UI.cursor.style.opacity = '0';
+        clearTimeout(cursorIdleTimer);
+    }
+}
+
+function enableCursor() {
+    if (cursorEnabled || !UI.cursor) return;
+    cursorEnabled = true;
+    UI.body.classList.add('cursor-enabled');
+    window.addEventListener('mousemove', cursorMove);
+    window.addEventListener('mouseout', cursorOut);
+    window.addEventListener('mouseover', resetCursorIdle);
+}
+
+function disableCursor() {
+    if (!cursorEnabled) return;
+    cursorEnabled = false;
+    UI.body.classList.remove('cursor-enabled');
+    window.removeEventListener('mousemove', cursorMove);
+    window.removeEventListener('mouseout', cursorOut);
+    window.removeEventListener('mouseover', resetCursorIdle);
+    clearTimeout(cursorIdleTimer);
+    UI.cursor.style.opacity = '0';
+}
+
+function setupCursorToggle() {
+    const toggle = document.getElementById('cursor-toggle');
+    if (!toggle || !UI.cursor) return;
+    if (window.matchMedia('(hover: none)').matches || prefersReducedMotion) {
+        toggle.style.display = 'none';
         return;
     }
-    if (prefersReducedMotion) {
-        UI.cursor.style.display = 'none';
-        return;
-    }
-
-    let idleTimer;
-    function resetIdle() {
-        UI.cursor.style.opacity = '1';
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => { UI.cursor.style.opacity = '0'; }, 3000);
-    }
-
-    window.addEventListener('mousemove', e => {
-        if (tabHidden) return;
-        const dx = e.clientX - lastMouse.x;
-        const dy = e.clientY - lastMouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const isExpanded = UI.cursor.classList.contains('active');
-        const intensity = isExpanded ? 0.01 : 0.15;
-        const stretch = Math.min(dist * intensity, 0.4);
-
-        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-            cursorAngle = Math.atan2(dy, dx) * (180 / Math.PI);
-        }
-
-        UI.cursor.style.left = `${e.clientX}px`;
-        UI.cursor.style.top  = `${e.clientY}px`;
-        UI.cursor.style.transform = `translate(-50%,-50%) rotate(${cursorAngle}deg) scale(${1 + stretch},${1 - stretch})`;
-
-        lastMouse.x = e.clientX;
-        lastMouse.y = e.clientY;
-
-        UI.cursor.classList.toggle('active', !!e.target.closest('button,a,.btn-accent,.btn-outline,.nav-link,.portfolio-card'));
-        resetIdle();
+    toggle.addEventListener('click', () => {
+        const next = !cursorEnabled;
+        if (next) enableCursor(); else disableCursor();
+        toggle.classList.toggle('on', next);
+        toggle.setAttribute('aria-pressed', String(next));
     });
-
-    window.addEventListener('mouseout', e => {
-        if (!e.relatedTarget && !e.toElement) {
-            UI.cursor.style.opacity = '0';
-            clearTimeout(idleTimer);
-        }
-    });
-
-    window.addEventListener('mouseover', resetIdle);
 }
 
 /* ── Fit hero name to viewport width ── */
@@ -808,7 +832,7 @@ function setupCvRoad() {
 
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
-    setupCursor();
+    setupCursorToggle();
     setupPortfolio();
     setupGrain();
     setupIconIdle();
