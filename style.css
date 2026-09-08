@@ -2356,7 +2356,13 @@ nav::after {
     transform: translateY(-4px);
 }
 
-.gear-card.wide { grid-column: 1 / -1; }
+.gear-card.wide {
+    grid-column: 1 / -1;
+    /* Slightly different treatment from the 4 spec cards — this one's the
+       workflow/process card, not a kit list, so it reads as its own mode. */
+    background: var(--accent-dim);
+    border-color: var(--border-accent);
+}
 
 .gear-cat {
     color: var(--accent);
@@ -2364,8 +2370,16 @@ nav::after {
     font-weight: 700;
     letter-spacing: 0.4em;
     text-transform: uppercase;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
     margin-bottom: var(--sp-4);
+}
+
+.gear-icon {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
 }
 
 .gear-name {
@@ -2382,12 +2396,14 @@ nav::after {
 .gear-specs li {
     display: flex;
     justify-content: space-between;
+    gap: var(--sp-3);
     font-size: var(--text-sm);
     border-bottom: 1px solid var(--border);
     padding-bottom: var(--sp-2);
 }
 
 .gear-specs li span:first-child {
+    flex-shrink: 0;
     color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
@@ -2395,7 +2411,24 @@ nav::after {
     font-size: var(--text-xs);
 }
 
-.gear-specs li span:last-child { color: var(--text-mid); text-align: right; }
+/* min-width:0 lets this shrink/wrap instead of forcing the row (and the
+   whole card) wider than the viewport — flex items default to
+   min-width:auto, which uses the value's un-wrapped content width. */
+.gear-specs li span:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    color: var(--text-mid);
+    text-align: right;
+}
+
+.gear-note {
+    margin: var(--sp-5) 0 0;
+    padding-top: var(--sp-4);
+    border-top: 1px dashed var(--border);
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+}
 
 .wf-steps {
     display: grid;
