@@ -152,6 +152,23 @@ button {
     opacity: 0.38;
 }
 
+/* Solid backer — sits between the cutting mat and real content. Page
+   content used to carry its own solid background at a LOWER z-index than
+   #bg-grad, which meant the grid painted in front of everything inside it,
+   including photos (visible as grid lines cutting across images). This
+   backer takes over "hide the footer until it's scrolled into view" duty
+   at z:1, #bg-grad stays at z:2 above it, and actual page content now
+   sits at z:3 (see "Page content wrappers" below) — so the grid still
+   tints the empty navy space same as before, but photos/text always
+   paint in front of it instead of the grid drawing over them. */
+#bg-backer {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--bg);
+}
+
 /* ── Custom cursor ──────────────────────────────────────── */
 #cursor {
     position: fixed;
@@ -208,9 +225,9 @@ button {
     transform: translateY(-100%);
     pointer-events: none;
     will-change: transform;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
 }
-#top-egg.tugging { transition: none; }
-#top-egg.settling { transition: transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+#top-egg.visible { transform: translateY(0); }
 
 /* ── Grain overlay ──────────────────────────────────────── */
 #grain {
@@ -466,14 +483,18 @@ nav::after {
 }
 
 /* ── Page content wrappers ── */
-/* bg-grad (z:2) lives above page content (z:1) so the cutting mat is visible.
-   JS scroll handler dynamically clips bg-grad bottom when footer reveals. */
+/* Content sits at z:3 — above #bg-grad (z:2) and its #bg-backer (z:1) —
+   so photos and text always paint over the cutting mat instead of it
+   drawing on top of them. No background here: #bg-backer supplies the
+   solid navy fill (and hides the footer until it's scrolled into view);
+   this wrapper stays transparent so the grid shows through the gaps
+   between actual content. JS scroll handler dynamically clips
+   bg-grad/bg-backer's bottom when the footer reveals. */
 #site-content,
 .page-wrap,
 #page-cv {
     position: relative;
-    z-index: 1;
-    background: var(--bg);
+    z-index: 3;
 }
 
 .page-wrap {

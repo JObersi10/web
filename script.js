@@ -89,85 +89,18 @@ function setupGrain() {
     document.body.appendChild(el);
 }
 
-/* ── Top overscroll easter egg ──
-   Pull past the very top of the page (wheel-up or a touch swipe-down)
-   while already at scrollY 0 and a little note peeks out from behind
-   the nav, like there's a "floor above the top" — same idea as an iOS
-   rubber-band bounce, done in JS since raw overscroll isn't reliably
-   hookable cross-browser. Never calls preventDefault — this rides
-   alongside native scroll/bounce, never fights it. */
+/* ── Top-of-page marker ──
+   A little tag tucked behind the nav that slides into view whenever
+   you're scrolled all the way to the top of the page. No gesture
+   tracking (that was glitchy on repeated scroll-ups) — it's just
+   there when you're at the top, gone once you scroll down. */
 function setupTopEasterEgg() {
     const el = document.createElement('div');
     el.id = 'top-egg';
     el.setAttribute('aria-hidden', 'true');
-    el.textContent = '· you found the top ·';
+    el.textContent = 'haiiiii :3 ^ω^';
     document.body.appendChild(el);
-
-    const REVEAL_PX = 34;
-    const THRESHOLD = 0.62;
-    let pull = 0;          // 0-1
-    let locked = false;    // fully revealed + holding
-    let hideTimer = null;
-    let touchStartY = null;
-
-    function render(instant) {
-        el.classList.toggle('tugging', !!instant);
-        el.classList.toggle('settling', !instant);
-        el.style.transform = `translateY(${(pull - 1) * REVEAL_PX}px)`;
-    }
-
-    function settleOpen() {
-        locked = true;
-        pull = 1;
-        render(false);
-        clearTimeout(hideTimer);
-        hideTimer = setTimeout(() => {
-            locked = false;
-            pull = 0;
-            render(false);
-        }, 1400);
-    }
-
-    function settleClosed() {
-        pull = 0;
-        render(false);
-    }
-
-    let wheelIdleTimer = null;
-    function nudge(deltaPull) {
-        if (locked || tabHidden) return;
-        if (window.scrollY > 0) { if (pull) settleClosed(); return; }
-        pull = Math.max(0, Math.min(1, pull + deltaPull));
-        render(true);
-        if (pull >= 1) settleOpen();
-    }
-
-    window.addEventListener('wheel', e => {
-        if (window.scrollY > 0 || locked) return;
-        if (e.deltaY < 0) {
-            nudge(-e.deltaY / 220);
-            clearTimeout(wheelIdleTimer);
-            wheelIdleTimer = setTimeout(() => {
-                if (!locked) { if (pull >= THRESHOLD) settleOpen(); else if (pull > 0) settleClosed(); }
-            }, 140);
-        }
-    }, { passive: true });
-
-    window.addEventListener('touchstart', e => {
-        touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    window.addEventListener('touchmove', e => {
-        if (touchStartY === null || window.scrollY > 0) return;
-        const dy = e.touches[0].clientY - touchStartY;
-        if (dy > 0) nudge(dy / 260);
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => {
-        touchStartY = null;
-        if (!locked && pull > 0 && pull < THRESHOLD) settleClosed();
-        else if (!locked && pull >= THRESHOLD) settleOpen();
-    }, { passive: true });
+    return el;
 }
 
 /* ── Magnetic buttons — proximity snap (desktop only) ── */
@@ -430,11 +363,24 @@ function setupHeroCharReveal() {
     splitChildNodes(el);
 
     const chars = el.querySelectorAll('.hero-char');
+
+    // The "your" glow is a one-time intro moment — once you've seen it this
+    // session, revisiting/reloading the home page just shows the text
+    // straight away instead of replaying the whole reveal + glow again.
+    let seen = false;
+    try { seen = sessionStorage.getItem('heroIntroSeen') === '1'; } catch (e) {}
+
+    if (seen) {
+        chars.forEach(ch => ch.classList.add('hc-active'));
+        return;
+    }
+
     let fired = false;
     const obs = new IntersectionObserver(entries => {
         if (!entries[0].isIntersecting || fired) return;
         fired = true;
         obs.disconnect();
+        try { sessionStorage.setItem('heroIntroSeen', '1'); } catch (e) {}
         chars.forEach((ch, i) => {
             setTimeout(() => ch.classList.add('hc-active'), i * 18);
         });
@@ -814,7 +760,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupPortfolio();
     setupGrain();
-    setupTopEasterEgg();
     setupMagnetic();
     setupScramble();
     setupEasterEgg();
@@ -825,8 +770,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Unified scroll handler — ONE rAF per frame for all scroll effects ──
     const backTopBtn = setupBackToTop();
+    const topEgg     = setupTopEasterEgg();
     const bgGrad     = document.getElementById('bg-grad');
     const bgBloom    = document.getElementById('bg-bloom');
+    const bgBacker   = document.getElementById('bg-backer');
     const footerEl   = document.getElementById('site-footer');
     let scrollTick   = false;
 
@@ -838,6 +785,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Back to top button
             if (backTopBtn) backTopBtn.classList.toggle('visible', y > 400);
+
+            // Top-of-page marker — visible only right at the very top
+            if (topEgg) topEgg.classList.toggle('visible', y <= 0);
 
             // Cutting mat parallax — near/major/minor layers drift at
             // clearly separated, slow speeds so the grid reads as depth
@@ -863,13 +813,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Clip bg overlays off the footer as it gets revealed
-            if (footerEl && (bgGrad || bgBloom)) {
+            if (footerEl && (bgGrad || bgBloom || bgBacker)) {
                 const maxScroll = document.body.scrollHeight - window.innerHeight;
                 const footerH   = footerEl.offsetHeight;
                 const revealed  = Math.max(0, y - (maxScroll - footerH));
                 const clip      = revealed + 'px';
-                if (bgGrad)  bgGrad.style.bottom  = clip;
-                if (bgBloom) bgBloom.style.bottom = clip;
+                if (bgGrad)   bgGrad.style.bottom   = clip;
+                if (bgBloom)  bgBloom.style.bottom  = clip;
+                if (bgBacker) bgBacker.style.bottom = clip;
             }
 
             // Word reveal
@@ -901,6 +852,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const duration = Math.min(5500, Math.max(2600, Math.abs(distance) * 2.2));
             let startTime  = null;
 
+            // CSS has `scroll-behavior: smooth` on <html> — left on, every
+            // scrollTo() call below would kick off its own native smooth
+            // animation toward that frame's target, fighting the easing
+            // curve here and reading as stutter instead of one clean glide.
+            // Switch to instant scrolling just for this animation, restore
+            // it after so anchor links elsewhere keep their native smoothing.
+            const htmlEl = document.documentElement;
+            const prevScrollBehavior = htmlEl.style.scrollBehavior;
+            htmlEl.style.scrollBehavior = 'auto';
+
             // easeOutQuart — rockets fast, then decelerates into the text reveal
             function easeOutQuart(t) {
                 return 1 - Math.pow(1 - t, 4);
@@ -910,7 +871,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const elapsed  = ts - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 window.scrollTo(0, start + distance * easeOutQuart(progress));
-                if (progress < 1) requestAnimationFrame(step);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    htmlEl.style.scrollBehavior = prevScrollBehavior;
+                }
             }
             requestAnimationFrame(step);
         });
